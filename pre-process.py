@@ -69,19 +69,19 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
             h3k4me3_json["chip.description"] = "Example_" + str(h3k4me3_counter) + "h3k4me3_json"
             h3k4me3_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k4me3_srr)):
-                h3k4me3_json["chip.fastqs_rep1_R1"] = h3k4me3_json.get("chip.fastqs_rep1_R1").append(H3K4me3_DIR + h3k4me3_srr[x] + "_pass.fastq")
+                h3k4me3_json["chip.fastqs_rep1_R1"] = h3k4me3_json["chip.fastqs_rep1_R1"].append(H3K4me3_DIR + h3k4me3_srr[x] + "_pass.fastq")
 
             h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = []
             print(h3k4me3_json)
             for x in range (len(control_srr_1)):
                 print(h3k4me3_json.get("chip.ctl_fastqs_rep1_R1"))
-                h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = h3k4me3_json.get("chip.ctl_fastqs_rep1_R1").append(CONTROL_DIR + control_srr_1[x] + "_pass.fastq")
+                h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = h3k4me3_json["chip.ctl_fastqs_rep1_R1"].append(CONTROL_DIR + control_srr_1[x] + "_pass.fastq")
                 print(h3k4me3_json.get("chip.ctl_fastqs_rep1_R1"))
             
             if len(control_srr_2) > 0:
                 h3k4me3_json["chip.ctl_fastqs_rep2_R1"] = []
                 for x in range (len(control_srr_2)):
-                    h3k4me3_json["chip.ctl_fastqs_rep2_R1"] = h3k4me3_json.get("chip.ctl_fastqs_rep2_R1").append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
+                    h3k4me3_json["chip.ctl_fastqs_rep2_R1"] = h3k4me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
             
             h3k4me3_json = json.dumps(h3k4me3_json)
             jsonFile = open(H3K4me3_DIR + "h3k4me3_" + str(h3k4me3_counter) + ".json", "w")
@@ -97,16 +97,16 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
             h3k27ac_json["chip.description"] = "Example_" + str(h3k27ac_counter) + "h3k27ac_json"
             h3k27ac_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k27ac_srr)):
-                h3k27ac_json["chip.fastqs_rep1_R1"] = h3k27ac_json.get("chip.fastqs_rep1_R1").append(H3K27ac_DIR + h3k27ac_srr[x] + "_pass.fastq")
+                h3k27ac_json["chip.fastqs_rep1_R1"] = h3k27ac_json["chip.fastqs_rep1_R1"].append(H3K27ac_DIR + h3k27ac_srr[x] + "_pass.fastq")
 
             h3k27ac_json["chip.ctl_fastqs_rep1_R1"] = []
             for x in range (len(control_srr_1)):
-                h3k27ac_json["chip.ctl_fastqs_rep1_R1"] = h3k27ac_json.get("chip.ctl_fastqs_rep1_R1").append(CONTROL_DIR + control_srr_1[x] + "_pass.fastq")
+                h3k27ac_json["chip.ctl_fastqs_rep1_R1"] = h3k27ac_json["chip.ctl_fastqs_rep1_R1"].append(CONTROL_DIR + control_srr_1[x] + "_pass.fastq")
             
             if len(control_srr_2) > 0:
                 h3k27ac_json["chip.ctl_fastqs_rep2_R1"] = []
                 for x in range (len(control_srr_2)):
-                    h3k27ac_json["chip.ctl_fastqs_rep2_R1"] = h3k27ac_json.get("chip.ctl_fastqs_rep2_R1").append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
+                    h3k27ac_json["chip.ctl_fastqs_rep2_R1"] = h3k27ac_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
             
             h3k27ac_json = json.dumps(h3k27ac_json)
             jsonFile = open(H3K27ac_DIR + "h3k27ac_" + str(h3k27ac_counter) + ".json", "w")
