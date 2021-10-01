@@ -23,11 +23,12 @@ def generate_fastq(sra_numbers, output_path):
 
 def process_srr_val(srr_val):
     cleaned_srr_arr = []
-    if not(pd.isna(srr_val)) and srr_val!="2":
+    if not(pd.isna(srr_val)):
         split_srr = srr_val.split(";")
         for x in split_srr:
             x = x.strip()
             cleaned_srr_arr.append(x)
+    print(cleaned_srr_arr)
     return cleaned_srr_arr
 
 def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"):
