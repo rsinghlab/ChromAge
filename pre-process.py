@@ -58,8 +58,6 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
         H3K4me3_DIR = "/gpfs/home/masif/data/masif/chip-seq-pipeline2/example_input_json/h3k4me3/"
         H3K27ac_DIR = "/gpfs/home/masif/data/masif/chip-seq-pipeline2/example_input_json/h3k27ac/"
 
-        generate_fastq([h3k4me3_srr[0]], H3K4me3_DIR)
-
         h3k4me3_counter = 0
         if (len(h3k4me3_srr) > 0):
             h3k4me3_counter += 1
