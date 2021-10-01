@@ -115,14 +115,14 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
 
         h3k4me3_pipeline_call = call_pipeline_base + "/h3k4me3/" + "h3k4me3_" + str(h3k4me3_counter) + ".json"
 
-        if (h3k4me3_json != dict()):
+        if (len(h3k4me3_json) != 0):
             print ("Running the encode pipeline for" + str(h3k4me3_json))
             print ("The command used was: " + h3k4me3_pipeline_call)
             subprocess.call(h3k4me3_pipeline_call, shell=True)
 
         h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + str(h3k27ac_counter) + ".json"
 
-        if (h3k27ac_json != dict()):
+        if (len(h3k27ac_json) != 0):
             print ("Running the encode pipeline for" + str(h3k27ac_json))
             print ("The command used was: " + h3k27ac_pipeline_call)
             subprocess.call(h3k27ac_pipeline_call, shell=True)
