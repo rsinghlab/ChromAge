@@ -71,7 +71,8 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
             for x in range (len(h3k4me3_srr)):
                 h3k4me3_json["chip.fastqs_rep1_R1"] = h3k4me3_json.get("chip.fastqs_rep1_R1").append(H3K4me3_DIR + h3k4me3_srr[x] + "_pass.fastq")
 
-            h3k4me3_json.update({"chip.ctl_fastqs_rep1_R1" : []})
+            h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = []
+            print(h3k4me3_json)
             for x in range (len(control_srr_1)):
                 print(h3k4me3_json.get("chip.ctl_fastqs_rep1_R1"))
                 h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = h3k4me3_json.get("chip.ctl_fastqs_rep1_R1").append(CONTROL_DIR + control_srr_1[x] + "_pass.fastq")
