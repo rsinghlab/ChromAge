@@ -5,6 +5,8 @@ import json
 
 export_path = "export PATH=$PATH:/gpfs/home/masif/data/masif/sratoolkit.2.11.1-centos_linux64/bin"
 
+call_pipeline_base = "caper run chip.wdl -i /gpfs/home/masif/data/masif/chip-seq-pipeline2/example_input_json/"
+
 def generate_fastq(sra_numbers, output_path):
 
     # this will download the .sra files to ~/ncbi/public/sra/ (will create directory if not present)
@@ -31,7 +33,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"):
+def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
@@ -56,13 +58,14 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
         H3K4me3_DIR = "/gpfs/home/masif/data/masif/chip-seq-pipeline2/example_input_json/h3k4me3/"
         H3K27ac_DIR = "/gpfs/home/masif/data/masif/chip-seq-pipeline2/example_input_json/h3k27ac/"
 
-        # generate_fastq(control_srr_1, CONTROL_DIR)
-        # generate_fastq(control_srr_2, CONTROL_DIR)
-        # generate_fastq(h3k4me3_srr, H3K4me3_DIR)
-        # generate_fastq(h3k27ac_srr, H3K27ac_DIR)
+        generate_fastq(control_srr_1, CONTROL_DIR)
+        generate_fastq(control_srr_2, CONTROL_DIR)
+        generate_fastq(h3k4me3_srr, H3K4me3_DIR)
+        generate_fastq(h3k27ac_srr, H3K27ac_DIR)
 
         h3k4me3_counter = 0
         if (len(h3k4me3_srr) > 0):
+            h3k4me3_counter += 1
             h3k4me3_json = generic_json
             h3k4me3_json["chip.paired_end"] = paired_end
             h3k4me3_json["chip.title"] = "h3k4me3_json_"+str(h3k4me3_counter)
@@ -81,14 +84,13 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
                     h3k4me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
             
             print(h3k4me3_json)
-            h3k4me3_json = json.dumps(h3k4me3_json)
             jsonFile = open(H3K4me3_DIR + "h3k4me3_" + str(h3k4me3_counter) + ".json", "w")
-            jsonFile.write(h3k4me3_json)
+            jsonFile.write(json.dumps(h3k4me3_json))
             jsonFile.close()
-            h3k4me3_counter += 1
         
         h3k27ac_counter = 0 
         if (len(h3k27ac_srr) > 0):
+            h3k27ac_counter += 1
             h3k27ac_json = generic_json
             h3k27ac_json["chip.paired_end"] = paired_end
             h3k27ac_json["chip.title"] = "h3k27ac_json_" + str(h3k27ac_counter)
@@ -107,16 +109,29 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
                     h3k27ac_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
             
             print(h3k27ac_json)
-            h3k27ac_json = json.dumps(h3k27ac_json)
             jsonFile = open(H3K27ac_DIR + "h3k27ac_" + str(h3k27ac_counter) + ".json", "w")
-            jsonFile.write(h3k27ac_json)
+            jsonFile.write(json.dumps(h3k27ac_json))
             jsonFile.close()
-            h3k27ac_counter += 1
+
+        h3k4me3_pipeline_call = call_pipeline_base + "/h3k4me3/" + "h3k4me3_" + str(h3k4me3_counter) + ".json"
+
+        if (h3k4me3_json != dict()):
+            print ("Running the encode pipeline for" + str(h3k4me3_json))
+            print ("The command used was: " + h3k4me3_pipeline_call)
+            subprocess.call(h3k4me3_pipeline_call, shell=True)
+
+        h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + str(h3k27ac_counter) + ".json"
+
+        if (h3k27ac_json != dict()):
+            print ("Running the encode pipeline for" + str(h3k27ac_json))
+            print ("The command used was: " + h3k27ac_pipeline_call)
+            subprocess.call(h3k27ac_pipeline_call, shell=True)
+
         break
 
-create_json_1()
+run_pipeline()
 
-# jsons = {
+# json_example = {
 #     "chip.pipeline_type" : "histone",
 #     "chip.genome_tsv" : "/gpfs/home/masif/data/masif/chip-seq-pipeline2/genome/hg38.tsv",
 #     "chip.fastqs_rep1_R1" : ["/gpfs/home/masif/data/masif/chip-seq-pipeline2/example_input_j"],
