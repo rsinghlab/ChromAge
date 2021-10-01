@@ -64,8 +64,8 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
         if (len(h3k4me3_srr) > 0):
             h3k4me3_json = generic_json
             h3k4me3_json["chip.paired_end"] = paired_end
-            h3k4me3_json["chip.title"] = "h3k4me3_json_"+i
-            h3k4me3_json["chip.description"] = "Example_" + i + "h3k4me3_json"
+            h3k4me3_json["chip.title"] = "h3k4me3_json_"+str(h3k4me3_counter)
+            h3k4me3_json["chip.description"] = "Example_" + str(h3k4me3_counter) + "h3k4me3_json"
             h3k4me3_json["chip.fastqs_rep1_R1"] = []
             for x in range in len(h3k4me3_srr):
                 h3k4me3_json["chip.fastqs_rep1_R1"] = h3k4me3_json.get("chip.fastqs_rep1_R1").append(H3K4me3_DIR + h3k4me3_srr[x] + "_pass.fastq")
@@ -80,7 +80,7 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
                     h3k4me3_json["chip.ctl_fastqs_rep2_R1"] = h3k4me3_json.get("chip.ctl_fastqs_rep2_R1").append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
             
             h3k4me3_json = json.dumps(h3k4me3_json)
-            jsonFile = open(H3K4me3_DIR + "h3k4me3_" + h3k4me3_counter + ".json", "w")
+            jsonFile = open(H3K4me3_DIR + "h3k4me3_" + str(h3k4me3_counter) + ".json", "w")
             jsonFile.write(h3k4me3_json)
             jsonFile.close()
             h3k4me3_counter += 1
@@ -89,8 +89,8 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
         if (len(h3k27ac_srr) > 0):
             h3k27ac_json = generic_json
             h3k27ac_json["chip.paired_end"] = paired_end
-            h3k27ac_json["chip.title"] = "h3k27ac_json_"+i
-            h3k27ac_json["chip.description"] = "Example_" + i + "h3k27ac_json"
+            h3k27ac_json["chip.title"] = "h3k27ac_json_" + str(h3k27ac_counter)
+            h3k27ac_json["chip.description"] = "Example_" + str(h3k27ac_counter) + "h3k27ac_json"
             h3k27ac_json["chip.fastqs_rep1_R1"] = []
             for x in range in len(h3k27ac_srr):
                 h3k27ac_json["chip.fastqs_rep1_R1"] = h3k27ac_json.get("chip.fastqs_rep1_R1").append(H3K27ac_DIR + h3k27ac_srr[x] + "_pass.fastq")
@@ -105,7 +105,7 @@ def create_json_1(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"
                     h3k27ac_json["chip.ctl_fastqs_rep2_R1"] = h3k27ac_json.get("chip.ctl_fastqs_rep2_R1").append(CONTROL_DIR + control_srr_2[x] + "_pass.fastq")
             
             h3k27ac_json = json.dumps(h3k27ac_json)
-            jsonFile = open(H3K27ac_DIR + "h3k27ac_" + h3k27ac_counter + ".json", "w")
+            jsonFile = open(H3K27ac_DIR + "h3k27ac_" + str(h3k27ac_counter) + ".json", "w")
             jsonFile.write(h3k27ac_json)
             jsonFile.close()
             h3k27ac_counter += 1
