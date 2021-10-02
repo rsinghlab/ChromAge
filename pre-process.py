@@ -300,7 +300,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         break
 
 run_pipeline()
-run_pipeline(priority=False)
+
 
 # json_example = {
 #     "chip.pipeline_type" : "histone",

@@ -21,5 +21,29 @@ if [ "$y" == "Y" ]; then
 export PATH=$PATH:/gpfs/data/rsingh47/masif/sratoolkit.2.11.1-centos_linux64/bin
 source /gpfs/data/rsingh47/masif/ChromAge/ChromAge_venv/bin/activate
 python3 /gpfs/data/rsingh47/masif/ChromAge/pre-process.py
+deactivate
 fi
-echo "Please enter Y, only then will the script run the pipeline"
+
+cd /gpfs/data/rsingh47/masif/caper_output/chip
+
+part1="/gpfs/data/rsingh47/masif/caper_output/chip/"
+part2="signal/rep1/"
+
+conda activate encode-chip-seq-pipeline
+
+for d in */ ; do
+echo $d
+cd /gpfs/data/rsingh47/masif/caper_output/chip/$d
+croo metadata.json
+cd "$part1$d$part2"
+pwd
+for e in *.bigwig ; do
+echo $e
+mv $e /gpfs/data/rsingh47/masif/caper_output/bigWigs
+done
+done
+
+rm -f /gpfs/data/rsingh47/masif/ChromAge/cromwell.out
+rm -r /gpfs/data/rsingh47/masif/ChromAge/chip
+rm -r /gpfs/data/rsingh47/masif/ChromAge/cromwell-workflow-logs/
+rm -r /gpfs/data/rsingh47/masif/caper_output/chip
