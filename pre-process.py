@@ -261,14 +261,14 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
         if (priority):
-            h3k4me3_pipeline_call = call_pipeline_base + "/h3k4me3/" + "h3k4me3_" + h3k4me3_GEO + ".json"
+            h3k4me3_pipeline_call = call_pipeline_base + "/h3k4me3/" + "h3k4me3_" + h3k4me3_GEO[0] + ".json"
 
             if (len(h3k4me3_json) != 0):
                 print ("Running the encode pipeline for" + str(h3k4me3_json))
                 print ("The command used was: " + h3k4me3_pipeline_call)
                 subprocess.call(h3k4me3_pipeline_call, shell=True)
 
-            h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO + ".json"
+            h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
 
             if (len(h3k27ac_json) != 0):
                 print ("Running the encode pipeline for" + str(h3k27ac_json))
@@ -276,28 +276,28 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 subprocess.call(h3k27ac_pipeline_call, shell=True)
 
         if not(priority):
-            h3k4me1_pipeline_call = call_pipeline_base + "/h3k4me1/" + "h3k4me1_" + h3k4me1_GEO + ".json"
+            h3k4me1_pipeline_call = call_pipeline_base + "/h3k4me1/" + "h3k4me1_" + h3k4me1_GEO[0] + ".json"
 
             if (len(h3k4me1_json) != 0):
                 print ("Running the encode pipeline for" + str(h3k4me1_json))
                 print ("The command used was: " + h3k4me1_pipeline_call)
                 subprocess.call(h3k4me1_pipeline_call, shell=True)
 
-            h3k27me3_pipeline_call = call_pipeline_base + "/h3k27me3/" + "h3k27me3_" + h3k27me3_GEO + ".json"
+            h3k27me3_pipeline_call = call_pipeline_base + "/h3k27me3/" + "h3k27me3_" + h3k27me3_GEO[0] + ".json"
 
             if (len(h3k27me3_json) != 0):
                 print ("Running the encode pipeline for" + str(h3k27me3_json))
                 print ("The command used was: " + h3k27me3_pipeline_call)
                 subprocess.call(h3k27me3_pipeline_call, shell=True)
 
-            h3k9me3_pipeline_call = call_pipeline_base + "/h3k9me3/" + "h3k9me3_" + h3k9me3_GEO + ".json"
+            h3k9me3_pipeline_call = call_pipeline_base + "/h3k9me3/" + "h3k9me3_" + h3k9me3_GEO[0] + ".json"
 
             if (len(h3k9me3_json) != 0):
                 print ("Running the encode pipeline for" + str(h3k9me3_json))
                 print ("The command used was: " + h3k9me3_pipeline_call)
                 subprocess.call(h3k9me3_pipeline_call, shell=True)
 
-            h3k36me3_pipeline_call = call_pipeline_base + "/h3k36me3/" + "h3k36me3_" + h3k36me3_GEO + ".json"
+            h3k36me3_pipeline_call = call_pipeline_base + "/h3k36me3/" + "h3k36me3_" + h3k36me3_GEO[0] + ".json"
 
             if (len(h3k36me3_json) != 0):
                 print ("Running the encode pipeline for" + str(h3k36me3_json))
