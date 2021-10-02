@@ -1,5 +1,6 @@
 #!/bin/bash
 module load python/3.7.4
+source /gpfs/home/masif/data/masif/miniconda3/etc/profile.d/conda.sh
 echo "Conda ready to use"
 echo "Please enter Y if chip-seq-pipeline virtual environment is already created, and N otherwise"
 read n
@@ -10,6 +11,7 @@ fi
 echo "If you did not enter N, and the pipeline environment is not installed the script will error on the next step." 
 conda activate encode-chip-seq-pipeline
 conda install tbb=2020.2
+cp /gpfs/home/masif/data/masif/miniconda3/envs/encode-chip-seq-pipeline/lib/python3.7/_sysconfigdata_x86_64_conda_cos6_linux_gnu.py /gpfs/home/masif/data/masif/miniconda3/envs/encode-chip-seq-pipeline/lib/python3.7/_sysconfigdata_x86_64_conda_linux_gnu.py
 pip3 install caper
 pip3 install croo
 caper init local
