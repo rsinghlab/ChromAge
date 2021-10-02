@@ -3,9 +3,9 @@ import pandas as pd
 from pathlib import Path
 import json
 
-export_path = "export PATH=$PATH:/gpfs/home/masif/data/masif/sratoolkit.2.11.1-centos_linux64/bin"
+export_path = "export PATH=$PATH:/gpfs/data/rsingh47/masif/sratoolkit.2.11.1-centos_linux64/bin"
 
-call_pipeline_base = "caper run /gpfs/home/masif/data/masif/chip-seq-pipeline2/chip.wdl -i /gpfs/home/masif/data/masif/pipeline_raw_data"
+call_pipeline_base = "caper run /gpfs/data/rsingh47/masif/chip-seq-pipeline2/chip.wdl -i /gpfs/data/rsingh47/masif/pipeline_raw_data"
 
 def generate_fastq(sra_numbers, output_path):
 
@@ -33,7 +33,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv"):
+def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv"):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
@@ -43,22 +43,22 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
 
         h3k4me3_srr = process_srr_val(df["H3K4me3 SRR list"][i]) ## h3k4me3, h3k27ac are more important
-        h3k4me3_GEO = process_srr_val(df["H3K4me3 GEO"][i])[0]
+        h3k4me3_GEO = process_srr_val(df["H3K4me3 GEO"][i])
 
         h3k27ac_srr = process_srr_val(df["H3K27ac SRR list"][i])
-        h3k27ac_GEO = process_srr_val(df["H3K27ac GEO"][i])[0]
+        h3k27ac_GEO = process_srr_val(df["H3K27ac GEO"][i])
 
         h3k4me1_srr = process_srr_val(df["H3K4me1 SRR list"][i])
-        h3k4me1_GEO = process_srr_val(df["H3K4me1 GEO"][i])[0]
+        h3k4me1_GEO = process_srr_val(df["H3K4me1 GEO"][i])
 
         h3k27me3_srr = process_srr_val(df["H3K27me3 SRR list"][i])
-        h3k27me3_GEO = process_srr_val(df["H3K27me3 GEO"][i])[0]
+        h3k27me3_GEO = process_srr_val(df["H3K27me3 GEO"][i])
 
         h3k9me3_srr = process_srr_val(df["H3K9me3 SRR list"][i])
-        h3k9me3_GEO = process_srr_val(df["H3K9me3 GEO"][i])[0]
+        h3k9me3_GEO = process_srr_val(df["H3K9me3 GEO"][i])
 
         h3k36me3_srr = process_srr_val(df["H3K36me3 SRR list"][i])
-        h3k36me3_GEO = process_srr_val(df["H3K36me3 GEO"][i])[0]
+        h3k36me3_GEO = process_srr_val(df["H3K36me3 GEO"][i])
 
         paired_end = df["SE or PE"][i]
         if (paired_end == "SE"):
@@ -73,22 +73,22 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
 
         generic_json = {
             "chip.pipeline_type" : "histone",
-            "chip.genome_tsv" : "/gpfs/home/masif/data/masif/chip-seq-pipeline2/genome/hg38.tsv",
+            "chip.genome_tsv" : "/gpfs/data/rsingh47/masif/chip-seq-pipeline2/genome/hg38.tsv",
         }
 
-        CONTROL_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/control/"
-        H3K4me3_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/h3k4me3/"
-        H3K27ac_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/h3k27ac/"
-        H3K4me1_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/h3k4me1/"
-        H3K27me3_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/h3k27me3/"
-        H3K9me3_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/h3k9me3/"
-        H3K36me3_DIR = "/gpfs/home/masif/data/masif/pipeline_raw_data/h3k36me3/"
+        CONTROL_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/control/"
+        H3K4me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k4me3/"
+        H3K27ac_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k27ac/"
+        H3K4me1_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k4me1/"
+        H3K27me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k27me3/"
+        H3K9me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k9me3/"
+        H3K36me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k36me3/"
 
         if (len(h3k4me3_srr) > 0):
             h3k4me3_json = generic_json
             h3k4me3_json["chip.paired_end"] = paired_end
-            h3k4me3_json["chip.title"] = "h3k4me3_json_" + h3k4me3_GEO
-            h3k4me3_json["chip.description"] = "Example_" + h3k4me3_GEO + " h3k4me3_json"
+            h3k4me3_json["chip.title"] = "h3k4me3_json_" + h3k4me3_GEO[0]
+            h3k4me3_json["chip.description"] = "Example_" + h3k4me3_GEO[0] + " h3k4me3_json"
             h3k4me3_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k4me3_srr)):
                 if not(Path(H3K4me3_DIR + h3k4me3_srr[x] + ".fastq").is_file()):
@@ -109,15 +109,15 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
                     h3k4me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
             
             print(h3k4me3_json)
-            jsonFile = open(H3K4me3_DIR + "h3k4me3_" + h3k4me3_GEO + ".json", "w")
+            jsonFile = open(H3K4me3_DIR + "h3k4me3_" + h3k4me3_GEO[0] + ".json", "w")
             jsonFile.write(json.dumps(h3k4me3_json))
             jsonFile.close()
         
         if (len(h3k27ac_srr) > 0):
             h3k27ac_json = generic_json
             h3k27ac_json["chip.paired_end"] = paired_end
-            h3k27ac_json["chip.title"] = "h3k27ac_json_" + h3k27ac_GEO
-            h3k27ac_json["chip.description"] = "Example_" + h3k27ac_GEO + " h3k27ac_json"
+            h3k27ac_json["chip.title"] = "h3k27ac_json_" + h3k27ac_GEO[0]
+            h3k27ac_json["chip.description"] = "Example_" + h3k27ac_GEO[0] + " h3k27ac_json"
             h3k27ac_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k27ac_srr)):
                 if not(Path(H3K27ac_DIR + h3k27ac_srr[x] + ".fastq").is_file()):
@@ -138,15 +138,15 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
                     h3k27ac_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
             
             print(h3k27ac_json)
-            jsonFile = open(H3K27ac_DIR + "h3k27ac_" + h3k27ac_GEO + ".json", "w")
+            jsonFile = open(H3K27ac_DIR + "h3k27ac_" + h3k27ac_GEO[0] + ".json", "w")
             jsonFile.write(json.dumps(h3k27ac_json))
             jsonFile.close()
         
         if (len(h3k4me1_srr) > 0):
             h3k4me1_json = generic_json
             h3k4me1_json["chip.paired_end"] = paired_end
-            h3k4me1_json["chip.title"] = "h3k4me1_json_" + h3k4me1_GEO
-            h3k4me1_json["chip.description"] = "Example_" + h3k4me1_GEO + " h3k4me1_json"
+            h3k4me1_json["chip.title"] = "h3k4me1_json_" + h3k4me1_GEO[0]
+            h3k4me1_json["chip.description"] = "Example_" + h3k4me1_GEO[0] + " h3k4me1_json"
             h3k4me1_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k4me1_srr)):
                 if not(Path(H3K4me1_DIR + h3k4me1_srr[x] + ".fastq").is_file()):
@@ -167,15 +167,15 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
                     h3k4me1_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
             
             print(h3k4me1_json)
-            jsonFile = open(H3K4me1_DIR + "h3k4me1_" + h3k4me1_GEO + ".json", "w")
+            jsonFile = open(H3K4me1_DIR + "h3k4me1_" + h3k4me1_GEO[0] + ".json", "w")
             jsonFile.write(json.dumps(h3k4me1_json))
             jsonFile.close()
 
         if (len(h3k27me3_srr) > 0):
             h3k27me3_json = generic_json
             h3k27me3_json["chip.paired_end"] = paired_end
-            h3k27me3_json["chip.title"] = "h3k27me3_json_" + h3k27me3_GEO
-            h3k27me3_json["chip.description"] = "Example_" + h3k27me3_GEO + "h3k27me3_json"
+            h3k27me3_json["chip.title"] = "h3k27me3_json_" + h3k27me3_GEO[0]
+            h3k27me3_json["chip.description"] = "Example_" + h3k27me3_GEO[0] + "h3k27me3_json"
             h3k27me3_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k27me3_srr)):
                 if not(Path(H3K27me3_DIR + h3k27me3_srr[x] + ".fastq").is_file()):
@@ -196,15 +196,15 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
                     h3k27me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
             
             print(h3k27me3_json)
-            jsonFile = open(H3K27me3_DIR + "h3k27me3_" + h3k27me3_GEO + ".json", "w")
+            jsonFile = open(H3K27me3_DIR + "h3k27me3_" + h3k27me3_GEO[0] + ".json", "w")
             jsonFile.write(json.dumps(h3k27me3_json))
             jsonFile.close()
 
         if (len(h3k9me3_srr) > 0):
             h3k9me3_json = generic_json
             h3k9me3_json["chip.paired_end"] = paired_end
-            h3k9me3_json["chip.title"] = "h3k9me3_json_" + h3k9me3_GEO
-            h3k9me3_json["chip.description"] = "Example_" + h3k9me3_GEO + "h3k9me3_json"
+            h3k9me3_json["chip.title"] = "h3k9me3_json_" + h3k9me3_GEO[0]
+            h3k9me3_json["chip.description"] = "Example_" + h3k9me3_GEO[0] + "h3k9me3_json"
             h3k9me3_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k9me3_srr)):
                 if not(Path(H3K9me3_DIR + h3k9me3_srr[x] + ".fastq").is_file()):
@@ -225,15 +225,15 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
                     h3k9me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
             
             print(h3k9me3_json)
-            jsonFile = open(H3K9me3_DIR + "h3k9me3_" + h3k9me3_GEO + ".json", "w")
+            jsonFile = open(H3K9me3_DIR + "h3k9me3_" + h3k9me3_GEO[0] + ".json", "w")
             jsonFile.write(json.dumps(h3k9me3_json))
             jsonFile.close()
 
         if (len(h3k36me3_srr) > 0):
             h3k36me3_json = generic_json
             h3k36me3_json["chip.paired_end"] = paired_end
-            h3k36me3_json["chip.title"] = "h3k36me3_json_" + h3k36me3_GEO
-            h3k36me3_json["chip.description"] = "Example_" + h3k36me3_GEO + "h3k36me3_json"
+            h3k36me3_json["chip.title"] = "h3k36me3_json_" + h3k36me3_GEO[0]
+            h3k36me3_json["chip.description"] = "Example_" + h3k36me3_GEO[0] + "h3k36me3_json"
             h3k36me3_json["chip.fastqs_rep1_R1"] = []
             for x in range (len(h3k36me3_srr)):
                 if not(Path(H3K36me3_DIR + h3k36me3_srr[x] + ".fastq").is_file()):
@@ -254,7 +254,7 @@ def run_pipeline(path = "/gpfs/home/masif/data/masif/ChromAge/GEO_metadata.csv")
                     h3k36me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
             
             print(h3k36me3_json)
-            jsonFile = open(H3K36me3_DIR + "h3k36me3_" + h3k36me3_GEO + ".json", "w")
+            jsonFile = open(H3K36me3_DIR + "h3k36me3_" + h3k36me3_GEO[0] + ".json", "w")
             jsonFile.write(json.dumps(h3k36me3_json))
             jsonFile.close()
 
