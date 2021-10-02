@@ -28,6 +28,7 @@ cd /gpfs/data/rsingh47/masif/caper_output/chip
 
 part1="/gpfs/data/rsingh47/masif/caper_output/chip/"
 part2="signal/rep1/"
+part3="qc"
 
 conda activate encode-chip-seq-pipeline
 
@@ -37,6 +38,7 @@ cd /gpfs/data/rsingh47/masif/caper_output/chip/$d
 croo metadata.json
 cd "$part1$d$part2"
 pwd
+cp "$part1$d$part3" /gpfs/data/rsingh47/masif/caper_output/qcReports/$d
 for e in *.bigwig ; do
 echo $e
 mv $e /gpfs/data/rsingh47/masif/caper_output/bigWigs
