@@ -297,9 +297,9 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 print ("Running the encode pipeline for" + str(h3k36me3_json))
                 print ("The command used was: " + h3k36me3_pipeline_call)
                 subprocess.call(h3k36me3_pipeline_call, shell=True)
-        break
 
 run_pipeline()
+run_pipeline(priority=False)
 
 
 # json_example = {
