@@ -10,7 +10,7 @@ for e in */ ; do
 cd "$part1$d$e$part2"
 for f in *.txt ; do
 echo $f
-wget -i $f
+wget -bqci $f
 done
 done
 done
