@@ -2,6 +2,7 @@ import subprocess
 import pandas as pd
 from pathlib import Path
 import json
+import numpy as np
 
 export_path = "export PATH=$PATH:/gpfs/data/rsingh47/masif/sratoolkit.2.11.1-centos_linux64/bin"
 
@@ -37,6 +38,19 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
+        # arr = df["H3K27ac SRR list"]
+        # arr1 = df["H3K4me3 SRR list"]
+        # arr2 = df["H3K4me1 SRR list"]
+        # arr3 = df["H3K27me3 SRR list"]
+        # arr4 = df["H3K9me3 SRR list"]
+        # arr5 = df["H3K36me3 SRR list"]
+        # print(len(arr[~pd.isna(arr)]))
+        # print(len(arr1[~pd.isna(arr1)]))
+        # print(len(arr2[~pd.isna(arr2)]))
+        # print(len(arr3[~pd.isna(arr3)]))
+        # print(len(arr4[~pd.isna(arr4)]))
+        # print(len(arr5[~pd.isna(arr5)]))
+        # return
     print("Finished reading data!")
     for i in range(df.shape[0]):
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
@@ -298,8 +312,12 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 print ("The command used was: " + h3k36me3_pipeline_call)
                 subprocess.call(h3k36me3_pipeline_call, shell=True)
 
+            break
+
+local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
+
 run_pipeline()
-run_pipeline(priority=False)
+#run_pipeline(priority=False)
 
 
 # json_example = {
