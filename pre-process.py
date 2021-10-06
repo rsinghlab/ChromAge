@@ -52,7 +52,13 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         # print(len(arr5[~pd.isna(arr5)]))
         # return
     print("Finished reading data!")
-    for i in range(df.shape[0]):
+
+    max_count = 180 #count for the batch job
+    for i in range(0,df.shape[0]):
+        
+        if (max_count <= 0):
+            break
+
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
 
@@ -98,8 +104,10 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         H3K9me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k9me3/"
         H3K36me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k36me3/"
 
+
         if (priority):
             if (len(h3k4me3_srr) > 0):
+                max_count -= 1
                 h3k4me3_json = generic_json
                 h3k4me3_json["chip.paired_end"] = paired_end
                 h3k4me3_json["chip.title"] = "h3k4me3_json_" + h3k4me3_GEO[0]
@@ -129,6 +137,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
             
             if (len(h3k27ac_srr) > 0):
+                max_count -= 1
                 h3k27ac_json = generic_json
                 h3k27ac_json["chip.paired_end"] = paired_end
                 h3k27ac_json["chip.title"] = "h3k27ac_json_" + h3k27ac_GEO[0]
@@ -159,6 +168,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         
         if not(priority):
             if (len(h3k4me1_srr) > 0):
+                max_count -= 1
                 h3k4me1_json = generic_json
                 h3k4me1_json["chip.paired_end"] = paired_end
                 h3k4me1_json["chip.title"] = "h3k4me1_json_" + h3k4me1_GEO[0]
@@ -188,6 +198,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
             if (len(h3k27me3_srr) > 0):
+                max_count -= 1
                 h3k27me3_json = generic_json
                 h3k27me3_json["chip.paired_end"] = paired_end
                 h3k27me3_json["chip.title"] = "h3k27me3_json_" + h3k27me3_GEO[0]
@@ -217,6 +228,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
             if (len(h3k9me3_srr) > 0):
+                max_count -= 1
                 h3k9me3_json = generic_json
                 h3k9me3_json["chip.paired_end"] = paired_end
                 h3k9me3_json["chip.title"] = "h3k9me3_json_" + h3k9me3_GEO[0]
@@ -246,6 +258,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
             if (len(h3k36me3_srr) > 0):
+                max_count -= 1
                 h3k36me3_json = generic_json
                 h3k36me3_json["chip.paired_end"] = paired_end
                 h3k36me3_json["chip.title"] = "h3k36me3_json_" + h3k36me3_GEO[0]
@@ -311,8 +324,8 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 print ("Running the encode pipeline for" + str(h3k36me3_json))
                 print ("The command used was: " + h3k36me3_pipeline_call)
                 subprocess.call(h3k36me3_pipeline_call, shell=True)
-
-            break
+        
+        print("ROW " + str(i) + " finished")
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
