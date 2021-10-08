@@ -238,7 +238,7 @@ class histone_data:
         
 #------------------------------------------------------------------------------------------------------
     def save(self, name):
-        filehandler = open('histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/processed_data/' + name + '.pkl', 'wb') 
+        filehandler = open('histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
         pickle.dump(self, filehandler)
 
 #------------------------------------------------------------------------------------------------------
@@ -545,12 +545,3 @@ H3K36me3_entropy_bins.check_files(verbose = True)
 H3K36me3_entropy_bins.subdivide(by = 'bin', window_size = 100000)
 H3K36me3_entropy_bins.process(my_entropy)
 H3K36me3_entropy_bins.save('H3K36me3_entropy_bins')
-
-
-
-
-
-
-
-
-
