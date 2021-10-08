@@ -86,7 +86,7 @@ class histone_data:
 
 #------------------------------------------------------------------------------------------------------
     def add_file_names(self):
-        directory = 'histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/'
+        directory = 'encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/'
         histone_files = [f for f in listdir(directory) if isfile(join(directory, f))]
         histone_files.sort()
         histone_files.pop(0)
@@ -238,7 +238,7 @@ class histone_data:
         
 #------------------------------------------------------------------------------------------------------
     def save(self, name):
-        filehandler = open('histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
+        filehandler = open('encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
         pickle.dump(self, filehandler)
 
 #------------------------------------------------------------------------------------------------------
