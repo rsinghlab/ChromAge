@@ -34,7 +34,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True):
+def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
@@ -53,12 +53,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         # return
     print("Finished reading data!")
 
-    max_count = 180 #count for the batch job
-    for i in range(0,df.shape[0]):
-        
-        if (max_count <= 0):
-            break
-
+    for i in range(df.shape[0]):
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
 
@@ -104,71 +99,68 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         H3K9me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k9me3/"
         H3K36me3_DIR = "/gpfs/data/rsingh47/masif/pipeline_raw_data/h3k36me3/"
 
-
         if (priority):
-            if (len(h3k4me3_srr) > 0):
-                max_count -= 1
-                h3k4me3_json = generic_json
-                h3k4me3_json["chip.paired_end"] = paired_end
-                h3k4me3_json["chip.title"] = "h3k4me3_json_" + h3k4me3_GEO[0]
-                h3k4me3_json["chip.description"] = "Example_" + h3k4me3_GEO[0] + " h3k4me3_json"
-                h3k4me3_json["chip.fastqs_rep1_R1"] = []
-                for x in range (len(h3k4me3_srr)):
-                    if not(Path(H3K4me3_DIR + h3k4me3_srr[x] + ".fastq").is_file()):
-                        generate_fastq([h3k4me3_srr[x]], H3K4me3_DIR)
-                    h3k4me3_json["chip.fastqs_rep1_R1"].append(H3K4me3_DIR + h3k4me3_srr[x] + ".fastq")
+            if (H3K4me3):
+                if (len(h3k4me3_srr) > 0):
+                    h3k4me3_json = generic_json
+                    h3k4me3_json["chip.paired_end"] = paired_end
+                    h3k4me3_json["chip.title"] = "h3k4me3_json_" + h3k4me3_GEO[0]
+                    h3k4me3_json["chip.description"] = "Example_" + h3k4me3_GEO[0] + " h3k4me3_json"
+                    h3k4me3_json["chip.fastqs_rep1_R1"] = []
+                    for x in range (len(h3k4me3_srr)):
+                        if not(Path(H3K4me3_DIR + h3k4me3_srr[x] + ".fastq").is_file()):
+                            generate_fastq([h3k4me3_srr[x]], H3K4me3_DIR)
+                        h3k4me3_json["chip.fastqs_rep1_R1"].append(H3K4me3_DIR + h3k4me3_srr[x] + ".fastq")
 
-                h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = []
-                for x in range (len(control_srr_1)):
-                    if not(Path(CONTROL_DIR + control_srr_1[x] + ".fastq").is_file()):
-                        generate_fastq([control_srr_1[x]], CONTROL_DIR)
-                    h3k4me3_json["chip.ctl_fastqs_rep1_R1"].append(CONTROL_DIR + control_srr_1[x] + ".fastq")
-                
-                if len(control_srr_2) > 0:
-                    h3k4me3_json["chip.ctl_fastqs_rep2_R1"] = []
-                    for x in range (len(control_srr_2)):
-                        if not(Path(CONTROL_DIR + control_srr_2[x] + ".fastq").is_file()):
-                            generate_fastq([control_srr_2[x]], CONTROL_DIR)
-                        h3k4me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
-                
-                print(h3k4me3_json)
-                jsonFile = open(H3K4me3_DIR + "h3k4me3_" + h3k4me3_GEO[0] + ".json", "w")
-                jsonFile.write(json.dumps(h3k4me3_json))
-                jsonFile.close()
-            
-            if (len(h3k27ac_srr) > 0):
-                max_count -= 1
-                h3k27ac_json = generic_json
-                h3k27ac_json["chip.paired_end"] = paired_end
-                h3k27ac_json["chip.title"] = "h3k27ac_json_" + h3k27ac_GEO[0]
-                h3k27ac_json["chip.description"] = "Example_" + h3k27ac_GEO[0] + " h3k27ac_json"
-                h3k27ac_json["chip.fastqs_rep1_R1"] = []
-                for x in range (len(h3k27ac_srr)):
-                    if not(Path(H3K27ac_DIR + h3k27ac_srr[x] + ".fastq").is_file()):
-                        generate_fastq([h3k27ac_srr[x]], H3K27ac_DIR)
-                    h3k27ac_json["chip.fastqs_rep1_R1"].append(H3K27ac_DIR + h3k27ac_srr[x] + ".fastq")
+                    h3k4me3_json["chip.ctl_fastqs_rep1_R1"] = []
+                    for x in range (len(control_srr_1)):
+                        if not(Path(CONTROL_DIR + control_srr_1[x] + ".fastq").is_file()):
+                            generate_fastq([control_srr_1[x]], CONTROL_DIR)
+                        h3k4me3_json["chip.ctl_fastqs_rep1_R1"].append(CONTROL_DIR + control_srr_1[x] + ".fastq")
+                    
+                    if len(control_srr_2) > 0:
+                        h3k4me3_json["chip.ctl_fastqs_rep2_R1"] = []
+                        for x in range (len(control_srr_2)):
+                            if not(Path(CONTROL_DIR + control_srr_2[x] + ".fastq").is_file()):
+                                generate_fastq([control_srr_2[x]], CONTROL_DIR)
+                            h3k4me3_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
+                    
+                    print(h3k4me3_json)
+                    jsonFile = open(H3K4me3_DIR + "h3k4me3_" + h3k4me3_GEO[0] + ".json", "w")
+                    jsonFile.write(json.dumps(h3k4me3_json))
+                    jsonFile.close()
+            else:     
+                if (len(h3k27ac_srr) > 0):
+                    h3k27ac_json = generic_json
+                    h3k27ac_json["chip.paired_end"] = paired_end
+                    h3k27ac_json["chip.title"] = "h3k27ac_json_" + h3k27ac_GEO[0]
+                    h3k27ac_json["chip.description"] = "Example_" + h3k27ac_GEO[0] + " h3k27ac_json"
+                    h3k27ac_json["chip.fastqs_rep1_R1"] = []
+                    for x in range (len(h3k27ac_srr)):
+                        if not(Path(H3K27ac_DIR + h3k27ac_srr[x] + ".fastq").is_file()):
+                            generate_fastq([h3k27ac_srr[x]], H3K27ac_DIR)
+                        h3k27ac_json["chip.fastqs_rep1_R1"].append(H3K27ac_DIR + h3k27ac_srr[x] + ".fastq")
 
-                h3k27ac_json["chip.ctl_fastqs_rep1_R1"] = []
-                for x in range (len(control_srr_1)):
-                    if not(Path(CONTROL_DIR + control_srr_1[x] + ".fastq").is_file()):
-                        generate_fastq([control_srr_1[x]], CONTROL_DIR)
-                    h3k27ac_json["chip.ctl_fastqs_rep1_R1"].append(CONTROL_DIR + control_srr_1[x] + ".fastq")
-                
-                if len(control_srr_2) > 0:
-                    h3k27ac_json["chip.ctl_fastqs_rep2_R1"] = []
-                    for x in range (len(control_srr_2)):
-                        if not(Path(CONTROL_DIR + control_srr_2[x] + ".fastq").is_file()):
-                            generate_fastq([control_srr_2[x]], CONTROL_DIR)
-                        h3k27ac_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
-                
-                print(h3k27ac_json)
-                jsonFile = open(H3K27ac_DIR + "h3k27ac_" + h3k27ac_GEO[0] + ".json", "w")
-                jsonFile.write(json.dumps(h3k27ac_json))
-                jsonFile.close()
+                    h3k27ac_json["chip.ctl_fastqs_rep1_R1"] = []
+                    for x in range (len(control_srr_1)):
+                        if not(Path(CONTROL_DIR + control_srr_1[x] + ".fastq").is_file()):
+                            generate_fastq([control_srr_1[x]], CONTROL_DIR)
+                        h3k27ac_json["chip.ctl_fastqs_rep1_R1"].append(CONTROL_DIR + control_srr_1[x] + ".fastq")
+                    
+                    if len(control_srr_2) > 0:
+                        h3k27ac_json["chip.ctl_fastqs_rep2_R1"] = []
+                        for x in range (len(control_srr_2)):
+                            if not(Path(CONTROL_DIR + control_srr_2[x] + ".fastq").is_file()):
+                                generate_fastq([control_srr_2[x]], CONTROL_DIR)
+                            h3k27ac_json["chip.ctl_fastqs_rep2_R1"].append(CONTROL_DIR + control_srr_2[x] + ".fastq")
+                    
+                    print(h3k27ac_json)
+                    jsonFile = open(H3K27ac_DIR + "h3k27ac_" + h3k27ac_GEO[0] + ".json", "w")
+                    jsonFile.write(json.dumps(h3k27ac_json))
+                    jsonFile.close()
         
         if not(priority):
             if (len(h3k4me1_srr) > 0):
-                max_count -= 1
                 h3k4me1_json = generic_json
                 h3k4me1_json["chip.paired_end"] = paired_end
                 h3k4me1_json["chip.title"] = "h3k4me1_json_" + h3k4me1_GEO[0]
@@ -198,7 +190,6 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
             if (len(h3k27me3_srr) > 0):
-                max_count -= 1
                 h3k27me3_json = generic_json
                 h3k27me3_json["chip.paired_end"] = paired_end
                 h3k27me3_json["chip.title"] = "h3k27me3_json_" + h3k27me3_GEO[0]
@@ -228,7 +219,6 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
             if (len(h3k9me3_srr) > 0):
-                max_count -= 1
                 h3k9me3_json = generic_json
                 h3k9me3_json["chip.paired_end"] = paired_end
                 h3k9me3_json["chip.title"] = "h3k9me3_json_" + h3k9me3_GEO[0]
@@ -258,7 +248,6 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
             if (len(h3k36me3_srr) > 0):
-                max_count -= 1
                 h3k36me3_json = generic_json
                 h3k36me3_json["chip.paired_end"] = paired_end
                 h3k36me3_json["chip.title"] = "h3k36me3_json_" + h3k36me3_GEO[0]
@@ -288,17 +277,18 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 jsonFile.close()
 
         if (priority):
-            if (len(h3k4me3_json) != 0):
-                h3k4me3_pipeline_call = call_pipeline_base + "/h3k4me3/" + "h3k4me3_" + h3k4me3_GEO[0] + ".json"
-                print ("Running the encode pipeline for" + str(h3k4me3_json))
-                print ("The command used was: " + h3k4me3_pipeline_call)
-                subprocess.call(h3k4me3_pipeline_call, shell=True)
-
-            if (len(h3k27ac_json) != 0):
-                h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
-                print ("Running the encode pipeline for" + str(h3k27ac_json))
-                print ("The command used was: " + h3k27ac_pipeline_call)
-                subprocess.call(h3k27ac_pipeline_call, shell=True)
+            if (H3K4me3):
+                if (len(h3k4me3_json) != 0):
+                    h3k4me3_pipeline_call = call_pipeline_base + "/h3k4me3/" + "h3k4me3_" + h3k4me3_GEO[0] + ".json"
+                    print ("Running the encode pipeline for" + str(h3k4me3_json))
+                    print ("The command used was: " + h3k4me3_pipeline_call)
+                    subprocess.call(h3k4me3_pipeline_call, shell=True)
+            else:
+                if (len(h3k27ac_json) != 0):
+                    h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
+                    print ("Running the encode pipeline for" + str(h3k27ac_json))
+                    print ("The command used was: " + h3k27ac_pipeline_call)
+                    subprocess.call(h3k27ac_pipeline_call, shell=True)
 
         if not(priority):
             if (len(h3k4me1_json) != 0):
@@ -330,6 +320,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
 run_pipeline()
+# run_pipeline(H3K4me3=False)
 #run_pipeline(priority=False)
 
 
