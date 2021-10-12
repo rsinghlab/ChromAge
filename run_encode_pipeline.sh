@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#SBATCH -n 6
-#SBATCH --mem=16G
-#SBATCH -t 300:00:00
+#SBATCH -n 30
+#SBATCH --mem=100G
+#SBATCH -t 600:00:00
 
 sh ~/data/masif/ChromAge/ready_pipeline.sh
