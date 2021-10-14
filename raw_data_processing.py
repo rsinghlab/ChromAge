@@ -14,6 +14,8 @@ import pickle
 from scipy.stats import lognorm
 from gtfparse import read_gtf
 import gc
+import os
+import shutil
 
 #hg38 numbers
 chrom_info_hg38 = {
@@ -85,8 +87,22 @@ class histone_data:
         self.gene_annotation = None            #gene annotation for each transcript
 
 #------------------------------------------------------------------------------------------------------
-    def add_file_names(self):
-        directory = 'encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/'
+
+    def divide_into_folders(self, path="/users/masif/scratch/ChromAge/encode_histone_data/"):
+        metadata = pd.read_csv(path + self.organism + '/' + self.data_type + '/metadata.tsv', sep = '\t', index_col = 0, low_memory=False)
+        directory = path + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/'
+        for entry in os.scandir(directory):
+            if (entry.path.endswith(".bigWig")) and entry.is_file():
+                name = entry.name.split(".")[0]
+                metadata_new = metadata.loc[name]
+                if (metadata_new["Output type"] == "signal p-value"):
+                    shutil.move(entry.path, directory + 'pval/')
+                elif (metadata_new["Output type"] == "fold change over control"):
+                    shutil.move(entry.path, directory + 'fc/')
+
+#------------------------------------------------------------------------------------------------------
+    def add_file_names(self, fc_or_pval_path):
+        directory = 'encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/' + fc_or_pval_path
         histone_files = [f for f in listdir(directory) if isfile(join(directory, f))]
         histone_files.sort()
         histone_files.pop(0)
@@ -264,7 +280,8 @@ def my_entropy(bases):
 
 # H3K4me3
 H3K4me3_mean_bins = histone_data('H3K4me3', 'human', 'tissue', chrom_info_hg38)
-H3K4me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K4me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K4me3_mean_bins.check_files(verbose = True)
 H3K4me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K4me3_mean_bins.process(np.mean)
@@ -288,7 +305,8 @@ H3K4me3_mean_bins.save('H3K4me3_mean_bins')
 
 # H3K27ac
 H3K27ac_mean_bins = histone_data('H3K27ac', 'human', 'tissue', chrom_info_hg38)
-H3K27ac_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K27ac_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K27ac_mean_bins.check_files(verbose = True)
 H3K27ac_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K27ac_mean_bins.process(np.mean)
@@ -311,7 +329,8 @@ H3K27ac_mean_bins.save('H3K27ac_mean_bins')
 
 # H3K4me1
 H3K4me1_mean_bins = histone_data('H3K4me1', 'human', 'tissue', chrom_info_hg38)
-H3K4me1_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K4me1_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K4me1_mean_bins.check_files(verbose = True)
 H3K4me1_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K4me1_mean_bins.process(np.mean)
@@ -334,7 +353,8 @@ H3K4me1_mean_bins.save('H3K4me1_mean_bins')
 
 # H3K9me3
 H3K9me3_mean_bins = histone_data('H3K9me3', 'human', 'tissue', chrom_info_hg38)
-H3K9me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K9me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K9me3_mean_bins.check_files(verbose = True)
 H3K9me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K9me3_mean_bins.process(np.mean)
@@ -357,7 +377,8 @@ H3K9me3_mean_bins.save('H3K9me3_mean_bins')
 
 # H3K27me3
 H3K27me3_mean_bins = histone_data('H3K27me3', 'human', 'tissue', chrom_info_hg38)
-H3K27me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K27me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K27me3_mean_bins.check_files(verbose = True)
 H3K27me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K27me3_mean_bins.process(np.mean)
@@ -380,7 +401,8 @@ H3K27me3_mean_bins.save('H3K27me3_mean_bins')
 
 # H3K36me3
 H3K36me3_mean_bins = histone_data('H3K36me3', 'human', 'tissue', chrom_info_hg38)
-H3K36me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K36me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K36me3_mean_bins.check_files(verbose = True)
 H3K36me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K36me3_mean_bins.process(np.mean)
@@ -409,7 +431,8 @@ H3K36me3_mean_bins.save('H3K36me3_mean_bins')
 
 # H3K4me3
 H3K4me3_mean_bins = histone_data('H3K4me3', 'human', 'primary_cell', chrom_info_hg38)
-H3K4me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K4me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K4me3_mean_bins.check_files(verbose = True)
 H3K4me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K4me3_mean_bins.process(np.mean)
@@ -433,7 +456,8 @@ H3K4me3_mean_bins.save('H3K4me3_mean_bins')
 
 # H3K27ac
 H3K27ac_mean_bins = histone_data('H3K27ac', 'human', 'primary_cell', chrom_info_hg38)
-H3K27ac_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K27ac_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K27ac_mean_bins.check_files(verbose = True)
 H3K27ac_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K27ac_mean_bins.process(np.mean)
@@ -456,7 +480,8 @@ H3K27ac_mean_bins.save('H3K27ac_mean_bins')
 
 # H3K4me1
 H3K4me1_mean_bins = histone_data('H3K4me1', 'human', 'primary_cell', chrom_info_hg38)
-H3K4me1_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K4me1_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K4me1_mean_bins.check_files(verbose = True)
 H3K4me1_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K4me1_mean_bins.process(np.mean)
@@ -479,7 +504,8 @@ H3K4me1_mean_bins.save('H3K4me1_mean_bins')
 
 # H3K9me3
 H3K9me3_mean_bins = histone_data('H3K9me3', 'human', 'primary_cell', chrom_info_hg38)
-H3K9me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K9me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K9me3_mean_bins.check_files(verbose = True)
 H3K9me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K9me3_mean_bins.process(np.mean)
@@ -502,7 +528,8 @@ H3K9me3_mean_bins.save('H3K9me3_mean_bins')
 
 # H3K27me3
 H3K27me3_mean_bins = histone_data('H3K27me3', 'human', 'primary_cell', chrom_info_hg38)
-H3K27me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K27me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K27me3_mean_bins.check_files(verbose = True)
 H3K27me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K27me3_mean_bins.process(np.mean)
@@ -525,7 +552,8 @@ H3K27me3_mean_bins.save('H3K27me3_mean_bins')
 
 # H3K36me3
 H3K36me3_mean_bins = histone_data('H3K36me3', 'human', 'primary_cell', chrom_info_hg38)
-H3K36me3_mean_bins.add_file_names()
+H3K4me3_mean_bins.divide_into_folders()
+H3K36me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K36me3_mean_bins.check_files(verbose = True)
 H3K36me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K36me3_mean_bins.process(np.mean)
