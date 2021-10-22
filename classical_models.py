@@ -325,6 +325,8 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
         
         #ensures both X and y have same samples
         X = histone_data_object.df
+        print("X shape: ", X)
+       
         samples = np.intersect1d(X.index, metadata.index)
         y = metadata.loc[samples].age
         X = X.loc[y.index]
