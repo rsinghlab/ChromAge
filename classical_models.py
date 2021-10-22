@@ -140,7 +140,7 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
     cv = KFold(n_splits=folds, random_state=42, shuffle=True)
     
     for file in histone_files:
-        
+        print(file)
         histone_data_object = pickle.load(open(directory + file, 'rb'))
         
         #ensures both X and y have same samples
