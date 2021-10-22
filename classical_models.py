@@ -328,6 +328,8 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
         print("X shape: ", X)
        
         samples = np.intersect1d(X.index, metadata.index)
+        print(samples.shape)
+        print("meta shape: ", metadata.shape)
         y = metadata.loc[samples].age
         X = X.loc[y.index]
         
