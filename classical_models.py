@@ -509,7 +509,7 @@ param_grid = {
     'neural_network__coeff':[0.005, 0.05, 0.01],
 }
 
-pipeline = make_pipeline(('imputer', KNNImputer()), StandardScaler(), ('neural_network', neural_network))
+pipeline = Pipeline(steps= [('imputer', KNNImputer()), StandardScaler(), ('neural_network', neural_network)])
 
 # (steps = [('imputer', KNNImputer()), neural_network])
 
