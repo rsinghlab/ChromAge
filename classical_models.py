@@ -493,7 +493,7 @@ samples = np.intersect1d(X.index, metadata.index)
 y = metadata.loc[samples].age
 X = X.loc[y.index]
 
-# neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
+neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
 
 scaler = StandardScaler()
 
@@ -509,7 +509,7 @@ param_grid = {
     'neural_network__coeff':[0.005, 0.05, 0.01],
 }
 
-pipeline = make_pipeline(KNNImputer(), KerasRegressor(build_fn = create_nn, verbose = 0))
+pipeline = make_pipeline(KNNImputer(), StandardScaler(), neural_network)
 
 # (steps = [('imputer', KNNImputer()), neural_network])
 
