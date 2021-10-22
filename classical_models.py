@@ -308,6 +308,7 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
     
     #load metadata without the cancer samples
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/' + organism + '/' + data_type + '/metadata_summary.pkl') 
+    print("meta shape: ", metadata.shape)
     metadata = filter_metadata(metadata)
     
     #code to get a progress bar
