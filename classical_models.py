@@ -329,6 +329,8 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
         y = metadata.loc[samples].age
         X = X.loc[y.index]
         
+        print("X shape: ", X)
+        print("y shape: ", y)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, train_size = 0.8, random_state = 42)        
         
         #loop through the different age transformers
