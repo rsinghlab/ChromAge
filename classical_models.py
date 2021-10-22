@@ -122,12 +122,12 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
     summary_df = pd.DataFrame(columns = ['Histone', 'Function', 'Scaler', 'Age Transform', 'Model', 'Mean MAE', 'Std MAE', 'Mean MSE', 'Std MSE', 'Mean R2', 'Std R2'])
     
     #get file names for all the compressed histone_data_objects
-    directory = 'encode_histone_data/' + organism + '/' + data_type + '/' + histone +'/processed_data/'
+    directory = '/users/masif/data/masif/ChromAge/encode_histone_data/' + organism + '/' + data_type + '/' + histone +'/processed_data/'
     histone_files = [f for f in listdir(directory) if isfile(join(directory, f))]
     histone_files = [f for f in histone_files if histone in f]
     
     #load metadata without the cancer samples
-    metadata = pd.read_pickle('encode_histone_data/' + organism + '/' + data_type + '/metadata_summary.pkl') 
+    metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/' + organism + '/' + data_type + '/metadata_summary.pkl') 
     metadata = filter_metadata(metadata)
     
     #code to get a progress bar
@@ -302,9 +302,9 @@ results_H3K27me3 = validate_classical_models('H3K27me3', 'human', 'tissue', mode
 
 results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 10)
 
-histone_data_object = pickle.load(open('encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean.pkl', 'rb'))
+histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean.pkl', 'rb'))
 
-metadata = pd.read_pickle('encode_histone_data/human/tissue/metadata_summary.pkl') 
+metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 
 #ensures both X and y have same samples
 X = histone_data_object.df
