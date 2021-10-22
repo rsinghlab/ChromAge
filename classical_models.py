@@ -288,11 +288,11 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
         metadata = metadata.drop(cancer_indexes)
     
     #keep or remove biological replicates
-    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>1].index
-    if biological_replicates == True:
-        metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
-    else:
-        metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    # biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>1].index
+    # if biological_replicates == True:
+    #     metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    # else:
+    #     metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     return metadata
 
@@ -336,7 +336,7 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
         
         print("X shape: ", X)
         print("y shape: ", y)
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, train_size = 0.8, random_state = 42)        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)        
         
         #loop through the different age transformers
         for age_transform in age_transform_list:
