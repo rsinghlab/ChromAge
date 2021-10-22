@@ -483,7 +483,7 @@ age_transform_list = [
 
 # results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 10)
 
-histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean.pkl', 'rb'))
+histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
 
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 
@@ -521,4 +521,4 @@ means = grid.cv_results_['mean_test_score']
 stds = grid.cv_results_['std_test_score']
 params = grid.cv_results_['params']
 
-plot(results_H3K36me3)
+# plot(results_H3K36me3)
