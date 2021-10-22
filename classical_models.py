@@ -274,7 +274,7 @@ class SigmoidTransformer(BaseEstimator, TransformerMixin):
         target_ = target_ * self.max_lifespan - self.gestation_time
         return target_
 
-def filter_metadata(metadata, cancer = False, biological_replicates = False):
+def filter_metadata(metadata, cancer = False, biological_replicates = True):
     
     #keep or remove cancer samples
     cancer_indexes = []
@@ -288,11 +288,11 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
         metadata = metadata.drop(cancer_indexes)
     
     #keep or remove biological replicates
-    # biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>1].index
-    # if biological_replicates == True:
-    #     metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
-    # else:
-    #     metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>1].index
+    if biological_replicates == True:
+        metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    else:
+        metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     return metadata
 
@@ -321,21 +321,15 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
     cv = KFold(n_splits=folds, random_state=42, shuffle=True)
     
     for file in histone_files:
-        print(file)
         histone_data_object = pickle.load(open(directory + file, 'rb'))
         
         #ensures both X and y have same samples
         X = histone_data_object.df
-        print("X shape: ", X)
-       
         samples = np.intersect1d(X.index, metadata.index)
-        print(samples.shape)
         print("meta shape: ", metadata.shape)
         y = metadata.loc[samples].age
         X = X.loc[y.index]
-        
-        print("X shape: ", X)
-        print("y shape: ", y)
+    
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)        
         
         #loop through the different age transformers
