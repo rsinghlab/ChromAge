@@ -17,7 +17,7 @@ from IPython.display import clear_output
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import TransformedTargetRegressor
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.linear_model import ElasticNet, ElasticNetCV
 from sklearn.svm import SVR
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
@@ -509,7 +509,9 @@ param_grid = {
     'neural_network__coeff':[0.005, 0.05, 0.01],
 }
 
-pipeline = Pipeline(steps = [('imputer', KNNImputer()), neural_network])
+pipeline = make_pipeline(KNNImputer(), StandardScaler(), neural_network)
+
+# (steps = [('imputer', KNNImputer()), neural_network])
 
 # if you're not using a GPU, you can set n_jobs to something other than 1
 grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
