@@ -509,7 +509,7 @@ param_grid = {
     'neural_network__coeff':[0.005, 0.05, 0.01],
 }
 
-pipeline = Pipeline(steps = [('imputer', KNNImputer()), scaler, neural_network])
+pipeline = Pipeline(steps = list([('imputer', KNNImputer()), scaler, neural_network]))
 
 # if you're not using a GPU, you can set n_jobs to something other than 1
 grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
