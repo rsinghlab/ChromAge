@@ -235,42 +235,4 @@ results_H3K27me3 = validate_classical_models('H3K27me3', 'human', 'tissue', mode
 
 results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
 
-histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-
-metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-
-#ensures both X and y have same samples
-X = histone_data_object.df
-samples = np.intersect1d(metadata.index, X.index)
-X = X.loc[samples]
-y = metadata.loc[X.index].age
-
-neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
-
-scaler = StandardScaler()
-
-# create parameter grid, as usual, but note that you can
-# vary other model parameters such as 'epochs' (and others 
-# such as 'batch_size' too)
-param_grid = {
-    'neural_network__epochs':[10,50],
-    'neural_network__hidden_layers':[1,3,5],
-    'neural_network__hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
-    'neural_network__lr':[0.00001,0.00005, 0.001, 0.01],
-    'neural_network__dropout':[0.0,0.1,0.3,0.5],
-    'neural_network__coeff':[0.005, 0.05, 0.01],
-}
-
-pipeline = Pipeline(steps = [('imputer', KNNImputer()), ('scaler', StandardScaler()), ('neural_network', neural_network)])
-
-# if you're not using a GPU, you can set n_jobs to something other than 1
-grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
-grid.fit(X, y)
-
-# summarize results
-print("Best: %f using %s" % (grid.best_score_, grid.best_params_))
-means = grid.cv_results_['mean_test_score']
-stds = grid.cv_results_['std_test_score']
-params = grid.cv_results_['params']
-
 # plot(results_H3K36me3)
