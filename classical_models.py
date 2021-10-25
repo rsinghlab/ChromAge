@@ -274,7 +274,7 @@ class SigmoidTransformer(BaseEstimator, TransformerMixin):
         target_ = target_ * self.max_lifespan - self.gestation_time
         return target_
 
-def filter_metadata(metadata, cancer = False, biological_replicates = False):
+def filter_metadata(metadata, cancer = False, biological_replicates = True):
     
     #keep or remove cancer samples
     cancer_indexes = []
@@ -325,10 +325,9 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
         
         #ensures both X and y have same samples
         X = histone_data_object.df
-        samples = np.intersect1d(X.index, metadata.index)
-        print("meta shape: ", metadata.shape)
-        y = metadata.loc[samples].age
-        X = X.loc[y.index]
+        samples = np.intersect1d(metadata.index, X.index)
+        X = X.loc[samples]
+        y = metadata.loc[X.index].age
     
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)        
         
@@ -489,9 +488,9 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 
 #ensures both X and y have same samples
 X = histone_data_object.df
-samples = np.intersect1d(X.index, metadata.index)
-y = metadata.loc[samples].age
-X = X.loc[y.index]
+samples = np.intersect1d(metadata.index, X.index)
+X = X.loc[samples]
+y = metadata.loc[X.index].age
 
 neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
 
@@ -510,8 +509,6 @@ param_grid = {
 }
 
 pipeline = Pipeline(steps = [('imputer', KNNImputer()), ('scaler', StandardScaler()), ('neural_network', neural_network)])
-
-# (steps = [('imputer', KNNImputer()), neural_network])
 
 # if you're not using a GPU, you can set n_jobs to something other than 1
 grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
