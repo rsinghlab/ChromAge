@@ -219,7 +219,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
         metadata = metadata.drop(cancer_indexes)
     
     #keep or remove biological replicates
-    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>1].index
+    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
     if biological_replicates == True:
         metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
     else:
