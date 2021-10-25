@@ -274,7 +274,7 @@ class SigmoidTransformer(BaseEstimator, TransformerMixin):
         target_ = target_ * self.max_lifespan - self.gestation_time
         return target_
 
-def filter_metadata(metadata, cancer = False, biological_replicates = True):
+def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     #keep or remove cancer samples
     cancer_indexes = []
