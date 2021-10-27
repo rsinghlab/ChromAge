@@ -320,7 +320,7 @@ model = create_nn()
 
 history = model.fit([X,y])
 
-print(history)
+print(history.history)
 
 # neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
 
