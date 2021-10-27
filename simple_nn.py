@@ -278,11 +278,11 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
               kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
     mu = Dense(1)(x)
-    sigma = Dense(1, activation=lambda x: tf.nn.elu(x) + 1)(x)
+    sigma = Dense(1, activation=lambda z: tf.nn.elu(z) + 1)(x)
     
     y_real = Input(shape=(1,))
     lossF = loss_function(mu,sigma,y_real)
-    model = Model(inputs, y_real)
+    model = Model(inputs=[inputs, y_real], outputs=[mu, sigma])
     model.add_loss(lossF)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
