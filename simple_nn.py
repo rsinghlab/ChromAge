@@ -318,7 +318,7 @@ y = metadata.loc[X.index].age
 
 model = create_nn()
 
-history = model.fit(X,y)
+history = model.fit([X,y])
 
 print(history)
 
