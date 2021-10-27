@@ -23,6 +23,7 @@ from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
 from tensorflow.keras import regularizers, datasets, layers, models
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, MaxPooling2D, MaxPooling1D, Reshape
+import tensorflow_probability as tfp
 
 #random seed for reproducibility
 tf.random.set_seed(42)
@@ -256,7 +257,7 @@ def create_google_mini_net():
     model = Model(inputs, x, name="minigooglenet")
 
 def loss_function(mu, sigma):
-    dist = tf.distributions.Normal(loc=mu, scale=sigma)
+    dist = tfp.distributions.Normal(loc=mu, scale=sigma)
     loss = tf.reduce_mean(-dist.log_prob(y))
     return loss
 
