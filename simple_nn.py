@@ -282,7 +282,7 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
     
     y_real = Input(shape=(1,))
     lossF = loss_function(mu,sigma,y_real)
-    model = Model(inputs=[x, y_real], outputs=[mu, sigma])
+    model = Model(x, outputs=[mu, sigma])
     model.add_loss(lossF)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
