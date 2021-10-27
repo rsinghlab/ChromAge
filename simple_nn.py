@@ -277,19 +277,16 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
     x = Dense(64,activation = 'selu',
               kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
-    x = Dense(1)(x)
-    # mu = Dense(1)(x)
-    # sigma = Dense(1, activation=lambda z: tf.nn.elu(z) + 1)(x)
+    mu = Dense(1)(x)
+    sigma = Dense(1, activation=lambda z: tf.nn.elu(z) + 1)(x)
     
-    # y_real = Input(shape=(1,))
-    # lossF = loss_function(mu,sigma,y_real)
-    # model = Model(inputs=[inputs, y_real], outputs=[mu, sigma])
-    # model.add_loss(lossF)
-
-    model = Model(inputs,x)
+    y_real = Input(shape=(1,))
+    lossF = loss_function(mu,sigma,y_real)
+    model = Model(inputs=[inputs, y_real], outputs=[mu, sigma])
+    model.add_loss(lossF)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
-    model.compile(optimizer=optimizer, loss='mse', metrics=['mae'])    
+    model.compile(optimizer=optimizer, metrics=['mse', 'mae'])    
 
     return model
 
@@ -321,7 +318,7 @@ y = metadata.loc[X.index].age
 
 model = create_nn()
 
-history = model.fit(X,y)
+history = model.fit([X,y])
 
 print(history)
 
