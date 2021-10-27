@@ -313,30 +313,36 @@ samples = np.intersect1d(metadata.index, X.index)
 X = X.loc[samples]
 y = metadata.loc[X.index].age
 
-neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
+model = create_nn()
 
-scaler = StandardScaler()
+history = model.fit(X,y)
 
-# create parameter grid, as usual, but note that you can
-# vary other model parameters such as 'epochs' (and others 
-# such as 'batch_size' too)
-param_grid = {
-    'neural_network__epochs':[10,50],
-    'neural_network__hidden_layers':[1,3,5],
-    'neural_network__hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
-    'neural_network__lr':[0.00001,0.00005, 0.001, 0.01],
-    'neural_network__dropout':[0.0,0.1,0.3,0.5],
-    'neural_network__coeff':[0.005, 0.05, 0.01],
-}
+print(history)
 
-pipeline = Pipeline(steps = [('imputer', KNNImputer()), ('scaler', StandardScaler()), ('neural_network', neural_network)])
+# neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
 
-# if you're not using a GPU, you can set n_jobs to something other than 1
-grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
-grid.fit(X, y)
+# scaler = StandardScaler()
 
-# summarize results
-print("Best: %f using %s" % (grid.best_score_, grid.best_params_))
-means = grid.cv_results_['mean_test_score']
-stds = grid.cv_results_['std_test_score']
-params = grid.cv_results_['params']
+# # create parameter grid, as usual, but note that you can
+# # vary other model parameters such as 'epochs' (and others 
+# # such as 'batch_size' too)
+# param_grid = {
+#     'neural_network__epochs':[10,50],
+#     'neural_network__hidden_layers':[1,3,5],
+#     'neural_network__hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
+#     'neural_network__lr':[0.00001,0.00005, 0.001, 0.01],
+#     'neural_network__dropout':[0.0,0.1,0.3,0.5],
+#     'neural_network__coeff':[0.005, 0.05, 0.01],
+# }
+
+# pipeline = Pipeline(steps = [('imputer', KNNImputer()), ('scaler', StandardScaler()), ('neural_network', neural_network)])
+
+# # if you're not using a GPU, you can set n_jobs to something other than 1
+# grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
+# grid.fit(X, y)
+
+# # summarize results
+# print("Best: %f using %s" % (grid.best_score_, grid.best_params_))
+# means = grid.cv_results_['mean_test_score']
+# stds = grid.cv_results_['std_test_score']
+# params = grid.cv_results_['params']
