@@ -256,10 +256,9 @@ def create_google_mini_net():
     # create the model
     model = Model(inputs, x, name="minigooglenet")
 
-def loss_function(mu, sigma):
+def loss_function(mu, sigma, y_real):
     dist = tfp.distributions.Normal(loc=mu, scale=sigma)
-    loss = tf.reduce_mean(-dist.log_prob(y))
-    return loss
+    return tf.reduce_mean(-dist.log_prob(y_real))
 
 #create neural network with adjustable parameters
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, coeff = 0.01, dropout = 0.1):
@@ -281,10 +280,13 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
     mu = Dense(1)(x)
     sigma = Dense(1, activation=lambda x: tf.nn.elu(x) + 1)(x)
     
-    model = Model(inputs, x)
+    y_real = Input(shape=(1,))
+    lossF = loss_function(mu,sigma,y_real)
+    model = Model(inputs=[x, y_real], outputs=[mu, sigma])
+    model.add_loss(lossF)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
-    model.compile(optimizer=optimizer, loss = loss_function(mu, sigma), metrics=['mse', 'mae'])    
+    model.compile(optimizer=optimizer, metrics=['mse', 'mae'])    
 
     return model
 
