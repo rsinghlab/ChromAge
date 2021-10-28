@@ -297,7 +297,7 @@ def posterior(kernel_size, bias_size, dtype=None):
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, coeff = 0.01, dropout = 0.1):
     
     inputs = Input(shape = (30321,))
-    # x = BatchNormalization()(inputs)
+    x = BatchNormalization()(inputs)
     x = ActivityRegularization(coeff, coeff)(inputs)
     
     for i in range(hidden_layers):
@@ -306,7 +306,7 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, co
             make_prior_fn=prior,
             make_posterior_fn=posterior,
             kl_weight=1 / 180,
-            activation='selu')(x)
+            activation='sigmoid')(x)
         # x = Dense(hidden_layer_sizes[i],activation = 'selu',
         #           kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
         #           activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
