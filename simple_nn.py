@@ -265,12 +265,14 @@ def loss_function(mu, sigma, y_real):
 def mean_pred(y_true, y_pred):
     print("y_true mse: ", y_true)
     print("y_pred mse: ", y_pred)
-    return K.mean((y_true -  y_pred[0])**2)
+    # return K.mean((y_true -  y_pred[0])**2)
+    return 10
 
 def mae_pred(y_true, y_pred):
     print("y_true mae: ", y_true)
     print("y_pred mae: ", y_pred)
-    return K.mean(K.abs(y_true - y_pred[0]))
+    # return K.mean(K.abs(y_true - y_pred[0]))
+    return 20
 
 #create neural network with adjustable parameters
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, coeff = 0.01, dropout = 0.1):
