@@ -261,38 +261,6 @@ def create_google_mini_net():
 def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
-# Define the prior weight distribution as Normal of mean=0 and stddev=1.
-# Note that, in this example, the we prior distribution is not trainable,
-# as we fix its parameters.
-def prior(kernel_size, bias_size, dtype=None):
-    n = kernel_size + bias_size
-    prior_model = Sequential(
-        [
-            tfp.layers.DistributionLambda(
-                lambda t: tfp.distributions.MultivariateNormalDiag(
-                    loc=tf.zeros(n), scale_diag=tf.ones(n)
-                )
-            )
-        ]
-    )
-    return prior_model
-
-
-# Define variational posterior weight distribution as multivariate Gaussian.
-# Note that the learnable parameters for this distribution are the means,
-# variances, and covariances.
-def posterior(kernel_size, bias_size, dtype=None):
-    n = kernel_size + bias_size
-    posterior_model = Sequential(
-        [
-            tfp.layers.VariableLayer(
-                tfp.layers.MultivariateNormalTriL.params_size(n), dtype=dtype
-            ),
-            tfp.layers.MultivariateNormalTriL(n),
-        ]
-    )
-    return posterior_model
-
 #create neural network with adjustable parameters
 def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 0.001, coeff = 0.01, dropout = 0.1):
     
@@ -301,13 +269,6 @@ def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 
     x = ActivityRegularization(coeff, coeff)(inputs)
     
     for i in range(hidden_layers):
-        # x = tfp.layers.DenseVariational(
-        #     units=hidden_layer_sizes[i],
-        #     make_prior_fn=prior,
-        #     make_posterior_fn=posterior,
-        #     kl_weight=1 / 180,
-        #     activation='sigmoid')(x)
-
         x = Dense(hidden_layer_sizes[i],activation = 'selu',
                   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
                   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
@@ -318,8 +279,10 @@ def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 
               kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
-    distribution_params = Dense(2, activation='relu')(x)
-    outputs = tfp.layers.IndependentNormal(1)(distribution_params)
+    distribution_params = Dense(2)(x)
+    outputs = tfp.layers.DistributionLambda(
+      lambda t: tfp.distributions.Normal(loc=t[..., :1],
+                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
 
     model = Model(inputs, outputs)
     
@@ -356,7 +319,7 @@ y = metadata.loc[X.index].age
 
 model = create_nn()
 
-history_cache = model.fit(X,y, epochs=1000)
+history_cache = model.fit(X,y, epochs=100)
 
 print(history_cache.history)
 
@@ -370,7 +333,7 @@ print(history_cache.history)
 # # vary other model parameters such as 'epochs' (and others 
 # # such as 'batch_size' too)
 # param_grid = {
-#     'neural_network__epochs':[10,50],
+#     'neural_network__epochs':[100,500],
 #     'neural_network__hidden_layers':[1,3,5],
 #     'neural_network__hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
 #     'neural_network__lr':[0.00001,0.00005, 0.001, 0.01],
