@@ -306,9 +306,7 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, co
             make_prior_fn=prior,
             make_posterior_fn=posterior,
             kl_weight=1 / 180,
-            activation='selu',
-            kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-            activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
+            activation='selu')(x)
         # x = Dense(hidden_layer_sizes[i],activation = 'selu',
         #           kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
         #           activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
