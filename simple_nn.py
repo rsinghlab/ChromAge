@@ -266,7 +266,7 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
     
     inputs = Input(shape = (30321,))
     # x = BatchNormalization()(inputs)
-    x = ActivityRegularization(coeff, coeff)(x)
+    x = ActivityRegularization(coeff, coeff)(inputs)
     
     for i in range(hidden_layers):
         x = Dense(hidden_layer_sizes[i],activation = 'selu',
