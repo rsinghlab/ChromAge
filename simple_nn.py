@@ -24,6 +24,7 @@ from tensorflow.keras import regularizers, datasets, layers, models
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, MaxPooling2D, MaxPooling1D, Reshape
 import tensorflow_probability as tfp
+import keras.backend as K
 from matplotlib import pyplot as plt
 
 #random seed for reproducibility
@@ -261,6 +262,12 @@ def loss_function(mu, sigma, y_real):
     dist = tfp.distributions.Normal(loc=mu, scale=sigma)
     return tf.reduce_mean(-dist.log_prob(y_real))
 
+def mean_pred(y_true, y_pred):
+    return tf.keras.metrics.mean_squared_error(y_true[0], y_pred[0])
+
+def mae_pred(y_true, y_pred):
+    return tf.keras.metrics.mean_absolute_error(y_true[0], y_pred[0])
+
 #create neural network with adjustable parameters
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, coeff = 0.01, dropout = 0.1):
     
@@ -287,7 +294,7 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
     model.add_loss(lossF)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
-    model.compile(optimizer=optimizer, metrics=['mse', 'mae'])    
+    model.compile(optimizer=optimizer, metrics=[mean_pred, mae_pred])    
 
     return model
 
