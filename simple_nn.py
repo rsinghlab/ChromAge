@@ -279,7 +279,7 @@ def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 
               kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
-    distribution_params = Dense(2)(x)
+    distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
                            scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
@@ -321,8 +321,6 @@ model = create_nn()
 
 history_cache = model.fit(X,y, epochs=100)
 
-print(history_cache.history)
-
 # print('Final cost: {0:.4f}'.format(history_cache.history['loss'][-1]))
 
 # neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
@@ -346,6 +344,14 @@ print(history_cache.history)
 # # if you're not using a GPU, you can set n_jobs to something other than 1
 # grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
 # grid.fit(X, y)
+
+# # accession code, real age and the actual age, predicted mean, predicted stddev for each model, model type 
+
+# prediction_distribution = model(x_test)
+
+# prediction_distribution.mean().numpy().flatten()
+
+# prediction_distribution.sttdev().numpy().flatten()
 
 # # summarize results
 # print("Best: %f using %s" % (grid.best_score_, grid.best_params_))
