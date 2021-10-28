@@ -265,7 +265,7 @@ def loss_function(targets, estimated_distribution):
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, coeff = 0.01, dropout = 0.1):
     
     inputs = Input(shape = (30321,))
-    x = BatchNormalization()(inputs)
+    # x = BatchNormalization()(inputs)
     x = ActivityRegularization(coeff, coeff)(x)
     
     for i in range(hidden_layers):
@@ -279,13 +279,13 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
               kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
-    distribution_params = layers.Dense(units=2)(x)
+    distribution_params = Dense(2)(x)
     outputs = tfp.layers.IndependentNormal(1)(distribution_params)
 
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
-    model.compile(optimizer=optimizer, loss = loss_function, metrics=['mse', 'mae'])    
+    model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
 
     return model
 
