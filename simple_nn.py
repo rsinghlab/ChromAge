@@ -262,7 +262,7 @@ def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
 #create neural network with adjustable parameters
-def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, coeff = 0.01, dropout = 0.1):
+def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, coeff = 0.01, dropout = 0.1):
     
     inputs = Input(shape = (30321,))
     # x = BatchNormalization()(inputs)
