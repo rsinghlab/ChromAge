@@ -261,6 +261,38 @@ def create_google_mini_net():
 def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
+# Define the prior weight distribution as Normal of mean=0 and stddev=1.
+# Note that, in this example, the we prior distribution is not trainable,
+# as we fix its parameters.
+def prior(kernel_size, bias_size, dtype=None):
+    n = kernel_size + bias_size
+    prior_model = Sequential(
+        [
+            tfp.layers.DistributionLambda(
+                lambda t: tfp.distributions.MultivariateNormalDiag(
+                    loc=tf.zeros(n), scale_diag=tf.ones(n)
+                )
+            )
+        ]
+    )
+    return prior_model
+
+
+# Define variational posterior weight distribution as multivariate Gaussian.
+# Note that the learnable parameters for this distribution are the means,
+# variances, and covariances.
+def posterior(kernel_size, bias_size, dtype=None):
+    n = kernel_size + bias_size
+    posterior_model = Sequential(
+        [
+            tfp.layers.VariableLayer(
+                tfp.layers.MultivariateNormalTriL.params_size(n), dtype=dtype
+            ),
+            tfp.layers.MultivariateNormalTriL(n),
+        ]
+    )
+    return posterior_model
+
 #create neural network with adjustable parameters
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, coeff = 0.01, dropout = 0.1):
     
@@ -269,9 +301,17 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, co
     x = ActivityRegularization(coeff, coeff)(inputs)
     
     for i in range(hidden_layers):
-        x = Dense(hidden_layer_sizes[i],activation = 'selu',
-                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
+        x = tfp.layers.DenseVariational(
+            units=hidden_layer_sizes[i],
+            make_prior_fn=prior,
+            make_posterior_fn=posterior,
+            kl_weight=1 / 180,
+            activation='selu',
+            kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+            activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
+        # x = Dense(hidden_layer_sizes[i],activation = 'selu',
+        #           kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+        #           activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
         x = BatchNormalization()(x)
         x = Dropout(dropout)(x)
         
