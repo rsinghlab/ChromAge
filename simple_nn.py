@@ -300,7 +300,7 @@ def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, c
     model.add_loss(lossF)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
-    model.compile(optimizer=optimizer, metrics=[mean_pred, mae_pred])    
+    model.compile(optimizer=optimizer, metrics=[mean_pred(), mae_pred()])    
 
     return model
 
