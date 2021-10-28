@@ -326,7 +326,7 @@ y = metadata.loc[X.index].age
 
 model = create_nn()
 
-history_cache = model.fit([X,y])
+history_cache = model.fit([X,y], epochs=3)
 
 print(history_cache.history)
 
