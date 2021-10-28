@@ -294,30 +294,31 @@ def posterior(kernel_size, bias_size, dtype=None):
     return posterior_model
 
 #create neural network with adjustable parameters
-def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.001, coeff = 0.01, dropout = 0.1):
+def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 0.001, coeff = 0.01, dropout = 0.1):
     
     inputs = Input(shape = (30321,))
     x = BatchNormalization()(inputs)
     x = ActivityRegularization(coeff, coeff)(inputs)
     
     for i in range(hidden_layers):
-        x = tfp.layers.DenseVariational(
-            units=hidden_layer_sizes[i],
-            make_prior_fn=prior,
-            make_posterior_fn=posterior,
-            kl_weight=1 / 180,
-            activation='sigmoid')(x)
-        # x = Dense(hidden_layer_sizes[i],activation = 'selu',
-        #           kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-        #           activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
+        # x = tfp.layers.DenseVariational(
+        #     units=hidden_layer_sizes[i],
+        #     make_prior_fn=prior,
+        #     make_posterior_fn=posterior,
+        #     kl_weight=1 / 180,
+        #     activation='sigmoid')(x)
+
+        x = Dense(hidden_layer_sizes[i],activation = 'selu',
+                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
         x = BatchNormalization()(x)
         x = Dropout(dropout)(x)
         
-    x = Dense(64,activation = 'selu',
+    x = Dense(32,activation = 'selu',
               kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
-    distribution_params = Dense(2)(x)
+    distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.IndependentNormal(1)(distribution_params)
 
     model = Model(inputs, outputs)
