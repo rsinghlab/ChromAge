@@ -24,6 +24,7 @@ from tensorflow.keras import regularizers, datasets, layers, models
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, MaxPooling2D, MaxPooling1D, Reshape
 import tensorflow_probability as tfp
+from matplotlib import pyplot as plt
 
 #random seed for reproducibility
 tf.random.set_seed(42)
@@ -318,9 +319,11 @@ y = metadata.loc[X.index].age
 
 model = create_nn()
 
-history = model.fit([X,y], epochs=500)
+history_cache = model.fit([X,y])
 
-print(history.history)
+print(history_cache.history)
+
+# print('Final cost: {0:.4f}'.format(history_cache.history['loss'][-1]))
 
 # neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
 
