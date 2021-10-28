@@ -262,11 +262,11 @@ def loss_function(mu, sigma, y_real):
     dist = tfp.distributions.Normal(loc=mu, scale=sigma)
     return tf.reduce_mean(-dist.log_prob(y_real))
 
-def mean_pred(mu_true, sigma_true, mu_pred, sigma_pred):
-    return tf.keras.metrics.mean_squared_error(mu_true, mu_pred)
+def mean_pred(y_true, y_pred):
+    return K.mean((y_true -  y_pred[0])**2)
 
-def mae_pred(mu_true, sigma_true, mu_pred, sigma_pred):
-    return tf.keras.metrics.mean_absolute_error(mu_true, mu_pred)
+def mae_pred(y_true, y_pred):
+    return K.mean(K.abs(y_true - y_pred[0]))
 
 #create neural network with adjustable parameters
 def create_nn(hidden_layers = 3, hidden_layer_sizes = [16,32,64], lr = 0.0001, coeff = 0.01, dropout = 0.1):
