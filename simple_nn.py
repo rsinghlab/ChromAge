@@ -263,9 +263,13 @@ def loss_function(mu, sigma, y_real):
     return tf.reduce_mean(-dist.log_prob(y_real))
 
 def mean_pred(y_true, y_pred):
+    print("y_true mse: ", y_true)
+    print("y_pred mse: ", y_pred)
     return K.mean((y_true -  y_pred[0])**2)
 
 def mae_pred(y_true, y_pred):
+    print("y_true mae: ", y_true)
+    print("y_pred mae: ", y_pred)
     return K.mean(K.abs(y_true - y_pred[0]))
 
 #create neural network with adjustable parameters
