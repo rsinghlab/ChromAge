@@ -234,7 +234,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         random.shuffle(replicates_arr)
         train_data = replicates_arr[0 : int((1-split) * len(replicates_arr))]
         test_data = replicates_arr[int((1-split) * len(replicates_arr)) : len(replicates_arr)]
-
+        print("HITTTT")
         for x_replicate, y_replicate in train_data:
             X_train.append(x_replicate)
             y_train.append(y_replicate)
@@ -242,6 +242,8 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         for x_replicate, y_replicate in test_data:
             X_test.append(x_replicate)
             y_test.append(y_replicate)
+        
+        print(X_train, X_test, y_train, y_test)
 
     return X_train, X_test, y_train, y_test
 
