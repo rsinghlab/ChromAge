@@ -227,7 +227,9 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         replicates_arr = []
         for replicate in biological_replicate_experiments:
             X = histone_data_object.df
+            print(metadata.loc[metadata['Experiment accession'].isin([replicate])].index)
             samples = np.intersect1d(metadata.loc[metadata['Experiment accession'].isin([replicate])].index, X.index)
+            print(len(samples))
             X = X.loc[samples]
             y = metadata.loc[X.index].age
             replicates_arr.append((X,y))
@@ -235,9 +237,6 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         print(len(replicates_arr))
         train_data = replicates_arr[0 : int((1-split) * len(replicates_arr))]
         test_data = replicates_arr[int((1-split) * len(replicates_arr)) : len(replicates_arr)]
-
-        print(len(train_data))
-        print(len(test_data))
 
         for x_replicate, y_replicate in train_data:
             print("HIT")
