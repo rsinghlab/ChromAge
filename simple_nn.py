@@ -210,10 +210,27 @@ class histone_data:
 
 #------------------------------------------------------------------------------------------------------
 
-def split_data(metadata, histone_data_object, biological_replicates = False, split = 0.2):
+def get_data_with_replicates(metadata, histone_data_object):
+    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
+
+    replicates_arr = []
+    for replicate in biological_replicate_experiments:
+        replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
+    
+    data_array = []
+    for i in range(len(replicates_arr)):
+        X = histone_data_object.df
+        samples = np.intersect1d(replicates_arr[i].index, X.index)
+        X = X.loc[samples]
+        y = metadata.loc[X.index].age
+        data_array.append((X,y))
+    
+    return data_array
+
+def get_data_without_replicates(metadata, histone_data_object):
     #keep or remove biological replicates
     biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
-    
+
     # take all data without replicates and only add if biological_replicates is True
     metadata_temp = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
@@ -222,23 +239,17 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     samples = np.intersect1d(metadata_temp.index, X.index)
     X = X.loc[samples]
     y = metadata_temp.loc[X.index].age
+    
+    return X,y
+
+def split_data(metadata, histone_data_object, biological_replicates = False, split = 0.2):
+    X,y = get_data_without_replicates(metadata, histone_data_object)
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
 
     if biological_replicates == True:
         #add the replicates here
-        replicates_arr = []
-        for replicate in biological_replicate_experiments:
-            replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
-        
-        data_array = []
-        for i in range(len(replicates_arr)):
-            X = histone_data_object.df
-            samples = np.intersect1d(replicates_arr[i].index, X.index)
-            X = X.loc[samples]
-            y = metadata.loc[X.index].age
-            data_array.append((X,y))
-
+        data_array = get_data_with_replicates(metadata, histone_data_object)
         random.shuffle(data_array)
         train_data = data_array[0 : int((1-split) * len(data_array))]
         test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
@@ -250,7 +261,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         for x_replicate, y_replicate in test_data:
             X_test = np.append(X_test, x_replicate, axis=0)
             y_test = np.append(y_test, y_replicate, axis=0)
-
+    
     return X_train, X_test, y_train, y_test
 
 def filter_metadata(metadata, cancer = False):
@@ -268,17 +279,41 @@ def filter_metadata(metadata, cancer = False):
     
     return metadata
 
-def k_cross_validate_model(train_x, train_y, k, batch_size, epochs):
+def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, test_y, batch_size, epochs, k = 4, biological_replicates = False):
     for i in range(k):
+
+
+
         validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
         validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         training_x = np.concatenate((train_x[0:int(i*(1/k)*train_x.shape[0])],train_x[int((i+1)*(1/k)*train_x.shape[0]):train_x.shape[0]]), axis=0)
         training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
 
+        print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
 
+        if biological_replicates:
+            data_array = np.asarray(get_data_with_replicates(metadata, histone_data_object))
+            
+            # improve this using numpy
+            for x,y in data_array:
+                if x in test_x or x not in train_x:
+                    np.delete(data_array, (x,y), axis=0)
+
+            random.shuffle(data_array)
+            validation_data = data_array[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
+            train_data = data_array[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
+
+            for x_replicate, y_replicate in train_data:
+                training_x = np.append(training_x, x_replicate, axis=0)
+                training_y = np.append(training_y, y_replicate, axis=0)
+
+            for x_replicate, y_replicate in validation_data:
+                validation_x = np.append(validation_x, x_replicate, axis=0)
+                validation_y = np.append(validation_y, y_replicate, axis=0)
 
         model = create_nn()
-        model.fit(x=training_x, y=training_y, batch_size=20, epochs=20, validation_data=(validation_x,validation_y), shuffle=True)
+        print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
+        # model.fit(training_x, training_y, batch_size, epochs, validation_data=(validation_x,validation_y), shuffle=True)
 
 def create_google_mini_net():
     inputShape = (height, width, depth)
@@ -362,14 +397,11 @@ metadata = filter_metadata(metadata)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
 
-print(len(X_train), len(X_test), len(y_train), len(y_test))
-
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
+X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
-print(X_train)
-print(y_train)
+k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, 20, 1, k=4, biological_replicates=True)
 
 model = create_nn()
 
