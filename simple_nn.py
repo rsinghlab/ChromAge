@@ -224,6 +224,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     
     #ensures both X and y have same samples
     X = histone_data_object.df
+    print(metadata.index)
     samples = np.intersect1d(metadata.index, X.index)
     X = X.loc[samples]
     y = metadata.loc[X.index].age
