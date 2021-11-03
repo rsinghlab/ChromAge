@@ -364,6 +364,7 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 metadata = filter_metadata(metadata)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
+print("WHAT")
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
 model = create_nn()
