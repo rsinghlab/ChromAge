@@ -235,6 +235,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         train_data = replicates_arr[0 : int((1-split) * len(replicates_arr))]
         test_data = replicates_arr[int((1-split) * len(replicates_arr)) : len(replicates_arr)]
         for x_replicate, y_replicate in train_data:
+            print("HIT")
             X_train.append(x_replicate)
             y_train.append(y_replicate)
 
