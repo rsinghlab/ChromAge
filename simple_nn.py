@@ -224,6 +224,8 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
 
+    print(len(X_train), len(X_test), len(y_train), len(y_test))
+
     if biological_replicates == True:
         #add the replicates here
         replicates_arr = []
@@ -239,7 +241,6 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
             data_array.append((X,y))
 
         random.shuffle(data_array)
-        print(data_array)
         train_data = data_array[0 : int((1-split) * len(data_array))]
         test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
 
@@ -249,9 +250,11 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
             y_train.append(y_replicate)
 
         for x_replicate, y_replicate in test_data:
+            print("HIT1")
             X_test.append(x_replicate)
             y_test.append(y_replicate)
-
+    
+    print(len(X_train), len(X_test), len(y_train), len(y_test))
     return X_train, X_test, y_train, y_test
 
 def filter_metadata(metadata, cancer = False, biological_replicates = False):
@@ -374,10 +377,6 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
-
-print(len(X_train), len(X_test), len(y_train), len(y_test))
-
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
