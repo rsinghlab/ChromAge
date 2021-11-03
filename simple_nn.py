@@ -214,6 +214,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     #keep or remove biological replicates
     biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
     
+    # take all data without replicates and only add if biological_replicates is True
     metadata_temp = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     #ensures both X and y have same samples
@@ -223,8 +224,6 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     y = metadata_temp.loc[X.index].age
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
-    print(np.asarray(X_train).shape)
-    print(len(X_train), len(X_test), len(y_train), len(y_test))
 
     if biological_replicates == True:
         #add the replicates here
@@ -245,21 +244,15 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
 
         for x_replicate, y_replicate in train_data:
-            print("HIT")
             X_train = np.append(X_train, x_replicate, axis=0)
             y_train = np.append(y_train, y_replicate, axis=0)
 
         for x_replicate, y_replicate in test_data:
-            print("HIT1")
             X_test = np.append(X_test, x_replicate, axis=0)
             y_test = np.append(y_test, y_replicate, axis=0)
-    
-    print(np.asarray(X_train).shape)
-
-    print(len(X_train), len(X_test), len(y_train), len(y_test))
     return X_train, X_test, y_train, y_test
 
-def filter_metadata(metadata, cancer = False, biological_replicates = False):
+def filter_metadata(metadata, cancer = False):
     
     #keep or remove cancer samples
     cancer_indexes = []
@@ -271,13 +264,6 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
         metadata = metadata.loc[cancer_indexes]
     else:
         metadata = metadata.drop(cancer_indexes)
-    
-    #keep or remove biological replicates
-    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
-    if biological_replicates == True:
-        metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
-    else:
-        metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     return metadata
 
@@ -375,10 +361,13 @@ class MyModel(Model):
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
 
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-# metadata = filter_metadata(metadata)
-
+metadata = filter_metadata(metadata)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
+
+print(len(X_train), len(X_test), len(y_train), len(y_test))
+
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
