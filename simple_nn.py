@@ -214,31 +214,25 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     #keep or remove biological replicates
     biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
     
+    metadata_temp = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    
+    #ensures both X and y have same samples
+    X = histone_data_object.df
+    X = X.loc[metadata_temp.index & X.index]
+    y = metadata_temp.loc[X.index].age
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
+
     if biological_replicates == True:
         #add the replicates here
         replicates_arr = []
         for replicate in biological_replicate_experiments:
             replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
-    
-    metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
-    
-    #ensures both X and y have same samples
-    X = histone_data_object.df
-    print(metadata.index)
-    samples = np.intersect1d(metadata.index, X.index)
-    X = X.loc[samples]
-    y = metadata.loc[X.index].age
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
-
-    if biological_replicates == True:
+        
         data_array = []
-
         for i in range(len(replicates_arr)):
             X = histone_data_object.df
-            print(replicates_arr[i].index)
             X = X.loc[X.index & replicates_arr[i].index]
-            print(X)
             y = metadata.loc[X.index].age
             data_array.append((X,y))
 
@@ -248,7 +242,6 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
 
         for x_replicate, y_replicate in train_data:
-            print("HIT")
             X_train.append(x_replicate)
             y_train.append(y_replicate)
 
