@@ -232,8 +232,8 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
             y = metadata.loc[X.index].age
             replicates_arr.append((X,y))
         random.shuffle(replicates_arr)
-        train_data = replicates_arr[0 : (1-split) * len(replicates_arr)]
-        test_data = replicates_arr[(1-split) * len(replicates_arr) : len(replicates_arr)]
+        train_data = replicates_arr[0 : int((1-split) * len(replicates_arr))]
+        test_data = replicates_arr[int((1-split) * len(replicates_arr)) : len(replicates_arr)]
 
         for x_replicate, y_replicate in train_data:
             X_train.append(x_replicate)
