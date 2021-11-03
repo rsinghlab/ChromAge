@@ -218,7 +218,8 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     
     #ensures both X and y have same samples
     X = histone_data_object.df
-    X = X.loc[metadata_temp.index & X.index]
+    samples = np.intersect1d(metadata_temp.index, X.index)
+    X = X.loc[samples]
     y = metadata_temp.loc[X.index].age
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
@@ -232,16 +233,18 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         data_array = []
         for i in range(len(replicates_arr)):
             X = histone_data_object.df
-            X = X.loc[X.index & replicates_arr[i].index]
+            samples = np.intersect1d(replicates_arr[i].index, X.index)
+            X = X.loc[samples]
             y = metadata.loc[X.index].age
             data_array.append((X,y))
 
         random.shuffle(data_array)
-        print(len(data_array))
+        print(data_array)
         train_data = data_array[0 : int((1-split) * len(data_array))]
         test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
 
         for x_replicate, y_replicate in train_data:
+            print("HIT")
             X_train.append(x_replicate)
             y_train.append(y_replicate)
 
