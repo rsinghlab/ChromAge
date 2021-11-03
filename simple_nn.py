@@ -250,6 +250,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
         for x_replicate, y_replicate in test_data:
             X_test = np.append(X_test, x_replicate, axis=0)
             y_test = np.append(y_test, y_replicate, axis=0)
+
     return X_train, X_test, y_train, y_test
 
 def filter_metadata(metadata, cancer = False):
@@ -267,20 +268,16 @@ def filter_metadata(metadata, cancer = False):
     
     return metadata
 
-def k_cross_validate_model(train_x, train_y, k):
+def k_cross_validate_model(train_x, train_y, k, batch_size, epochs):
     for i in range(k):
         validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
         validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         training_x = np.concatenate((train_x[0:int(i*(1/k)*train_x.shape[0])],train_x[int((i+1)*(1/k)*train_x.shape[0]):train_x.shape[0]]), axis=0)
         training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
-        model = tf.keras.Sequential()
-        layer_1 = tf.keras.layers.Conv2D(8,9,activation=tf.keras.layers.ReLU(), padding="valid")
-        layer_2 = tf.keras.layers.Conv2D(8,1,activation=tf.keras.layers.ReLU(), padding="valid")
-        layer_3 = tf.keras.layers.Conv2D(1,5,activation=tf.keras.layers.ReLU(), padding="valid")
-        model.add(layer_1)
-        model.add(layer_2)
-        model.add(layer_3)
-        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.008), loss=tf.keras.losses.MeanSquaredError())
+
+
+
+        model = create_nn()
         model.fit(x=training_x, y=training_y, batch_size=20, epochs=20, validation_data=(validation_x,validation_y), shuffle=True)
 
 def create_google_mini_net():
@@ -370,6 +367,9 @@ print(len(X_train), len(X_test), len(y_train), len(y_test))
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
+
+print(X_train)
+print(y_train)
 
 model = create_nn()
 
