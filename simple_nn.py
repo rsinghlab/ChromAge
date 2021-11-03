@@ -366,7 +366,7 @@ class MyModel(Model):
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
 
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-metadata = filter_metadata(metadata)
+# metadata = filter_metadata(metadata)
 
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
