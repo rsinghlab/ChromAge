@@ -224,20 +224,25 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
     if biological_replicates == True:
         #add the replicates here
-        print(len(biological_replicate_experiments))
         replicates_arr = []
         for replicate in biological_replicate_experiments:
+            replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
+
+        data_array = []
+
+        for i in range(len(replicates_arr)):
             X = histone_data_object.df
-            print(metadata.loc[metadata['Experiment accession'].isin([replicate])].index)
-            samples = np.intersect1d(metadata.loc[metadata['Experiment accession'].isin([replicate])].index, X.index)
+            print(replicates_arr[i].index)
+            samples = np.intersect1d(replicates_arr[i].index, X.index)
             print(len(samples))
             X = X.loc[samples]
             y = metadata.loc[X.index].age
-            replicates_arr.append((X,y))
-        random.shuffle(replicates_arr)
-        print(len(replicates_arr))
-        train_data = replicates_arr[0 : int((1-split) * len(replicates_arr))]
-        test_data = replicates_arr[int((1-split) * len(replicates_arr)) : len(replicates_arr)]
+            data_array.append((X,y))
+
+        random.shuffle(data_array)
+        print(len(data_array))
+        train_data = data_array[0 : int((1-split) * len(data_array))]
+        test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
 
         for x_replicate, y_replicate in train_data:
             print("HIT")
