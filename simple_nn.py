@@ -224,6 +224,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
     if biological_replicates == True:
         #add the replicates here
+        print(len(biological_replicate_experiments))
         replicates_arr = []
         for replicate in biological_replicate_experiments:
             X = histone_data_object.df
