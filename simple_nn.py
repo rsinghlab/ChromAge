@@ -223,7 +223,7 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     y = metadata_temp.loc[X.index].age
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
-
+    print(np.asarray(X_train).shape)
     print(len(X_train), len(X_test), len(y_train), len(y_test))
 
     if biological_replicates == True:
@@ -254,6 +254,8 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
             X_test.append(x_replicate)
             y_test.append(y_replicate)
     
+    print(np.asarray(X_train).shape)
+
     print(len(X_train), len(X_test), len(y_train), len(y_test))
     return X_train, X_test, y_train, y_test
 
