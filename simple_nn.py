@@ -246,13 +246,13 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
 
         for x_replicate, y_replicate in train_data:
             print("HIT")
-            X_train.append(x_replicate, axis=0)
-            y_train.append(y_replicate, axis=0)
+            X_train = np.append(X_train, x_replicate, axis=0)
+            y_train = np.append(y_train, y_replicate, axis=0)
 
         for x_replicate, y_replicate in test_data:
             print("HIT1")
-            X_test.append(x_replicate, axis=0)
-            y_test.append(y_replicate, axis=0)
+            X_test = np.append(X_test, x_replicate, axis=0)
+            y_test = np.append(y_test, y_replicate, axis=0)
     
     print(np.asarray(X_train).shape)
 
