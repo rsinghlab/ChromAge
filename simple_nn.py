@@ -213,6 +213,13 @@ class histone_data:
 def split_data(metadata, histone_data_object, biological_replicates = False, split = 0.2):
     #keep or remove biological replicates
     biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
+    
+    if biological_replicates == True:
+        #add the replicates here
+        replicates_arr = []
+        for replicate in biological_replicate_experiments:
+            replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
+    
     metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     #ensures both X and y have same samples
@@ -222,12 +229,8 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
     y = metadata.loc[X.index].age
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
-    if biological_replicates == True:
-        #add the replicates here
-        replicates_arr = []
-        for replicate in biological_replicate_experiments:
-            replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
 
+    if biological_replicates == True:
         data_array = []
 
         for i in range(len(replicates_arr)):
