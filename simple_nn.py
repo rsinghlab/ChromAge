@@ -1,3 +1,4 @@
+import re
 import numpy as np
 import pandas as pd
 import random
@@ -30,6 +31,7 @@ from matplotlib import pyplot as plt
 #random seed for reproducibility
 tf.random.set_seed(42)
 random.seed(42)
+np.random.seed(42)
 
 class histone_data:
     
@@ -208,6 +210,41 @@ class histone_data:
 
 #------------------------------------------------------------------------------------------------------
 
+def split_data(metadata, histone_data_object, biological_replicates = False, split = 0.2):
+    #keep or remove biological replicates
+    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
+    metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    
+    #ensures both X and y have same samples
+    X = histone_data_object.df
+    samples = np.intersect1d(metadata.index, X.index)
+    X = X.loc[samples]
+    y = metadata.loc[X.index].age
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
+    if biological_replicates == True:
+        #add the replicates here
+        replicates_arr = []
+        for replicate in biological_replicate_experiments:
+            X = histone_data_object.df
+            samples = np.intersect1d(metadata.loc[metadata['Experiment accession'].isin([replicate])].index, X.index)
+            X = X.loc[samples]
+            y = metadata.loc[X.index].age
+            replicates_arr.append((X,y))
+        random.shuffle(replicates_arr)
+        train_data = replicates_arr[0 : (1-split) * len(replicates_arr)]
+        test_data = replicates_arr[(1-split) * len(replicates_arr) : len(replicates_arr)]
+
+        for x_replicate, y_replicate in train_data:
+            X_train.append(x_replicate)
+            y_train.append(y_replicate)
+
+        for x_replicate, y_replicate in test_data:
+            X_test.append(x_replicate)
+            y_test.append(y_replicate)
+
+    return X_train, X_test, y_train, y_test
+
 def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     #keep or remove cancer samples
@@ -229,6 +266,22 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
         metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     return metadata
+
+def k_cross_validate_model(train_x, train_y, k):
+    for i in range(k):
+        validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
+        validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
+        training_x = np.concatenate((train_x[0:int(i*(1/k)*train_x.shape[0])],train_x[int((i+1)*(1/k)*train_x.shape[0]):train_x.shape[0]]), axis=0)
+        training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
+        model = tf.keras.Sequential()
+        layer_1 = tf.keras.layers.Conv2D(8,9,activation=tf.keras.layers.ReLU(), padding="valid")
+        layer_2 = tf.keras.layers.Conv2D(8,1,activation=tf.keras.layers.ReLU(), padding="valid")
+        layer_3 = tf.keras.layers.Conv2D(1,5,activation=tf.keras.layers.ReLU(), padding="valid")
+        model.add(layer_1)
+        model.add(layer_2)
+        model.add(layer_3)
+        model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.008), loss=tf.keras.losses.MeanSquaredError())
+        model.fit(x=training_x, y=training_y, batch_size=20, epochs=20, validation_data=(validation_x,validation_y), shuffle=True)
 
 def create_google_mini_net():
     inputShape = (height, width, depth)
@@ -310,16 +363,12 @@ histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata)
 
-
-#ensures both X and y have same samples
-X = histone_data_object.df
-samples = np.intersect1d(metadata.index, X.index)
-X = X.loc[samples]
-y = metadata.loc[X.index].age
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
+print(len(X_train), len(X_test), len(y_train), len(y_test))
 
 model = create_nn()
 
-history_cache = model.fit(X,y, epochs=100)
+# history_cache = model.fit(X,y, epochs=100)
 
 # print('Final cost: {0:.4f}'.format(history_cache.history['loss'][-1]))
 
