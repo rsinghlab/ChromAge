@@ -294,7 +294,7 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_
     
     return data_array, train_x, train_y
 
-def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, test_y, batch_size, epochs, k = 4, biological_replicates = False):
+def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, batch_size, epochs, k = 4, biological_replicates = False):
     print(train_x.shape, train_y.shape)
     if biological_replicates:
         data_array, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y)
