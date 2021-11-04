@@ -333,7 +333,11 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
             training_y = np.concatenate(training_y, training_tuple_y, axis=0)
             print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         model = create_nn()
-        # model.fit(training_x, training_y, batch_size, epochs, validation_data=(validation_x,validation_y), shuffle=True)
+        model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
+        results = model.evaluate(validation_x, validation_y, batch_size)
+        print("test loss, test acc:", results)
+
+        predictions = model.predict(validation_x)
 
 def create_google_mini_net():
     inputShape = (height, width, depth)
