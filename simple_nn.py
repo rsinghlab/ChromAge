@@ -280,7 +280,7 @@ def filter_metadata(metadata, cancer = False):
     return metadata
 
 def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y):
-    data_array = np.asarray(get_data_with_replicates(metadata, histone_data_object))
+    data_array = get_data_with_replicates(metadata, histone_data_object)
     print(data_array.shape)
     print(test_y.shape)
     # improve this using numpy
