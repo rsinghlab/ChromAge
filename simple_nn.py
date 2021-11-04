@@ -279,12 +279,12 @@ def filter_metadata(metadata, cancer = False):
     
     return metadata
 
-def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y):
+def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y):
     data_array = np.asarray(get_data_with_replicates(metadata, histone_data_object))
     
     # improve this using numpy
     for x,y in data_array:
-        if x in test_x:
+        if y in test_y:
             np.delete(data_array, (x,y), axis=0)
     
     for x,y in data_array:
@@ -294,10 +294,10 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_
     
     return data_array, train_x, train_y
 
-def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, batch_size, epochs, k = 4, biological_replicates = False):
+def k_cross_validate_model(metadata, histone_data_object, train_x, test_y, train_y, batch_size, epochs, k = 4, biological_replicates = False):
     print(train_x.shape, train_y.shape)
     if biological_replicates:
-        data_array, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y)
+        data_array, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y)
         tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
 
     print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
@@ -405,7 +405,7 @@ X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.a
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
-k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, 20, 1, k=4, biological_replicates=True)
+k_cross_validate_model(metadata, histone_data_object, X_train, y_test, y_train, 20, 1, k=4, biological_replicates=True)
 
 model = create_nn()
 
