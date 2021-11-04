@@ -224,7 +224,7 @@ def get_data_with_replicates(metadata, histone_data_object):
         X = X.loc[samples]
         y = metadata.loc[X.index].age
         data_array.append((X,y))
-    
+    print(data_array)
     return data_array
 
 def get_data_without_replicates(metadata, histone_data_object):
