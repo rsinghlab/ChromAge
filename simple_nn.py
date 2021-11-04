@@ -279,40 +279,44 @@ def filter_metadata(metadata, cancer = False):
     
     return metadata
 
+def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y):
+    data_array = np.asarray(get_data_with_replicates(metadata, histone_data_object))
+    
+    # improve this using numpy
+    for x,y in data_array:
+        if x in test_x:
+            np.delete(data_array, (x,y), axis=0)
+    
+    for x,y in data_array:
+        if x in train_x:
+            np.delete(train_x, x, axis=0)
+            np.delete(train_y, y, axis=0)
+    
+    return data_array, train_x, train_y
+
 def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, test_y, batch_size, epochs, k = 4, biological_replicates = False):
+    print(train_x.shape, train_y.shape)
+    if biological_replicates:
+        data_array, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y)
+        tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
+
+    print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
+
     for i in range(k):
-
-
-
         validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
         validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         training_x = np.concatenate((train_x[0:int(i*(1/k)*train_x.shape[0])],train_x[int((i+1)*(1/k)*train_x.shape[0]):train_x.shape[0]]), axis=0)
         training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
-
         print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
-
         if biological_replicates:
-            data_array = np.asarray(get_data_with_replicates(metadata, histone_data_object))
-            
-            # improve this using numpy
-            for x,y in data_array:
-                if x in test_x or x not in train_x:
-                    np.delete(data_array, (x,y), axis=0)
-
-            random.shuffle(data_array)
-            validation_data = data_array[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
-            train_data = data_array[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
-
-            for x_replicate, y_replicate in train_data:
-                training_x = np.append(training_x, x_replicate, axis=0)
-                training_y = np.append(training_y, y_replicate, axis=0)
-
-            for x_replicate, y_replicate in validation_data:
-                validation_x = np.append(validation_x, x_replicate, axis=0)
-                validation_y = np.append(validation_y, y_replicate, axis=0)
-
+            validation_x = np.concatenate(validation_x, tuple_x[int(i*(1/k)*tuple_x.shape[0]):int((i+1)*(1/k)*tuple_x.shape[0])], axis=0)
+            validation_y = np.concatenate(validation_y, tuple_x[int(i*(1/k)*tuple_y.shape[0]):int((i+1)*(1/k)*tuple_y.shape[0])], axis=0)
+            training_tuple_x = np.concatenate((tuple_x[0:int(i*(1/k)*tuple_x.shape[0])],tuple_x[int((i+1)*(1/k)*tuple_x.shape[0]):tuple_x.shape[0]]), axis=0)
+            training_tuple_y = np.concatenate((tuple_y[0:int(i*(1/k)*tuple_y.shape[0])],tuple_y[int((i+1)*(1/k)*tuple_y.shape[0]):tuple_y.shape[0]]), axis=0)
+            training_x = np.concatenate(training_x, training_tuple_x, axis=0)
+            training_y = np.concatenate(training_y, training_tuple_y, axis=0)
+            print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         model = create_nn()
-        print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         # model.fit(training_x, training_y, batch_size, epochs, validation_data=(validation_x,validation_y), shuffle=True)
 
 def create_google_mini_net():
