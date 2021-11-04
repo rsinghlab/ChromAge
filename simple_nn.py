@@ -285,6 +285,7 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_
     tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
 
     mask1 = np.isin(tuple_y, test_y, invert=True)
+
     tuple_y = tuple_y[mask1]
 
     mask2 = np.isin(train_x, tuple_x, invert=True)
