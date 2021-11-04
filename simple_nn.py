@@ -225,7 +225,6 @@ def get_data_with_replicates(metadata, histone_data_object):
         y = metadata.loc[X.index].age
         if (len(X.index) > 0):
             data_array.append((X,y))
-    print(data_array)
     return data_array
 
 def get_data_without_replicates(metadata, histone_data_object):
@@ -283,26 +282,38 @@ def filter_metadata(metadata, cancer = False):
 def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y):
     data_array = get_data_with_replicates(metadata, histone_data_object)
     # improve this using numpy
-    for x,y in data_array:
-        print(y)
-        print(len(y))
-        if y in test_y:
-            np.delete(data_array, (x,y), axis=0)
+    tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
+
+    mask1 = np.isin(tuple_y, test_y, invert=True)
+    tuple_y = tuple_y[mask1]
+
+    mask2 = np.isin(train_x, tuple_x, invert=True)
+
+    train_x = train_x[mask2]
+
+    mask3 = np.isin(train_y, tuple_y, invert=True)
+
+    train_y = train_y[mask3]    
+
+    # for x,y in data_array:
+    #     print(y)
+    #     print(len(y))
+    #     if np.isin(test_y, y):
+    #         np.delete(data_array, (x,y), axis=0)
     
-    for x,y in data_array:
-        if x in train_x:
-            np.delete(train_x, x, axis=0)
-            np.delete(train_y, y, axis=0)
+    # for x in train_x:
+    #     if x in tuple_x:
+    #         np.delete(train_x, x, axis=0)
+    #         np.delete(train_y, y, axis=0)
     
-    return data_array, train_x, train_y
+    return tuple_x, tuple_y, train_x, train_y
 
 def k_cross_validate_model(metadata, histone_data_object, train_x, test_y, train_y, batch_size, epochs, k = 4, biological_replicates = False):
     train_x, train_y = np.asarray(train_x), np.asarray(train_y)
     print(train_x.shape, train_y.shape)
 
     if biological_replicates:
-        data_array, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y)
-        tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
+        tuple_x, tuple_y, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y)
 
     print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
 
