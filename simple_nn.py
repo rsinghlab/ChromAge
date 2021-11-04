@@ -421,7 +421,7 @@ X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.a
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
-k_cross_validate_model(metadata, histone_data_object, X_train, y_test, y_train, 20, 1, k=4, biological_replicates=True)
+k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=True)
 
 model = create_nn()
 
