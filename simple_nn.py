@@ -279,21 +279,22 @@ def filter_metadata(metadata, cancer = False):
     
     return metadata
 
-def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y):
+def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y, test_y):
     data_array = get_data_with_replicates(metadata, histone_data_object)
     # improve this using numpy
     tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
+    tuple_x, tuple_y = np.asarray(tuple_x), np.asarray(tuple_y)
+    
+    mask0 = np.isin(tuple_x, test_x, invert=True)
+    tuple_x = tuple_y[mask0]
 
     mask1 = np.isin(tuple_y, test_y, invert=True)
-
     tuple_y = tuple_y[mask1]
 
     mask2 = np.isin(train_x, tuple_x, invert=True)
-
     train_x = train_x[mask2]
 
     mask3 = np.isin(train_y, tuple_y, invert=True)
-
     train_y = train_y[mask3]    
 
     # for x,y in data_array:
@@ -309,12 +310,11 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_
     
     return tuple_x, tuple_y, train_x, train_y
 
-def k_cross_validate_model(metadata, histone_data_object, train_x, test_y, train_y, batch_size, epochs, k = 4, biological_replicates = False):
-    train_x, train_y = np.asarray(train_x), np.asarray(train_y)
+def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, test_y, batch_size, epochs, k = 4, biological_replicates = False):
     print(train_x.shape, train_y.shape)
 
     if biological_replicates:
-        tuple_x, tuple_y, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y)
+        tuple_x, tuple_y, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y, test_y)
 
     print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
 
@@ -417,7 +417,7 @@ metadata = filter_metadata(metadata)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
 
-# X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
+X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
