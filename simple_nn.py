@@ -223,7 +223,8 @@ def get_data_with_replicates(metadata, histone_data_object):
         samples = np.intersect1d(replicates_arr[i].index, X.index)
         X = X.loc[samples]
         y = metadata.loc[X.index].age
-        data_array.append((X,y))
+        if (len(X.index) > 0):
+            data_array.append((X,y))
     print(data_array)
     return data_array
 
