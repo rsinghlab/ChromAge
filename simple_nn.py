@@ -283,6 +283,8 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_
     data_array = get_data_with_replicates(metadata, histone_data_object)
     # improve this using numpy
     for x,y in data_array:
+        print(y)
+        print(len(y))
         if y in test_y:
             np.delete(data_array, (x,y), axis=0)
     
@@ -296,7 +298,7 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_
 def k_cross_validate_model(metadata, histone_data_object, train_x, test_y, train_y, batch_size, epochs, k = 4, biological_replicates = False):
     train_x, train_y = np.asarray(train_x), np.asarray(train_y)
     print(train_x.shape, train_y.shape)
-    
+
     if biological_replicates:
         data_array, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_y, train_y)
         tuple_x, tuple_y = [a_tuple[0] for a_tuple in data_array], [b_tuple[1] for b_tuple in data_array]
