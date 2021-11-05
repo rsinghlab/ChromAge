@@ -336,8 +336,12 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         print("test loss, test acc:", results)
-
         predictions = model.predict(validation_x)
+        print(predictions)
+        print(predictions.shape)
+        print(validation_y)
+        print(validation_y.shape)
+        return
 
 def create_google_mini_net():
     inputShape = (height, width, depth)
@@ -419,13 +423,13 @@ histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
 
 X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 
 print(len(X_train), len(X_test), len(y_train), len(y_test))
 
-k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=True)
+k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=False)
 
 model = create_nn()
 
