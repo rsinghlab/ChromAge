@@ -335,7 +335,7 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         print("test loss, test acc:", results)
-        predictions = model.predict(validation_x)
+        predictions = np.squeeze(model.predict(validation_x))
         print(predictions)
         print(predictions.shape)
         print(validation_y)
