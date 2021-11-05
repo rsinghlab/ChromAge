@@ -315,8 +315,7 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
 
     if biological_replicates:
         tuple_x, tuple_y, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y, test_y)
-
-    print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
+        print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
 
     for i in range(k):
         validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
