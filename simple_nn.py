@@ -310,8 +310,9 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_
     
     return tuple_x, tuple_y, train_x, train_y
 
-def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train_y, test_y, batch_size, epochs, k = 4, biological_replicates = False):
-    print(train_x.shape, train_y.shape)
+def k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, batch_size, epochs, k = 4, biological_replicates = False):
+    train_x, test_x, train_y, test_y = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
+    y_train_index, y_test_index = np.asarray(y_train.index), np.asarray(y_test.index)
 
     if biological_replicates:
         tuple_x, tuple_y, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y, test_y)
@@ -322,6 +323,10 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
         validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         training_x = np.concatenate((train_x[0:int(i*(1/k)*train_x.shape[0])],train_x[int((i+1)*(1/k)*train_x.shape[0]):train_x.shape[0]]), axis=0)
         training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
+
+        validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
+        training_y_index = np.concatenate((y_train_index[0:int(i*(1/k)*y_train_index.shape[0])],y_train_index[int((i+1)*(1/k)*y_train_index.shape[0]):y_train_index.shape[0]]), axis=0)
+        
         print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         if biological_replicates:
             validation_x = np.concatenate(validation_x, tuple_x[int(i*(1/k)*tuple_x.shape[0]):int((i+1)*(1/k)*tuple_x.shape[0])], axis=0)
@@ -331,6 +336,7 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
             training_x = np.concatenate(training_x, training_tuple_x, axis=0)
             training_y = np.concatenate(training_y, training_tuple_y, axis=0)
             print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
+        
         model = create_nn()
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
@@ -341,11 +347,9 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
         print(validation_y)
         print(validation_y.shape)
 
-        # df_dict = {}
-
-        # for i in range(len(predictions)):
-
-
+        df_dict = {"Actual Age": validation_y, "Predicted Age": predictions}
+        df = pd.DataFrame(df_dict, index = validation_y_index)
+        print(df)
         return
 
 def create_google_mini_net():
@@ -429,12 +433,6 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 metadata = filter_metadata(metadata)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
-
-print(y_train)
-
-X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
-
-print(len(X_train), len(X_test), len(y_train), len(y_test))
 
 k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=False)
 
