@@ -353,7 +353,9 @@ def k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_tra
             df_dict = {"Actual Age": validation_y, "Predicted Age": predictions}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df.append({"Actual Age": validation_y, "Predicted Age": predictions}, index = validation_y_index)
+            df2 = pd.DataFrame([validation_y, predictions], columns=list('Actual AgePredicted Age'), index=validation_y_index)
+            # df.append({"Actual Age": validation_y, "Predicted Age": predictions}, index = validation_y_index)
+            df.append(df2)
     print(df)
 
 def create_google_mini_net():
