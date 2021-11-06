@@ -340,6 +340,12 @@ def k_cross_validate_model(metadata, histone_data_object, train_x, test_x, train
         print(predictions.shape)
         print(validation_y)
         print(validation_y.shape)
+
+        # df_dict = {}
+
+        # for i in range(len(predictions)):
+
+
         return
 
 def create_google_mini_net():
@@ -423,6 +429,8 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 metadata = filter_metadata(metadata)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
+
+print(y_train)
 
 X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 
