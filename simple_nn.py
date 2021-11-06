@@ -216,8 +216,6 @@ def get_data_with_replicates(metadata, histone_data_object):
     replicates_arr = []
     for replicate in biological_replicate_experiments:
         replicates_arr.append(metadata.loc[metadata['Experiment accession'].isin([replicate])])
-    
-    print(replicates_arr)
 
     data_array = []
     for i in range(len(replicates_arr)):
@@ -228,6 +226,7 @@ def get_data_with_replicates(metadata, histone_data_object):
         if (len(X.index) > 0):
             data_array.append((X,y))
     
+    print(data_array)
 
     return data_array
 
