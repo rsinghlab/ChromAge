@@ -314,6 +314,8 @@ def k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_tra
     train_x, test_x, train_y, test_y = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
     y_train_index, y_test_index = np.asarray(y_train.index), np.asarray(y_test.index)
 
+    df = None
+
     if biological_replicates:
         tuple_x, tuple_y, train_x, train_y = clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_y, test_y)
         print(train_x.shape, train_y.shape, tuple_x.shape, tuple_y.shape)
@@ -347,10 +349,12 @@ def k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_tra
         print(validation_y)
         print(validation_y.shape)
 
-        df_dict = {"Actual Age": validation_y, "Predicted Age": predictions}
-        df = pd.DataFrame(df_dict, index = validation_y_index)
-        print(df)
-        return
+        if df is None:
+            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions}
+            df = pd.DataFrame(df_dict, index = validation_y_index)
+        else:
+            df.append({"Actual Age": validation_y, "Predicted Age": predictions}, index = validation_y_index)
+    print(df)
 
 def create_google_mini_net():
     inputShape = (height, width, depth)
