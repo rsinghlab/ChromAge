@@ -459,11 +459,11 @@ X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-metadata = filter_metadata(metadata, biological_replicates = False)
+# metadata = filter_metadata(metadata, biological_replicates = False)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
-X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
-print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+# X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+# X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
+# print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 # k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=False)
 
 model = create_nn()
