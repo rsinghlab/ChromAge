@@ -371,7 +371,7 @@ histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata, biological_replicates = True)
 
-experiment_DataFrame = run_grid_search(param_grid)
+experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
 # history_cache = model.fit(X,y, epochs=100)
 
