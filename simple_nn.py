@@ -272,16 +272,16 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         model = create_nn()
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
-        # print("test loss, test acc:", results)
-        predictions = model.predict(validation_x)
+        # print("test loss, test acc:", results)     
+        prediction_distribution = model.predict(validation_x)
         # predictions = np.squeeze(model.predict(validation_x))
-        type_arr = np.full(predictions.shape, model_type)
+        type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predictions[:,0], "Predicted Std": predictions[:,1], "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Std": prediction_distribution.sttdev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predictions[:,0], "Predicted Std": predictions[:,1], "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Std": prediction_distribution.sttdev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
     print(df)
@@ -340,7 +340,6 @@ def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 
     outputs = tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
                            scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
-    print(outputs)
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
