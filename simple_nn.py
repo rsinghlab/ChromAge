@@ -289,9 +289,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
 
-    if biological_replicates:
-        metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
-    else:
+    if not(biological_replicates):
         metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     return metadata
