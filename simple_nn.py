@@ -273,7 +273,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
-        prediction_distribution = model.predict(validation_x)
+        prediction_distribution = model(validation_x)
         # predictions = np.squeeze(model.predict(validation_x))
         type_arr = np.full(validation_y.shape, model_type)
 
@@ -337,10 +337,10 @@ def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
     distribution_params = Dense(2, activation='relu')(x)
-    # outputs = tfp.layers.DistributionLambda(
-    #   lambda t: tfp.distributions.Normal(loc=t[..., :1],
-    #                        scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
-    outputs = tfp.layers.IndependentNormal(1)(distribution_params)
+    outputs = tfp.layers.DistributionLambda(
+      lambda t: tfp.distributions.Normal(loc=t[..., :1],
+                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
+    # outputs = tfp.layers.IndependentNormal(1)(distribution_params)
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
