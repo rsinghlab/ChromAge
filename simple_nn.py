@@ -259,7 +259,7 @@ def k_cross_validate_model(metadata, X_train, y_train, batch_size, epochs, model
     y_train_index = np.asarray(y_train.index)
 
     df = None
-    
+
     for i in range(k):
         validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
         validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
@@ -371,7 +371,7 @@ metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=False)
+k_cross_validate_model(metadata, X_train, y_train, 20, 1, "simple_nn", k=4)
 
 model = create_nn()
 
