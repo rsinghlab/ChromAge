@@ -251,16 +251,20 @@ def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
 
-    experiment_training, experiment_testing = train_test_split(metadata.loc[samples, :].groupby(['Experiment accession']).count().index, test_size = split)
+    metadata_temp = metadata[metadata.loc[samples, :]]
 
-    training_list = [i in experiment_training for i in np.array(metadata.loc[samples, :]['Experiment accession'])]
-    training_metadata = metadata.loc[samples, :].loc[training_list, :]
+    print(metadata_temp)
+
+    experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split)
+
+    training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
+    training_metadata = metadata_temp.loc[training_list, :]
     training_samples = np.intersect1d(training_metadata.index, X.index)
     X_train = X.loc[training_samples]
     y_train = training_metadata.loc[X_train.index].age
     
-    testing_list = [i in experiment_testing for i in np.array(metadata.loc[samples, :]['Experiment accession'])]
-    testing_metadata = metadata.loc[samples, :].loc[testing_list, :]
+    testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
+    testing_metadata = metadata_temp.loc[testing_list, :]
     testing_samples = np.intersect1d(testing_metadata.index, X.index)
     X_test = X.loc[testing_samples]
     y_test = testing_metadata.loc[X_test.index].age
