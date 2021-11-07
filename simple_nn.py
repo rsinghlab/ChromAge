@@ -267,23 +267,20 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
 
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
-        print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
+        # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
         model = create_nn()
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
-        # print("test loss, test acc:", results)
+        print("test loss, test acc:", results)
         predictions = np.squeeze(model.predict(validation_x))
-        # print(predictions)
-        # print(predictions.shape)
-        # print(validation_y)
-        # print(validation_y.shape)
+        type_arr = np.full(predictions.shape, model_type)
 
         if df is None:
-            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions}
+            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions, "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions}
+            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions, "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
     print(df)
