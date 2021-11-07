@@ -278,10 +278,10 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean(), "Predicted Std": prediction_distribution.sttdev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Std": prediction_distribution.sttdev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean(), "Predicted Std": prediction_distribution.sttdev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Std": prediction_distribution.sttdev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
     print(df)
@@ -337,9 +337,10 @@ def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 
               activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
     distribution_params = Dense(2, activation='relu')(x)
-    outputs = tfp.layers.DistributionLambda(
-      lambda t: tfp.distributions.Normal(loc=t[..., :1],
-                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
+    # outputs = tfp.layers.DistributionLambda(
+    #   lambda t: tfp.distributions.Normal(loc=t[..., :1],
+    #                        scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
+    outputs = tfp.layers.IndependentNormal(1)(distribution_params)
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
