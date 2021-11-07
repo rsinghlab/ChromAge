@@ -225,30 +225,13 @@ def get_data_with_replicates(metadata, histone_data_object):
         y = metadata.loc[X.index].age
         if (len(X.index) > 0):
             data_array.append((X,y))
-    
-    print(data_array)
 
     return data_array
 
-def get_data_without_replicates(metadata, histone_data_object):
-    #keep or remove biological replicates
-    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
-
-    # take all data without replicates and only add if biological_replicates is True
-    metadata_temp = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
-    
-    #ensures both X and y have same samples
-    X = histone_data_object.df
-    samples = np.intersect1d(metadata_temp.index, X.index)
-    X = X.loc[samples]
-    y = metadata_temp.loc[X.index].age
-    
-    return X,y
-
 def split_data(metadata, histone_data_object, biological_replicates = False, split = 0.2):
-    X,y = get_data_without_replicates(metadata, histone_data_object)
+    # X,y = get_data_without_replicates(metadata, histone_data_object)
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
 
     if biological_replicates == True:
         #add the replicates here
@@ -265,9 +248,15 @@ def split_data(metadata, histone_data_object, biological_replicates = False, spl
             X_test = np.append(X_test, x_replicate, axis=0)
             y_test = np.append(y_test, y_replicate, axis=0)
     
+    X = histone_data_object.df
+    samples = np.intersect1d(metadata.index, X.index)
+    print(metadata.loc[samples, :])
+    X = X.loc[samples]
+    y = metadata.loc[X.index].age
+    
     return X_train, X_test, y_train, y_test
 
-def filter_metadata(metadata, cancer = False):
+def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     #keep or remove cancer samples
     cancer_indexes = []
@@ -275,10 +264,17 @@ def filter_metadata(metadata, cancer = False):
         description = metadata.loc[i].Description
         if 'cancerous' in description or 'oma' in description:
             cancer_indexes.append(i)  
-    if cancer == True: 
+    if cancer: 
         metadata = metadata.loc[cancer_indexes]
     else:
         metadata = metadata.drop(cancer_indexes)
+    
+    biological_replicate_experiments = metadata.groupby(['Experiment accession']).count()[metadata.groupby(['Experiment accession']).count()['Biological replicate(s)']>2].index
+
+    if biological_replicates:
+        metadata = metadata[metadata['Experiment accession'].isin(biological_replicate_experiments)]
+    else:
+        metadata = metadata[~metadata['Experiment accession'].isin(biological_replicate_experiments)]
     
     return metadata
 
@@ -293,6 +289,8 @@ def clean_replicate_array(metadata, histone_data_object, train_x, test_x, train_
 
     mask1 = np.isin(tuple_y, test_y, invert=True)
     tuple_y = tuple_y[mask1]
+
+    # we want to remove all biological replicates from the train data set, so that we can evenly split them between training and testing
 
     mask2 = np.isin(train_x, tuple_x, invert=True)
     train_x = train_x[mask2]
