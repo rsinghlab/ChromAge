@@ -253,6 +253,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     return metadata
 
 def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epochs, model_type, k = 4):
+    print(y_test.index)
     metadata = metadata.drop[y_test.index]
 
     train_x, train_y= np.asarray(X_train), np.asarray(y_train)
