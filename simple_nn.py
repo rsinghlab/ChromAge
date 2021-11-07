@@ -252,13 +252,11 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epochs, model_type, k = 4):
+def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
     metadata = metadata.drop(y_test.index)
 
     train_x, train_y= np.asarray(X_train), np.asarray(y_train)
     y_train_index = np.asarray(y_train.index)
-
-    df = None
 
     for i in range(k):
         validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
@@ -269,7 +267,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
-        model = create_nn()
+        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3], model_params[4])
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
@@ -284,42 +282,13 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
             df_dict = {"Actual Age": validation_y, "Predicted Age": age_predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
-    print(df)
-    print(df.shape)
-
-def create_google_mini_net():
-    inputShape = (height, width, depth)
-    chanDim = -1
-    # define the model input and first CONV module
-    inputs = Input(shape=inputShape)
-    x = conv_module(inputs, 96, 3, 3, (1, 1), chanDim)
-    # two Inception modules followed by a downsample module
-    x = inception_module(x, 32, 32, chanDim)
-    x = inception_module(x, 32, 48, chanDim)
-    x = downsample_module(x, 80, chanDim)
-    # four Inception modules followed by a downsample module
-    x = inception_module(x, 112, 48, chanDim)
-    x = inception_module(x, 96, 64, chanDim)
-    x = inception_module(x, 80, 80, chanDim)
-    x = inception_module(x, 48, 96, chanDim)
-    x = downsample_module(x, 96, chanDim)
-    # two Inception modules followed by global POOL and dropout
-    x = inception_module(x, 176, 160, chanDim)
-    x = inception_module(x, 176, 160, chanDim)
-    x = AveragePooling2D((7, 7))(x)
-    x = Dropout(0.5)(x)
-    # softmax classifier
-    x = Flatten()(x)
-    x = Dense(classes)(x)
-    x = Activation("softmax")(x)
-    # create the model
-    model = Model(inputs, x, name="minigooglenet")
+    return df
 
 def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
 #create neural network with adjustable parameters
-def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 0.001, coeff = 0.01, dropout = 0.1):
+def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 0.001, dropout = 0.1, coeff = 0.01):
     
     inputs = Input(shape = (30321,))
     x = BatchNormalization()(inputs)
@@ -362,16 +331,47 @@ class MyModel(Model):
         x = self.d1(x)
         return self.d2(x)
 
+def run_grid_search(metadata, histone_data_object, param_grid):
+    X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+    df = None
+    imputer = KNNImputer()
+    scaler = StandardScaler()
+    X_train, y_train = imputer.fit_transform(X= X_train, y = y_train)
+    X_train, y_train = scaler.fit_transform(X= X_train, y = y_train)
+
+    for epoch in param_grid['epochs']:
+        for batch in param_grid['batch_size']:
+            for hidden_layers in param_grid['hidden_layers']:
+                for hidden_layer_sizes in param_grid['hidden_layer_sizes']:
+                    for lr in param_grid['lr']:
+                        for dropout in param_grid['dropout']:
+                            for coeff in param_grid['coeff']:
+                                model_params = [hidden_layers, hidden_layer_sizes, lr, dropout, coeff]
+                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, 20, epoch, "simple_nn " + " ".join(model_params), model_params, df, k=4)
+                                model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3], model_params[4])
+                                history = model.fit(X_train,y_train, epochs = epoch)
+                                # predictions = model.predict(X_test)
+                                print(history.history)
+                                print(df)
+                                print(df.shape)
+    return df
+
+param_grid = {
+    'epochs':[100,500],
+    'batch_size': [50,100],
+    'hidden_layers':[1,3,5],
+    'hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
+    'lr':[0.00001,0.00005, 0.001, 0.01],
+    'dropout':[0.0,0.1,0.3,0.5],
+    'coeff':[0.005, 0.05, 0.01],
+}
+
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
 
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-metadata = filter_metadata(metadata, biological_replicates = False)
+metadata = filter_metadata(metadata, biological_replicates = True)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
-
-k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size = 20, epochs = 1, model_type = "simple_nn", k=4)
-
-model = create_nn()
+experiment_DataFrame = run_grid_search(param_grid)
 
 # history_cache = model.fit(X,y, epochs=100)
 
@@ -398,14 +398,6 @@ model = create_nn()
 # # if you're not using a GPU, you can set n_jobs to something other than 1
 # grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
 # grid.fit(X, y)
-
-# # accession code, real age and the actual age, predicted mean, predicted stddev for each model, model type 
-
-# prediction_distribution = model(x_test)
-
-# prediction_distribution.mean().numpy().flatten()
-
-# prediction_distribution.sttdev().numpy().flatten()
 
 # # summarize results
 # print("Best: %f using %s" % (grid.best_score_, grid.best_params_))
