@@ -334,10 +334,10 @@ class MyModel(Model):
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
     df = None
-    imputer = KNNImputer()
-    scaler = StandardScaler()
-    X_train, y_train = imputer.fit_transform(X= X_train, y = y_train)
-    X_train, y_train = scaler.fit_transform(X= X_train, y = y_train)
+    # imputer = KNNImputer()
+    # scaler = StandardScaler()
+    # X_train, y_train = imputer.fit_transform(X= X_train, y = y_train)
+    # X_train, y_train = scaler.fit_transform(X= X_train, y = y_train)
 
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
