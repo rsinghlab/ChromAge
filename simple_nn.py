@@ -272,7 +272,8 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         model = create_nn()
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
-        print("test loss, test acc:", results)
+        # print("test loss, test acc:", results)
+        print(model.predict(validation_x))
         predictions = np.squeeze(model.predict(validation_x))
         type_arr = np.full(predictions.shape, model_type)
 
@@ -280,7 +281,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
             df_dict = {"Actual Age": validation_y, "Predicted Age": predictions, "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions, "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Age": predictions, "Model Type" : type_ar}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
     print(df)
