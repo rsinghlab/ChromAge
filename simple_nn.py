@@ -251,9 +251,9 @@ def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
 
-    metadata_temp = metadata[metadata.loc[samples, :]]
+    metadata_temp = metadata.loc[samples, :]
 
-    print(metadata_temp)
+    print(metadata_temp.groupby(['Experiment accession']).count().index)
 
     experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split)
 
