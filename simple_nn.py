@@ -288,6 +288,8 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
             # df.append({"Actual Age": validation_y, "Predicted Age": predictions}, index = validation_y_index)
             print("HIT")
             df.append(df2)
+            print(df)
+            print(df.shape)
     print(df)
     print(df.shape)
 
