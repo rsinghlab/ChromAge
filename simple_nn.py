@@ -252,7 +252,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, X_train, y_train, batch_size, epochs, model_type, k = 4):
+def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epochs, model_type, k = 4):
     metadata = metadata.drop[y_test.index]
 
     train_x, train_y= np.asarray(X_train), np.asarray(y_train)
@@ -371,7 +371,7 @@ metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-k_cross_validate_model(metadata, X_train, y_train, 20, 1, "simple_nn", k=4)
+k_cross_validate_model(metadata, X_train, y_train, y_test, 20, 1, "simple_nn", k=4)
 
 model = create_nn()
 
