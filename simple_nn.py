@@ -228,32 +228,43 @@ def get_data_with_replicates(metadata, histone_data_object):
 
     return data_array
 
-def split_data(metadata, histone_data_object, biological_replicates = False, split = 0.2):
+def split_data(metadata, histone_data_object, split = 0.2):
     # X,y = get_data_without_replicates(metadata, histone_data_object)
 
     # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = split, random_state = 42)  
 
-    if biological_replicates == True:
-        #add the replicates here
-        data_array = get_data_with_replicates(metadata, histone_data_object)
-        random.shuffle(data_array)
-        train_data = data_array[0 : int((1-split) * len(data_array))]
-        test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
+    # if biological_replicates == True:
+    #     #add the replicates here
+    #     data_array = get_data_with_replicates(metadata, histone_data_object)
+    #     random.shuffle(data_array)
+    #     train_data = data_array[0 : int((1-split) * len(data_array))]
+    #     test_data = data_array[int((1-split) * len(data_array)) : len(data_array)]
 
-        for x_replicate, y_replicate in train_data:
-            X_train = np.append(X_train, x_replicate, axis=0)
-            y_train = np.append(y_train, y_replicate, axis=0)
+    #     for x_replicate, y_replicate in train_data:
+    #         X_train = np.append(X_train, x_replicate, axis=0)
+    #         y_train = np.append(y_train, y_replicate, axis=0)
 
-        for x_replicate, y_replicate in test_data:
-            X_test = np.append(X_test, x_replicate, axis=0)
-            y_test = np.append(y_test, y_replicate, axis=0)
+    #     for x_replicate, y_replicate in test_data:
+    #         X_test = np.append(X_test, x_replicate, axis=0)
+    #         y_test = np.append(y_test, y_replicate, axis=0)
     
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
-    print(metadata.loc[samples, :])
-    X = X.loc[samples]
-    y = metadata.loc[X.index].age
+
+    experiment_training, experiment_testing = train_test_split(metadata.loc[samples, :].groupby(['Experiment accession']).count().index, test_size = split)
+
+    training_list = [i in experiment_training for i in np.array(metadata.loc[samples, :]['Experiment accession'])]
+    training_metadata = metadata.loc[samples, :].loc[training_list, :]
+    training_samples = np.intersect1d(training_metadata.index, X.index)
+    X_train = X.loc[training_samples]
+    y_train = training_metadata.loc[X_train.index].age
     
+    testing_list = [i in experiment_testing for i in np.array(metadata.loc[samples, :]['Experiment accession'])]
+    testing_metadata = metadata.loc[samples, :].loc[testing_list, :]
+    testing_samples = np.intersect1d(testing_metadata.index, X.index)
+    X_test = X.loc[testing_samples]
+    y_test = testing_metadata.loc[X_test.index].age
+
     return X_train, X_test, y_train, y_test
 
 def filter_metadata(metadata, cancer = False, biological_replicates = False):
@@ -438,16 +449,17 @@ class MyModel(Model):
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
 
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-metadata = filter_metadata(metadata)
+metadata = filter_metadata(metadata, biological_replicates = True)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, True)
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, False)
+metadata = filter_metadata(metadata, biological_replicates = False)
+
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 X_train, X_test, y_train, y_test = np.asarray(X_train), np.asarray(X_test), np.asarray(y_train), np.asarray(y_test)
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-
 # k_cross_validate_model(metadata, histone_data_object, X_train, X_test, y_train, y_test, 20, 1, k=4, biological_replicates=False)
 
 model = create_nn()
