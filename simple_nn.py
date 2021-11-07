@@ -258,14 +258,15 @@ def split_data(metadata, histone_data_object, split = 0.2):
 
     training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
     training_metadata = metadata_temp.loc[training_list, :]
-    training_samples = np.intersect1d(training_metadata.index, X.index)
-    X_train = X.loc[training_samples]
+    print(training_metadata)
+
+    X_train = X.loc[training_metadata.index]
     y_train = training_metadata.loc[X_train.index].age
     
     testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
     testing_metadata = metadata_temp.loc[testing_list, :]
-    testing_samples = np.intersect1d(testing_metadata.index, X.index)
-    X_test = X.loc[testing_samples]
+
+    X_test = X.loc[testing_metadata.index]
     y_test = testing_metadata.loc[X_test.index].age
 
     return X_train, X_test, y_train, y_test
