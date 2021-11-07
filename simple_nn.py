@@ -347,7 +347,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                         for dropout in param_grid['dropout']:
                             for coeff in param_grid['coeff']:
                                 model_params = [hidden_layers, hidden_layer_sizes, lr, dropout, coeff]
-                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, 20, epoch, "simple_nn " + " ".join(model_params), model_params, df, k=4)
+                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + " ".join(model_params), model_params, df)
                                 model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3], model_params[4])
                                 history = model.fit(X_train,y_train, epochs = epoch)
                                 # predictions = model.predict(X_test)
