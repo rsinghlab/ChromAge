@@ -371,7 +371,7 @@ metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-k_cross_validate_model(metadata, X_train, y_train, y_test, 20, 1, "simple_nn", k=4)
+k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size = 20, epochs = 1, model_type = "simple_nn", k=4)
 
 model = create_nn()
 
