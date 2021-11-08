@@ -272,14 +272,13 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
         prediction_distribution = model(validation_x)
-        age_predictions = np.squeeze(model.predict(validation_x))
         type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
-            df_dict = {"Actual Age": validation_y, "Predicted Age": age_predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Age": age_predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
     return df
