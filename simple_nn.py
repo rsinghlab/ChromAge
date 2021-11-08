@@ -267,7 +267,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
-        model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_LSTM()
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
@@ -386,7 +386,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                                 model_params = [hidden_layers, lr, dropout, coeff]
                                 str_model_params = [str(param) for param in model_params]
                                 df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
-                                model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
+                                model = create_LSTM()
                                 history = model.fit(X_train,y_train, epochs = epoch)
                                 # predictions = model.predict(X_test)
                                 print(history.history)
@@ -395,7 +395,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
     return df
 
 param_grid = {
-    'epochs':[200],
+    'epochs':[100],
     'batch_size': [50,100],
     'hidden_layers':[1,3,5],
     'lr':[0.00005, 0.001, 0.01],
