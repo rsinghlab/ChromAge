@@ -379,7 +379,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
-experiment_DataFrame.to_csv('simple_nn_results.csv')
+experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
 # history_cache = model.fit(X,y, epochs=100)
 
