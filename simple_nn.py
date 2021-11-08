@@ -267,7 +267,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
-        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3], model_params[4])
+        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
@@ -288,8 +288,15 @@ def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
 #create neural network with adjustable parameters
-def create_nn(hidden_layers = 5, hidden_layer_sizes = [16,32, 64, 64, 64], lr = 0.001, dropout = 0.1, coeff = 0.01):
-    
+def create_nn(hidden_layers = 5, lr = 0.001, dropout = 0.1, coeff = 0.01):
+    hidden_layer_sizes = []
+
+    if hidden_layers == 1:
+        hidden_layer_sizes.append(64)
+    else:
+        for i in range(hidden_layers):
+            hidden_layer_sizes.append(16 * (i+1))
+
     inputs = Input(shape = (30321,))
     x = BatchNormalization()(inputs)
     x = ActivityRegularization(coeff, coeff)(inputs)
@@ -342,14 +349,13 @@ def run_grid_search(metadata, histone_data_object, param_grid):
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
             for hidden_layers in param_grid['hidden_layers']:
-                for hidden_layer_sizes in param_grid['hidden_layer_sizes']:
                     for lr in param_grid['lr']:
                         for dropout in param_grid['dropout']:
                             for coeff in param_grid['coeff']:
-                                model_params = [hidden_layers, hidden_layer_sizes, lr, dropout, coeff]
+                                model_params = [hidden_layers, lr, dropout, coeff]
                                 str_model_params = [str(param) for param in model_params]
                                 df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + " ".join(str_model_params), model_params, df)
-                                model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3], model_params[4])
+                                model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
                                 history = model.fit(X_train,y_train, epochs = epoch)
                                 # predictions = model.predict(X_test)
                                 print(history.history)
@@ -361,7 +367,6 @@ param_grid = {
     'epochs':[100,500],
     'batch_size': [50,100],
     'hidden_layers':[1,3,5],
-    'hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
     'lr':[0.00001,0.00005, 0.001, 0.01],
     'dropout':[0.0,0.1,0.3,0.5],
     'coeff':[0.005, 0.05, 0.01],
@@ -373,6 +378,8 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 metadata = filter_metadata(metadata, biological_replicates = True)
 
 experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+
+experiment_DataFrame.to_csv('simple_nn_results.csv')
 
 # history_cache = model.fit(X,y, epochs=100)
 
