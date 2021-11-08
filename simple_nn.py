@@ -331,7 +331,11 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     x = BatchNormalization()(inputs)
     x = ActivityRegularization(coeff, coeff)(inputs)
     
+    x = tf.expand_dims(tf.convert_to_tensor(x), axis = 0)
+
     x, _, _ = LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True)(x)
+
+    x = tf.squeeze(x, axis=0)
 
     for i in range(1, hidden_layers):
         x = Dense(hidden_layer_sizes[i],activation = 'selu',
