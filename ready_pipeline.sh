@@ -21,6 +21,7 @@ conda activate encode-chip-seq-pipeline
 #if [ "$y" == "Y" ]; then
 export PATH=$PATH:/gpfs/data/rsingh47/masif/sratoolkit.2.11.1-centos_linux64/bin
 source /gpfs/data/rsingh47/masif/ChromAge/ChromAge_venv/bin/activate
+module load python/3.7.4
 python3 /gpfs/data/rsingh47/masif/ChromAge/pre-process.py
 deactivate
 #fi
@@ -46,7 +47,7 @@ mv $e /gpfs/data/rsingh47/masif/caper_output/bigWigs
 done
 done
 
-rm -f /gpfs/data/rsingh47/masif/ChromAge/cromwell.out
-rm -r /gpfs/data/rsingh47/masif/ChromAge/chip
-rm -r /gpfs/data/rsingh47/masif/ChromAge/cromwell-workflow-logs/
-rm -r /gpfs/data/rsingh47/masif/caper_output/chip
+#rm -f /gpfs/data/rsingh47/masif/ChromAge/cromwell.out
+#rm -r /gpfs/data/rsingh47/masif/ChromAge/chip
+#rm -r /gpfs/data/rsingh47/masif/ChromAge/cromwell-workflow-logs/
+#rm -r /gpfs/data/rsingh47/masif/caper_output/chip
