@@ -267,7 +267,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
-        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
@@ -306,16 +306,44 @@ def create_nn(hidden_layers = 5, lr = 0.001, dropout = 0.1, coeff = 0.01):
                   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
         x = BatchNormalization()(x)
         x = Dropout(dropout)(x)
-        
-    x = Dense(32,activation = 'selu',
-              kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-              activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
 
     distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
                            scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
-    # outputs = tfp.layers.IndependentNormal(1)(distribution_params)
+    model = Model(inputs, outputs)
+    
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
+    model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
+
+    return model
+
+def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
+    hidden_layer_sizes = []
+
+    if hidden_layers == 1:
+        hidden_layer_sizes.append(64)
+    else:
+        for i in range(hidden_layers):
+            hidden_layer_sizes.append(16 * (i+1))
+
+    inputs = Input(shape = (30321,))
+    x = BatchNormalization()(inputs)
+    x = ActivityRegularization(coeff, coeff)(inputs)
+    
+    x, _, _ = Bidirectional(LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True))
+
+    for i in range(1, hidden_layers):
+        x = Dense(hidden_layer_sizes[i],activation = 'selu',
+                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
+        x = BatchNormalization()(x)
+        x = Dropout(dropout)(x)
+
+    distribution_params = Dense(2, activation='relu')(x)
+    outputs = tfp.layers.DistributionLambda(
+      lambda t: tfp.distributions.Normal(loc=t[..., :1],
+                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
@@ -353,8 +381,8 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                             for coeff in param_grid['coeff']:
                                 model_params = [hidden_layers, lr, dropout, coeff]
                                 str_model_params = [str(param) for param in model_params]
-                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + " ".join(str_model_params), model_params, df)
-                                model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
+                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                                model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
                                 history = model.fit(X_train,y_train, epochs = epoch)
                                 # predictions = model.predict(X_test)
                                 print(history.history)
@@ -363,10 +391,10 @@ def run_grid_search(metadata, histone_data_object, param_grid):
     return df
 
 param_grid = {
-    'epochs':[100,500],
+    'epochs':[200],
     'batch_size': [50,100],
     'hidden_layers':[1,3,5],
-    'lr':[0.00001,0.00005, 0.001, 0.01],
+    'lr':[0.00005, 0.001, 0.01],
     'dropout':[0.0,0.1,0.3,0.5],
     'coeff':[0.005, 0.05, 0.01],
 }
