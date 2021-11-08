@@ -381,18 +381,18 @@ def run_grid_search(metadata, histone_data_object, param_grid):
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
             for hidden_layers in param_grid['hidden_layers']:
-                    for lr in param_grid['lr']:
-                        for dropout in param_grid['dropout']:
-                            for coeff in param_grid['coeff']:
-                                model_params = [hidden_layers, lr, dropout, coeff]
-                                str_model_params = [str(param) for param in model_params]
-                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
-                                model = create_LSTM(lr = model_params[1])
-                                history = model.fit(X_train,y_train, epochs = epoch)
-                                # predictions = model.predict(X_test)
-                                print(history.history)
-                                print(df)
-                                print(df.shape)
+                for lr in param_grid['lr']:
+                    for dropout in param_grid['dropout']:
+                        for coeff in param_grid['coeff']:
+                            model_params = [hidden_layers, lr, dropout, coeff]
+                            str_model_params = [str(param) for param in model_params]
+                            df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                            model = create_LSTM(lr = model_params[1])
+                            history = model.fit(X_train,y_train, epochs = epoch)
+                            # predictions = model.predict(X_test)
+                            print(history.history)
+                            print(df)
+                            print(df.shape)
     return df
 
 param_grid = {
