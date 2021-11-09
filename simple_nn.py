@@ -252,20 +252,39 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
-    metadata = metadata.drop(y_test.index)
-
+def k_cross_validate_model(metadata, histone_data_object, X_train, y_train, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
     train_x, train_y= np.asarray(X_train), np.asarray(y_train)
     y_train_index = np.asarray(y_train.index)
 
-    for i in range(k):
-        validation_x = train_x[int(i*(1/k)*train_x.shape[0]):int((i+1)*(1/k)*train_x.shape[0])]
-        validation_y = train_y[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
-        training_x = np.concatenate((train_x[0:int(i*(1/k)*train_x.shape[0])],train_x[int((i+1)*(1/k)*train_x.shape[0]):train_x.shape[0]]), axis=0)
-        training_y = np.concatenate((train_y[0:int(i*(1/k)*train_y.shape[0])],train_y[int((i+1)*(1/k)*train_y.shape[0]):train_y.shape[0]]), axis=0)
+    metadata = metadata.drop(y_test.index)
 
-        validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
-        # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
+    X = histone_data_object.df
+    samples = np.intersect1d(metadata.index, X.index)
+
+    metadata_temp = metadata.loc[samples, :]
+
+    kf = KFold(n_splits=k, shuffle=True)
+
+    kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
+
+    for train_index, val_index in kfold_data:
+        
+        experiment_training = metadata_temp.groupby(['Experiment accession']).count().index[train_index]
+        experiment_val = metadata_temp.groupby(['Experiment accession']).count().index[val_index]
+        
+        training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
+        train_metadata = metadata_temp.loc[training_list, :]
+        
+        val_list = [i in experiment_val for i in np.array(metadata_temp['Experiment accession'])]
+        val_metadata = metadata_temp.loc[val_list, :]
+
+        training_x = X.loc[train_metadata.index]
+        training_y = train_metadata.loc[training_x.index].age
+
+        validation_x = X.loc[val_metadata.index]
+        validation_y = val_metadata.loc[validation_x.index].age
+
+        validation_y_index = y_train_index[val_index]
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
@@ -380,18 +399,18 @@ def run_grid_search(metadata, histone_data_object, param_grid):
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
             for hidden_layers in param_grid['hidden_layers']:
-                    for lr in param_grid['lr']:
-                        for dropout in param_grid['dropout']:
-                            for coeff in param_grid['coeff']:
-                                model_params = [hidden_layers, lr, dropout, coeff]
-                                str_model_params = [str(param) for param in model_params]
-                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn_new " + str(batch) +" "+" ".join(str_model_params), model_params, df)
-                                model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-                                history = model.fit(X_train,y_train, epochs = epoch)
-                                # predictions = model.predict(X_test)
-                                print(history.history)
-                                print(df)
-                                print(df.shape)
+                for lr in param_grid['lr']:
+                    for dropout in param_grid['dropout']:
+                        for coeff in param_grid['coeff']:
+                            model_params = [hidden_layers, lr, dropout, coeff]
+                            str_model_params = [str(param) for param in model_params]
+                            df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn_new " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                            model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
+                            history = model.fit(X_train,y_train, epochs = epoch)
+                            # predictions = model.predict(X_test)
+                            print(history.history)
+                            print(df)
+                            print(df.shape)
     return df
 
 param_grid = {

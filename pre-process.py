@@ -78,6 +78,8 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         paired_end = df["SE or PE"][i]
         if (paired_end == "SE"):
             paired_end = False
+        else:
+            paired_end = True
             
         h3k4me3_json = dict()
         h3k27ac_json = dict()
