@@ -267,7 +267,7 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
-        model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
@@ -290,11 +290,9 @@ def loss_function(targets, estimated_distribution):
 def create_nn(hidden_layers = 5, lr = 0.001, dropout = 0.1, coeff = 0.01):
     hidden_layer_sizes = []
 
-    if hidden_layers == 1:
+    # hidden layer size
+    for i in range(hidden_layers):
         hidden_layer_sizes.append(64)
-    else:
-        for i in range(hidden_layers):
-            hidden_layer_sizes.append(16 * (i+1))
 
     inputs = Input(shape = (30321,))
     x = BatchNormalization()(inputs)
@@ -306,6 +304,8 @@ def create_nn(hidden_layers = 5, lr = 0.001, dropout = 0.1, coeff = 0.01):
                   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
         x = BatchNormalization()(x)
         x = Dropout(dropout)(x)
+
+    x = Dense(64, activation='selu')(x)
 
     distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.DistributionLambda(
@@ -385,8 +385,8 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                             for coeff in param_grid['coeff']:
                                 model_params = [hidden_layers, lr, dropout, coeff]
                                 str_model_params = [str(param) for param in model_params]
-                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
-                                model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
+                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn_new " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                                model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
                                 history = model.fit(X_train,y_train, epochs = epoch)
                                 # predictions = model.predict(X_test)
                                 print(history.history)
@@ -398,8 +398,8 @@ param_grid = {
     'epochs':[100],
     'batch_size': [50,100],
     'hidden_layers':[1,3,5],
-    'lr':[0.00005, 0.001, 0.01],
-    'dropout':[0.0,0.1,0.3,0.5],
+    'lr':[0.0001, 0.001, 0.01],
+    'dropout':[0.0,0.1,0.3],
     'coeff':[0.005, 0.05, 0.01],
 }
 
@@ -410,7 +410,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
-experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_lstm_results.csv')
+experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
 
 # history_cache = model.fit(X,y, epochs=100)
 
