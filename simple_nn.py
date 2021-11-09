@@ -267,19 +267,18 @@ def k_cross_validate_model(metadata, X_train, y_train, y_test, batch_size, epoch
         validation_y_index = y_train_index[int(i*(1/k)*train_y.shape[0]):int((i+1)*(1/k)*train_y.shape[0])]
         # print(training_x.shape, training_y.shape, validation_x.shape, validation_y.shape)
         
-        model = create_LSTM(lr = model_params[1])
+        model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
         results = model.evaluate(validation_x, validation_y, batch_size)
         # print("test loss, test acc:", results)     
-        predictions = np.squeeze(model.predict(validation_x))
         prediction_distribution = model(validation_x)
         type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
     return df
@@ -334,7 +333,7 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     
     x = tf.expand_dims(tf.convert_to_tensor(x), axis = 0)
 
-    x, _, _ = LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True)(x)
+    x, _, _ = Bidirectional(LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True))(x)
 
     x = tf.squeeze(x, axis=0)
 
@@ -381,18 +380,18 @@ def run_grid_search(metadata, histone_data_object, param_grid):
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
             for hidden_layers in param_grid['hidden_layers']:
-                for lr in param_grid['lr']:
-                    for dropout in param_grid['dropout']:
-                        for coeff in param_grid['coeff']:
-                            model_params = [hidden_layers, lr, dropout, coeff]
-                            str_model_params = [str(param) for param in model_params]
-                            df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
-                            model = create_LSTM(lr = model_params[1])
-                            history = model.fit(X_train,y_train, epochs = epoch)
-                            # predictions = model.predict(X_test)
-                            print(history.history)
-                            print(df)
-                            print(df.shape)
+                    for lr in param_grid['lr']:
+                        for dropout in param_grid['dropout']:
+                            for coeff in param_grid['coeff']:
+                                model_params = [hidden_layers, lr, dropout, coeff]
+                                str_model_params = [str(param) for param in model_params]
+                                df = k_cross_validate_model(metadata, X_train, y_train, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                                model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
+                                history = model.fit(X_train,y_train, epochs = epoch)
+                                # predictions = model.predict(X_test)
+                                print(history.history)
+                                print(df)
+                                print(df.shape)
     return df
 
 param_grid = {
