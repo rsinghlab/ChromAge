@@ -333,7 +333,7 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     
     x = tf.expand_dims(tf.convert_to_tensor(x), axis = 0)
 
-    x, _, _ = Bidirectional(LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True))(x)
+    x, _, _ = LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True)(x)
 
     x = tf.squeeze(x, axis=0)
 
