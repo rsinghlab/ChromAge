@@ -409,17 +409,15 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                             history = model.fit(X_train,y_train, epochs = epoch)
                             # predictions = model.predict(X_test)
                             print(history.history)
-                            print(df)
-                            print(df.shape)
     return df
 
 param_grid = {
-    'epochs':[100],
+    'epochs':[1000],
     'batch_size': [20, 50],
     'hidden_layers':[1,3,5],
     'lr':[0.0001, 0.001, 0.01],
     'dropout':[0.0,0.1,0.3],
-    'coeff':[0.005, 0.05, 0.01],
+    'coeff':[0.005, 0.01, 0.05],
 }
 
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
@@ -427,15 +425,9 @@ histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata, biological_replicates = True)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
-model_params = [3, 0.001, 0.1, 0.01]
-str_model_params = [str(param) for param in model_params]
-new_df = k_cross_validate_model(metadata, histone_data_object, y_test, 20, 1000, "simple_nn_new" + str(20) +" "+" ".join(str_model_params), model_params, df = None)
-
-# experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
-
-# experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
+experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
 
 # history_cache = model.fit(X,y, epochs=100)
 
