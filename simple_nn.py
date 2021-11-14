@@ -403,7 +403,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                         for coeff in param_grid['coeff']:
                             model_params = [hidden_layers, lr, dropout, coeff]
                             str_model_params = [str(param) for param in model_params]
-                            df = k_cross_validate_model(metadata, y_train, y_test, batch, epoch, "simple_nn_new " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                            df = k_cross_validate_model(metadata, histone_data_object, y_train, y_test, batch, epoch, "simple_nn_new " + str(batch) +" "+" ".join(str_model_params), model_params, df)
                             model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
                             history = model.fit(X_train,y_train, epochs = epoch)
                             # predictions = model.predict(X_test)
@@ -430,7 +430,7 @@ X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
 model_params = [5, 0.01, 0.1, 0.01]
 str_model_params = [str(param) for param in model_params]
-new_df = k_cross_validate_model(metadata, y_train, y_test, 20, 1000, "simple_nn_new" + str(20) +" "+" ".join(str_model_params), model_params, df = None)
+new_df = k_cross_validate_model(metadata, histone_data_object, y_train, y_test, 20, 1000, "simple_nn_new" + str(20) +" "+" ".join(str_model_params), model_params, df = None)
 
 # experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
