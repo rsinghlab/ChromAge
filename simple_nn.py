@@ -305,31 +305,32 @@ def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
 #create neural network with adjustable parameters
-def create_nn(hidden_layers = 5, lr = 0.001, dropout = 0.1, coeff = 0.01):
+def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     hidden_layer_sizes = []
 
     # hidden layer size
     for i in range(hidden_layers):
         hidden_layer_sizes.append(64)
+    
+    model = Sequential()
 
-    inputs = Input(shape = (30321,))
-    x = BatchNormalization()(inputs)
-    x = ActivityRegularization(coeff, coeff)(inputs)
+    model.add(Input(shape = (30321,)))
+    model.add(BatchNormalization())
+    # model.add(ActivityRegularization(coeff, coeff))
     
     for i in range(hidden_layers):
-        x = Dense(hidden_layer_sizes[i],activation = 'selu',
+        model.add(Dense(hidden_layer_sizes[i],activation = 'selu',
                   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
-        x = BatchNormalization()(x)
-        x = Dropout(dropout)(x)
+                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
+        model.add(BatchNormalization())
+        model.add(Dropout(dropout))
 
-    x = Dense(64, activation='selu')(x)
+    model.add(Dense(64, activation='selu'))
 
-    distribution_params = Dense(2, activation='relu')(x)
-    outputs = tfp.layers.DistributionLambda(
+    model.add(Dense(2, activation='relu'))
+    model.add(tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
-                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
-    model = Model(inputs, outputs)
+                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:]))))
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
     model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
@@ -428,7 +429,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-model_params = [5, 0.01, 0.1, 0.01]
+model_params = [3, 0.001, 0.1, 0.01]
 str_model_params = [str(param) for param in model_params]
 new_df = k_cross_validate_model(metadata, histone_data_object, y_test, 20, 1000, "simple_nn_new" + str(20) +" "+" ".join(str_model_params), model_params, df = None)
 
