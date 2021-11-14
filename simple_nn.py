@@ -277,18 +277,18 @@ def k_cross_validate_model(metadata, histone_data_object, y_train, y_test, batch
         val_list = [i in experiment_val for i in np.array(metadata_temp['Experiment accession'])]
         val_metadata = metadata_temp.loc[val_list, :]
 
-        training_x = X.loc[train_metadata.index]
-        training_y = train_metadata.loc[training_x.index].age
+        training_x = np.asarray(X.loc[train_metadata.index])
+        training_y = np.asarray(train_metadata.loc[training_x.index].age)
 
-        validation_x = X.loc[val_metadata.index]
-        validation_y = val_metadata.loc[validation_x.index].age
+        validation_x = np.asarray(X.loc[val_metadata.index])
+        validation_y = np.asarray(val_metadata.loc[validation_x.index].age)
 
         validation_y_index = y_train_index[val_index]
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(training_x, training_y, batch_size, epochs, shuffle=True)
+        model.fit(training_x, training_y, batch_size, epochs, shuffle=True, verbose=0)
         results = model.evaluate(validation_x, validation_y, batch_size)
-        # print("test loss, test acc:", results)     
+        print("Validation metrics:", results)     
         prediction_distribution = model(validation_x)
         type_arr = np.full(validation_y.shape, model_type)
 
