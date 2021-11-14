@@ -297,6 +297,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             df_dict = {"Actual Age": np.asarray(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
+        
+        print(df)
     return df
 
 def loss_function(targets, estimated_distribution):
