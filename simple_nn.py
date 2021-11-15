@@ -321,8 +321,8 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     # model.add(ActivityRegularization(coeff, coeff))
     
     for i in range(hidden_layers):
-        model.add(Dense(hidden_layer_sizes[i]),
-                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff))
+        model.add(Dense(hidden_layer_sizes[i],
+                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff)))
                 #   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
         model.add(BatchNormalization())
         model.add(Activation('selu'))
