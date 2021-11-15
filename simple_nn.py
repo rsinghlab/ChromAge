@@ -413,7 +413,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 param_grid = {
     'epochs':[1000],
-    'batch_size': [32, 64],
+    'batch_size': [16, 32],
     'hidden_layers':[1,3,5],
     'lr':[0.0001, 0.001, 0.01],
     'dropout':[0.0,0.1,0.3],
@@ -423,13 +423,20 @@ param_grid = {
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
 
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-metadata = filter_metadata(metadata, biological_replicates = True)
+metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.1, 0], None)
+# df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.1, 0], None)
 
-print(df)
+# print(df)
+
+model = create_nn(3, 0.001, 0.1,0)
+history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
+prediction_distribution = model(np.asarray(X_test))
+predictions = model.predict(np.asarray(X_test), verbose = 1)
+df_dict = {"Actual Age": np.asarray(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+df2 = pd.DataFrame(df_dict, index = y_test.index)
 
 # experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
