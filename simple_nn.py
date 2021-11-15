@@ -284,7 +284,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y_index = validation_y.index
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=0, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
+        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=1, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
         prediction_distribution = model(np.asarray(validation_x))
