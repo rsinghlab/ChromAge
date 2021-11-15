@@ -319,9 +319,9 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     # model.add(ActivityRegularization(coeff, coeff))
     
     for i in range(hidden_layers):
-        model.add(Dense(hidden_layer_sizes[i],activation = 'selu',
-                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
+        model.add(Dense(hidden_layer_sizes[i],activation = 'selu'))
+                #   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+                #   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
         model.add(BatchNormalization())
         model.add(Dropout(dropout))
 
@@ -413,7 +413,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 param_grid = {
     'epochs':[1000],
-    'batch_size': [20, 50],
+    'batch_size': [32, 64],
     'hidden_layers':[1,3,5],
     'lr':[0.0001, 0.001, 0.01],
     'dropout':[0.0,0.1,0.3],
@@ -425,9 +425,15 @@ histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata, biological_replicates = True)
 
-experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.1, 0], None)
+
+print(df)
+
+# experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+
+# experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
 
 # history_cache = model.fit(X,y, epochs=100)
 
