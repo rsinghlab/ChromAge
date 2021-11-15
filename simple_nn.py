@@ -284,7 +284,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y_index = validation_y.index
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=0)
+        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=0, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
         prediction_distribution = model(np.asarray(validation_x))
@@ -427,18 +427,18 @@ metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-# df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.1, 0], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.1, 0], None)
 
-# print(df)
+print(df)
 
-model = create_nn(3, 0.001, 0.1,0)
-history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
-prediction_distribution = model(np.asarray(X_test))
-results = model.evaluate(np.asarray(X_test), np.asarray(y_test), 32, verbose = 1)
-print("Validation metrics:", results) 
-predictions = model.predict(np.asarray(X_test), verbose = 1)
-df_dict = {"Actual Age": np.asarray(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-print(df_dict)
+# model = create_nn(3, 0.001, 0.1,0)
+# history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
+# prediction_distribution = model(np.asarray(X_test))
+# results = model.evaluate(np.asarray(X_test), np.asarray(y_test), 32, verbose = 1)
+# print("Validation metrics:", results) 
+# predictions = model.predict(np.asarray(X_test), verbose = 1)
+# df_dict = {"Actual Age": np.asarray(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+# print(df_dict)
 
 # experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
