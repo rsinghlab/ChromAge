@@ -436,7 +436,7 @@ history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
 prediction_distribution = model(np.asarray(X_test))
 predictions = model.predict(np.asarray(X_test), verbose = 1)
 df_dict = {"Actual Age": np.asarray(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-df2 = pd.DataFrame(df_dict, index = y_test.index)
+print(df_dict)
 
 # experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
