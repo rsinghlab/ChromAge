@@ -434,6 +434,8 @@ X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 model = create_nn(3, 0.001, 0.1,0)
 history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
 prediction_distribution = model(np.asarray(X_test))
+results = model.evaluate(np.asarray(X_test), np.asarray(y_test), 32)
+print("Validation metrics:", results) 
 predictions = model.predict(np.asarray(X_test), verbose = 1)
 df_dict = {"Actual Age": np.asarray(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 print(df_dict)
