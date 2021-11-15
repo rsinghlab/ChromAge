@@ -310,7 +310,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     # hidden layer size
     for i in range(hidden_layers):
-        hidden_layer_sizes.append(64)
+        hidden_layer_sizes.append(32)
     
     model = Sequential()
 
@@ -319,15 +319,15 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     # model.add(ActivityRegularization(coeff, coeff))
     
     for i in range(hidden_layers):
-        model.add(Dense(hidden_layer_sizes[i],activation = 'selu'))
-                #   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+        model.add(Dense(hidden_layer_sizes[i],activation = 'selu'),
+                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff))
                 #   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
         model.add(BatchNormalization())
         model.add(Dropout(dropout))
 
-    model.add(Dense(64, activation='selu'))
+    model.add(Dense(32, activation='selu'))
 
-    model.add(Dense(2, activation='relu'))
+    model.add(Dense(2))
     model.add(tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
                            scale=1e-3 + tf.math.softplus(0.01 * t[...,1:]))))
@@ -427,7 +427,7 @@ metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.1, 0], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.05, 0.05], None)
 
 print(df)
 
