@@ -283,7 +283,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
         
-        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_LSTM(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=0)
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
@@ -340,34 +340,31 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     hidden_layer_sizes = []
 
-    if hidden_layers == 1:
+    # hidden layer size
+    for i in range(hidden_layers):
         hidden_layer_sizes.append(64)
-    else:
-        for i in range(hidden_layers):
-            hidden_layer_sizes.append(16 * (i+1))
-
-    inputs = Input(shape = (30321,))
-    x = BatchNormalization()(inputs)
-    x = ActivityRegularization(coeff, coeff)(inputs)
     
-    x = tf.expand_dims(tf.convert_to_tensor(x), axis = 0)
+    model = Sequential()
 
-    x, _, _ = LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True)(x)
+    model.add(Input(shape = (30321,)))
+    model.add(BatchNormalization())
+    # model.add(ActivityRegularization(coeff, coeff))
+    
+    model.add(Bidirectional(LSTM(64, return_sequences=True, return_state=True)))
 
-    x = tf.squeeze(x, axis=0)
-
-    for i in range(1, hidden_layers):
-        x = Dense(hidden_layer_sizes[i],activation = 'selu',
+    for i in range(hidden_layers):
+        model.add(Dense(hidden_layer_sizes[i],activation = 'selu',
                   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
-        x = BatchNormalization()(x)
-        x = Dropout(dropout)(x)
+                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
+        model.add(BatchNormalization())
+        model.add(Dropout(dropout))
 
-    distribution_params = Dense(2, activation='relu')(x)
-    outputs = tfp.layers.DistributionLambda(
+    model.add(Dense(64, activation='selu'))
+
+    model.add(Dense(2, activation='relu'))
+    model.add(tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
-                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
-    model = Model(inputs, outputs)
+                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:]))))
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
     model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
@@ -425,9 +422,13 @@ histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata, biological_replicates = True)
 
-experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
+k_cross_validate_model(metadata, histone_data_object, y_test, 20, 500, "LSTM", [3, 0.001, 0.1, 0.01], df = None)
+
+# experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+
+# experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
 
 # history_cache = model.fit(X,y, epochs=100)
 
