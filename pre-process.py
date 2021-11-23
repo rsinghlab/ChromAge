@@ -34,7 +34,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True):
+def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True, counter = 0):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
@@ -54,6 +54,8 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
     print("Finished reading data!")
 
     for i in range(df.shape[0]):
+        if (counter > 99):
+            exit()
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
 
@@ -285,12 +287,14 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                     print ("Running the encode pipeline for" + str(h3k4me3_json))
                     print ("The command used was: " + h3k4me3_pipeline_call)
                     subprocess.call(h3k4me3_pipeline_call, shell=True)
+                    subprocess.call("sh extract_output.sh", shell=True)
             else:
                 if (len(h3k27ac_json) != 0):
                     h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
                     print ("Running the encode pipeline for" + str(h3k27ac_json))
                     print ("The command used was: " + h3k27ac_pipeline_call)
                     subprocess.call(h3k27ac_pipeline_call, shell=True)
+                    subprocess.call("sh extract_output.sh", shell=True)
 
         if not(priority):
             if (len(h3k4me1_json) != 0):
@@ -298,26 +302,31 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 print ("Running the encode pipeline for" + str(h3k4me1_json))
                 print ("The command used was: " + h3k4me1_pipeline_call)
                 subprocess.call(h3k4me1_pipeline_call, shell=True)
+                subprocess.call("sh extract_output.sh", shell=True)
 
             if (len(h3k27me3_json) != 0):
                 h3k27me3_pipeline_call = call_pipeline_base + "/h3k27me3/" + "h3k27me3_" + h3k27me3_GEO[0] + ".json"
                 print ("Running the encode pipeline for" + str(h3k27me3_json))
                 print ("The command used was: " + h3k27me3_pipeline_call)
                 subprocess.call(h3k27me3_pipeline_call, shell=True)
+                subprocess.call("sh extract_output.sh", shell=True)
 
             if (len(h3k9me3_json) != 0):
                 h3k9me3_pipeline_call = call_pipeline_base + "/h3k9me3/" + "h3k9me3_" + h3k9me3_GEO[0] + ".json"
                 print ("Running the encode pipeline for" + str(h3k9me3_json))
                 print ("The command used was: " + h3k9me3_pipeline_call)
                 subprocess.call(h3k9me3_pipeline_call, shell=True)
+                subprocess.call("sh extract_output.sh", shell=True)
 
             if (len(h3k36me3_json) != 0):
                 h3k36me3_pipeline_call = call_pipeline_base + "/h3k36me3/" + "h3k36me3_" + h3k36me3_GEO[0] + ".json"
                 print ("Running the encode pipeline for" + str(h3k36me3_json))
                 print ("The command used was: " + h3k36me3_pipeline_call)
                 subprocess.call(h3k36me3_pipeline_call, shell=True)
+                subprocess.call("sh extract_output.sh", shell=True)
         
         print("ROW " + str(i) + " finished")
+        counter += 1
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
