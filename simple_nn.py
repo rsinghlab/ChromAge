@@ -259,9 +259,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
-    print(samples)
-    print(y_test)
+    print(len(samples))
     print(len(y_test))
+    for x in y_test.index:
+        samples = samples.delete(x)
+    print(len(samples))
     metadata_temp = metadata.loc[samples, :]
 
     kf = KFold(n_splits=k, shuffle=True)
