@@ -255,14 +255,13 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     return metadata
 
 def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
-    print(metadata)
-    print(y_test)
     metadata = metadata.drop(y_test.index)
-    print(metadata)
 
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
-
+    print(samples)
+    print(y_test)
+    print(len(y_test))
     metadata_temp = metadata.loc[samples, :]
 
     kf = KFold(n_splits=k, shuffle=True)
