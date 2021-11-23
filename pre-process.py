@@ -54,7 +54,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
     print("Finished reading data!")
 
     for i in range(df.shape[0]):
-        if (counter > 99):
+        if (counter > 25):
             exit()
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
