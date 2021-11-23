@@ -262,7 +262,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
     print(len(samples))
     print(len(y_test))
     for x in y_test.index:
-        samples = samples.delete(x)
+        samples = np.delete(samples,x)
     print(len(samples))
     metadata_temp = metadata.loc[samples, :]
 
