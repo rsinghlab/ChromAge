@@ -19,3 +19,16 @@ mv $e /gpfs/data/rsingh47/masif/caper_output/bigWigs
 done
 rm -r /gpfs/data/rsingh47/masif/caper_output/chip/$d
 done
+
+cd /gpfs/data/rsingh47/masif/data/masif/ChromAge/chip
+for d in */ ; do
+echo $d
+rm -r /gpfs/data/rsingh47/masif/data/masif/ChromAge/chip/$d
+done
+
+cd /gpfs/data/rsingh47/masif/data/masif/ChromAge/cromwell-workflow-logs
+for d in */ ; do
+echo $d
+rm -f /gpfs/data/rsingh47/masif/data/masif/ChromAge/cromwell-workflow-logs/$d
+done
+
