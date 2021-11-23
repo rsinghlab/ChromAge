@@ -287,6 +287,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=1, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
+        
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
         prediction_distribution = model(np.asarray(validation_x))
@@ -424,15 +425,12 @@ param_grid = {
 }
 
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-
 metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
 metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
 df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.001, 0.05, 0.05], None)
-
-print(df)
 
 # model = create_nn(3, 0.001, 0.1,0)
 # history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
