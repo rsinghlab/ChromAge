@@ -32,9 +32,3 @@ echo $d
 rm -f /gpfs/data/rsingh47/masif/ChromAge/cromwell-workflow-logs/$d
 done
 
-cd /gpfs/data/rsingh47/masif/caper_output/qcReports
-for d in */ ; do
-echo $d
-rm -r /gpfs/data/rsingh47/masif/caper_output/qcReports/$d
-done
-
