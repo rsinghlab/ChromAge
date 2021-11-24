@@ -4,3 +4,5 @@
 .DS_Store
 *.pkl
 ChromAge_venv/
+chip/
+cromwell-workflow-logs/
