@@ -34,7 +34,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True, counter = 0):
+def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
@@ -54,8 +54,6 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
     print("Finished reading data!")
 
     for i in range(df.shape[0]):
-        if (counter > 25):
-            exit()
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
 
@@ -326,7 +324,6 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 subprocess.call("sh extract_output.sh", shell=True)
         
         print("ROW " + str(i) + " finished")
-        counter += 1
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
