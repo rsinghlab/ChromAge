@@ -279,7 +279,6 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         training_x = X.loc[train_metadata.index]
         print(training_x)
-        exit()
         training_y = train_metadata.loc[training_x.index].age
 
         validation_x = X.loc[val_metadata.index]
