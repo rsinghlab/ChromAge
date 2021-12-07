@@ -287,7 +287,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y_index = validation_y.index
         
         auto_encoder = AutoEncoder(5000)
-        auto_encoder.train(np.array(training_x), 1000)
+        auto_encoder.train(np.array(training_x), 10)
         auto_encoder_output = auto_encoder.predict(np.array(training_x))
 
         mse = tf.keras.losses.MeanSquaredError()
