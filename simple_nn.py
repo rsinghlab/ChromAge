@@ -286,8 +286,15 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
         
+        auto_encoder = AutoEncoder(16)
+        auto_encoder.train(np.array(training_x), 1000)
+        auto_encoder_output = auto_encoder.predict(np.array(training_x))
+
+        mse = tf.keras.losses.MeanSquaredError()
+        print("Average mean squared error for auto-encoder:",np.mean(mse(auto_encoder_output,np.array(training_x)).numpy()))
+
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
+        model.fit(auto_encoder_output, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
         
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
@@ -314,7 +321,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     # hidden layer size
     for i in range(hidden_layers):
-        hidden_layer_sizes.append(64 * (1 / (i+1)))
+        hidden_layer_sizes.append(32)
     
     model = Sequential()
 
@@ -379,19 +386,44 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     return model
 
-class MyModel(Model):
-    def __init__(self):
-        super(MyModel, self).__init__()
-        self.conv1 = Conv2D(32, 3, activation='relu')
-        self.flatten = Flatten()
-        self.d1 = Dense(128, activation='relu')
-        self.d2 = Dense(1)
+class AutoEncoder(tf.keras.Model):
+    def __init__(self,latent_size):
+        super(AutoEncoder, self).__init__()
+        self.batch_size = 32
+        self.loss = tf.keras.losses.MeanSquaredError()
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+        self.encoder = Sequential([
+            tf.keras.layers.Dense(64, activation='selu'),
+            tf.keras.layers.Dense(32, activation='selu'),
+            tf.keras.layers.Dropout(0.1),
+            tf.keras.layers.Dense(latent_size, activation='selu')
+        ])
+        self.decoder = Sequential([
+            tf.keras.layers.Dense(16, activation='selu'),
+            tf.keras.layers.Dense(32, activation='selu'),
+            tf.keras.layers.Dropout(0.1),
+            tf.keras.layers.Dense(64, activation=None)
+        ])
+    
+    def call(self, inputs):
+        encoder_output = self.encoder(inputs)
+        return self.decoder(encoder_output)
+    
+    def train(self, train_inputs, num_epochs):
+        for i in range(num_epochs):
+            loss_list = []
+            indices = tf.random.shuffle([x for x in range(len(train_inputs))])
+            train_inputs = tf.gather(train_inputs,indices)
+            for i in range(0,len(train_inputs),self.batch_size):
+                batched_inputs = train_inputs[i:i+self.batch_size]
+                with tf.GradientTape() as tape:
+                    predictions = self.call(batched_inputs)
+                    loss = self.loss(predictions,batched_inputs)
+                    loss_list.append(loss.numpy())
+                gradients = tape.gradient(loss, self.trainable_variables)
+                self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
+            print(sum(loss_list)/len(loss_list))
 
-    def call(self, x):
-        x = self.conv1(x)
-        x = self.flatten(x)
-        x = self.d1(x)
-        return self.d2(x)
 
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
