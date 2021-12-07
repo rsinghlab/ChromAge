@@ -262,7 +262,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
     metadata_temp = metadata.loc[samples, :]
 
-    kf = KFold(n_splits=k)
+    kf = KFold(n_splits=k, shuffle=True)
 
     kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
 
