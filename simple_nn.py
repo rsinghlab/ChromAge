@@ -262,7 +262,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
     metadata_temp = metadata.loc[samples, :]
 
-    kf = KFold(n_splits=k, shuffle=True)
+    kf = KFold(n_splits=k)
 
     kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
 
@@ -287,7 +287,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y_index = validation_y.index
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, shuffle=True, verbose=1, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
+        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, verbose=1, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
         
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
@@ -431,7 +431,7 @@ metadata = filter_metadata(metadata, biological_replicates = False)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 100, "", [3, 0.001, 0.05, 0.05], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 200, "", [3, 0.001, 0.05, 0.05], None)
 
 # model = create_nn(3, 0.001, 0.1,0)
 # history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
