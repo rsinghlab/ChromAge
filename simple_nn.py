@@ -314,7 +314,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     # hidden layer size
     for i in range(hidden_layers):
-        hidden_layer_sizes.append(32)
+        hidden_layer_sizes.append(64)
     
     model = Sequential()
 
@@ -326,11 +326,11 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
         model.add(Dense(hidden_layer_sizes[i],
                   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff)))
                 #   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
-        model.add(Activation('selu'))
+        model.add(Activation('relu'))
         model.add(BatchNormalization())
         model.add(Dropout(dropout))
 
-    model.add(Dense(32, activation='selu'))
+    model.add(Dense(64, activation='relu'))
 
     model.add(Dense(2))
     model.add(tfp.layers.DistributionLambda(
