@@ -288,13 +288,13 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         
         auto_encoder = AutoEncoder(5000)
         auto_encoder.train(np.array(training_x), 10)
-        auto_encoder_output = auto_encoder.predict(np.array(training_x))
+        auto_encoder_output = auto_encoder.predict(np.array(validation_x))
 
         mse = tf.keras.losses.MeanSquaredError()
-        print("Average mean squared error for auto-encoder:",np.mean(mse(auto_encoder_output,np.array(training_x)).numpy()))
+        print("Average validation mean squared error for auto-encoder:",np.mean(mse(auto_encoder_output,np.array(validation_x)).numpy()))
 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(auto_encoder_output, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
+        model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=1, validation_data=(auto_encoder_output, np.array(validation_y)))
         
         results = model.evaluate(np.array(validation_x), np.array(validation_y), batch_size)
         print("Validation metrics:", results)     
