@@ -432,7 +432,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0, 0.05], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.05], None)
 
 # model = create_nn(3, 0.001, 0.1,0)
 # history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
