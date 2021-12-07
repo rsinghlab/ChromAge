@@ -286,7 +286,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
         
-        auto_encoder = AutoEncoder(16)
+        auto_encoder = AutoEncoder(5000)
         auto_encoder.train(np.array(training_x), 1000)
         auto_encoder_output = auto_encoder.predict(np.array(training_x))
 
@@ -296,16 +296,16 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(auto_encoder_output, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
         
-        results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
+        results = model.evaluate(np.array(validation_x), np.array(validation_y), batch_size)
         print("Validation metrics:", results)     
-        prediction_distribution = model(np.asarray(validation_x))
-        type_arr = np.full(np.asarray(validation_y).shape, model_type)
+        prediction_distribution = model(np.array(validation_x))
+        type_arr = np.full(np.array(validation_y).shape, model_type)
 
         if df is None:
-            df_dict = {"Actual Age": np.asarray(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
         else:
-            df_dict = {"Actual Age": np.asarray(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
         
@@ -393,16 +393,16 @@ class AutoEncoder(tf.keras.Model):
         self.loss = tf.keras.losses.MeanSquaredError()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.encoder = Sequential([
-            tf.keras.layers.Dense(64, activation='selu'),
-            tf.keras.layers.Dense(32, activation='selu'),
+            tf.keras.layers.Dense(30321, activation='selu'),
+            tf.keras.layers.Dense(10000, activation='selu'),
             tf.keras.layers.Dropout(0.1),
             tf.keras.layers.Dense(latent_size, activation='selu')
         ])
         self.decoder = Sequential([
-            tf.keras.layers.Dense(16, activation='selu'),
-            tf.keras.layers.Dense(32, activation='selu'),
+            tf.keras.layers.Dense(5000, activation='selu'),
+            tf.keras.layers.Dense(10000, activation='selu'),
             tf.keras.layers.Dropout(0.1),
-            tf.keras.layers.Dense(64, activation=None)
+            tf.keras.layers.Dense(30321, activation=None)
         ])
     
     def call(self, inputs):
