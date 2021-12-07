@@ -395,13 +395,13 @@ class AutoEncoder(tf.keras.Model):
         self.encoder = Sequential([
             tf.keras.layers.Dense(30321, activation='selu'),
             tf.keras.layers.Dense(10000, activation='selu'),
-            tf.keras.layers.Dropout(0.1),
+            tf.keras.layers.Dropout(0.3),
             tf.keras.layers.Dense(latent_size, activation='selu')
         ])
         self.decoder = Sequential([
             tf.keras.layers.Dense(5000, activation='selu'),
             tf.keras.layers.Dense(10000, activation='selu'),
-            tf.keras.layers.Dropout(0.1),
+            tf.keras.layers.Dropout(0.3),
             tf.keras.layers.Dense(30321, activation=None)
         ])
     
@@ -463,7 +463,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.1], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.2, 0.2], None)
 
 df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
