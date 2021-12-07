@@ -259,8 +259,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
-
     metadata_temp = metadata.loc[samples, :]
+    
+    all_data_x = X.loc[metadata_temp.index]
+    auto_encoder = AutoEncoder(5000)
+    auto_encoder.train(np.array(all_data_x), 10)
 
     kf = KFold(n_splits=k, shuffle=True)
 
@@ -285,9 +288,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y = val_metadata.loc[validation_x.index].age
 
         validation_y_index = validation_y.index
-        
-        auto_encoder = AutoEncoder(5000)
-        auto_encoder.train(np.array(training_x), 10)
+
         auto_encoder_output = auto_encoder.predict(np.array(validation_x))
 
         mse = tf.keras.losses.MeanSquaredError()
