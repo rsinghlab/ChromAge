@@ -431,7 +431,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [5, 0.00007, 0.2, 0.2], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.00012, 0.2, 0.2], None)
 
 df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
