@@ -314,7 +314,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     # hidden layer size
     for i in range(hidden_layers):
-        hidden_layer_sizes.append(96 * (1 / (i+1)))
+        hidden_layer_sizes.append(64 * (1 / (i+1)))
     
     model = Sequential()
 
