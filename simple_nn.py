@@ -371,7 +371,7 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
-                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
+                           scale=1e-4 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
@@ -418,11 +418,11 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 param_grid = {
     'epochs':[1000],
-    'batch_size': [16, 32],
-    'hidden_layers':[1,3,5],
-    'lr':[0.0001, 0.001, 0.01],
-    'dropout':[0.0,0.1,0.3],
-    'coeff':[0.005, 0.01, 0.05],
+    'batch_size': [16,32,48],
+    'hidden_layers':[1,3,5,7],
+    'lr':[0.00005, 0.0001, 0.001],
+    'dropout':[0.0,0.5,0.1,0.2],
+    'coeff':[0.5, 0.1, 0.2],
 }
 
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
@@ -431,7 +431,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.2, 0.25], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.2, 0.2], None)
 
 df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
