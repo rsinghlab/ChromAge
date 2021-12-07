@@ -287,7 +287,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y_index = validation_y.index
         
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.asarray(training_x), np.asarray(training_y), batch_size, epochs, verbose=1, validation_data=(np.asarray(validation_x), np.asarray(validation_y)))
+        model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
         
         results = model.evaluate(np.asarray(validation_x), np.asarray(validation_y), batch_size)
         print("Validation metrics:", results)     
@@ -326,13 +326,13 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
         model.add(Dense(hidden_layer_sizes[i],
                   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff)))
                 #   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff)))
-        model.add(Activation('relu'))
+        model.add(Activation('selu'))
         model.add(BatchNormalization())
         model.add(Dropout(dropout))
 
-    model.add(Dense(32, activation='relu'))
+    model.add(Dense(32, activation='selu'))
 
-    model.add(Dense(2))
+    # model.add(Dense(2))
     model.add(tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
                            scale=1e-3 + tf.math.softplus(0.01 * t[...,1:]))))
