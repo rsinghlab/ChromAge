@@ -314,7 +314,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     # hidden layer size
     for i in range(hidden_layers):
-        hidden_layer_sizes.append(64 * (1 / (i+1)))
+        hidden_layer_sizes.append(32 * (1 / (i+1)))
     
     model = Sequential()
 
@@ -431,7 +431,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.15, 0.1], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.1], None)
 
 df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
