@@ -314,7 +314,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     # hidden layer size
     for i in range(hidden_layers):
-        hidden_layer_sizes.append(32)
+        hidden_layer_sizes.append(128 * (1 / (i+1)))
     
     model = Sequential()
 
@@ -332,7 +332,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     model.add(Dense(32, activation='selu'))
 
-    # model.add(Dense(2))
+    model.add(Dense(2))
     model.add(tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
                            scale=1e-3 + tf.math.softplus(0.01 * t[...,1:]))))
@@ -431,7 +431,7 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 64, 1000, "", [5, 0.0001, 0.05, 0.05], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 64, 1000, "", [5, 0.0001, 0.2, 0.05], None)
 
 # model = create_nn(3, 0.001, 0.1,0)
 # history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
