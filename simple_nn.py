@@ -371,7 +371,7 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.DistributionLambda(
       lambda t: tfp.distributions.Normal(loc=t[..., :1],
-                           scale=1e-4 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
+                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
     model = Model(inputs, outputs)
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
