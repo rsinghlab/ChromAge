@@ -366,8 +366,7 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
                   kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
                   activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
         x = BatchNormalization()(x)
-        if (i == 1):
-            x = Dropout(dropout)(x)
+        x = Dropout(dropout)(x)
 
     distribution_params = Dense(2, activation='relu')(x)
     outputs = tfp.layers.DistributionLambda(
