@@ -319,8 +319,8 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     model = Sequential()
 
     model.add(Input(shape = (30321,)))
-    model.add(BatchNormalization())
-    model.add(ActivityRegularization(coeff, coeff))
+    # model.add(BatchNormalization())
+    # model.add(ActivityRegularization(coeff, coeff))
     
     for i in range(hidden_layers):
         model.add(Dense(hidden_layer_sizes[i],
