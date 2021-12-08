@@ -1,9 +1,11 @@
+from collections import defaultdict
 import re
 import numpy as np
 import pandas as pd
 import random
 import pickle
 import gc
+from tensorflow.python.keras.utils.generic_utils import default
 
 from tensorflow.python.ops.gen_nn_ops import Selu
 
@@ -264,6 +266,10 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
     kf = KFold(n_splits=k, shuffle=True)
 
     kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
+    val_metrics_array = []
+    min_train_loss_array = []
+    min_train_mse_array = []
+    min_train_mae_array = []
 
     for train_index, val_index in kfold_data:
         
@@ -277,7 +283,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_metadata = metadata_temp.loc[val_list, :]
 
         training_x = X.loc[train_metadata.index]
-        print(training_x)
+        # print(training_x)
         training_y = train_metadata.loc[training_x.index].age
 
         validation_x = X.loc[val_metadata.index]
@@ -292,10 +298,15 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         # print("Average validation mean squared error for auto-encoder:",np.mean(mse(val_auto_encoder,np.array(validation_x)).numpy()))
 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
-        
+        history = model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=0, validation_data=(np.array(validation_x), np.array(validation_y)))
+        min_train_loss_array.append(np.min(history.history['loss']))
+        min_train_mse_array.append(np.min(history.history['mse']))
+        min_train_mae_array.append(np.min(history.history['mae']))
+
         results = model.evaluate(np.array(validation_x), np.array(validation_y), int(batch_size/2))
-        print("Validation metrics:", results)     
+        # print("Validation metrics:", results)     
+        val_metrics_array.append(results)
+
         prediction_distribution = model(np.array(validation_x))
         type_arr = np.full(np.array(validation_y).shape, model_type)
 
@@ -306,9 +317,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
-        
         print(df)
-    return df
+    return df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array
 
 def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
@@ -449,6 +459,7 @@ class AutoEncoder(tf.keras.Model):
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
     df = None
+    metrics_dict = dict()
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
             for hidden_layers in param_grid['hidden_layers']:
@@ -457,20 +468,19 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                         for coeff in param_grid['coeff']:
                             model_params = [hidden_layers, lr, dropout, coeff]
                             str_model_params = [str(param) for param in model_params]
-                            print("run for model " + "simple_nn " + str(batch) +" "+" ".join(str_model_params))
-                            df = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
-                            model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-                            history = model.fit(X_train,y_train, epochs = epoch, verbose=0)
-                            # predictions = model.predict(X_test)
-                            print(history.history)
-    return df
+                            model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params)
+                            print("run for model " + model_name)
+                            df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, df)
+                            metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_train_mse" : min_train_mse_array, "min_train_mae" : min_train_mae_array})
+                            print(metrics_dict)
+    return df, metrics_dict
 
 param_grid = {
     'epochs':[1000],
     'batch_size': [16,32,48],
     'hidden_layers':[1,3,5],
-    'lr':[0.0001, 0.0002, 0.0005],
-    'dropout':[0.0,0.05,0.1,0.2],
+    'lr':[0.0001, 0.0002, 0.0003],
+    'dropout':[0.0,0.05, 0.1, 0.125, 0.15],
     'coeff':[0.01, 0.02, 0.05, 0.1]
 }
 
@@ -495,18 +505,18 @@ X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-# experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
 
-# experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
+experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-model = create_nn(3, 0.0002, 0.1, 0.05)
-history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
-prediction_distribution = model(np.array(X_test))
-results = model.evaluate(np.array(X_test), np.array(y_test), 32)
-print("Testing metrics:", results) 
-predictions = model.predict(np.array(X_test))
-df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-print(df_dict)
+# model = create_nn(3, 0.0002, 0.1, 0.05)
+# history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
+# prediction_distribution = model(np.array(X_test))
+# results = model.evaluate(np.array(X_test), np.array(y_test), 32)
+# print("Testing metrics:", results) 
+# predictions = model.predict(np.array(X_test))
+# df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+# print(df_dict)
 
 # model = create_nn(3, 0.0001, 0.1, 0.01)
 # history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
