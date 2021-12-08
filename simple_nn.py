@@ -484,35 +484,35 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-X = histone_data_object.df
-samples = np.intersect1d(metadata.index, X.index)
-metadata_temp = metadata.loc[samples, :]
+# X = histone_data_object.df
+# samples = np.intersect1d(metadata.index, X.index)
+# metadata_temp = metadata.loc[samples, :]
 
-all_data_x = X.loc[metadata_temp.index]
-auto_encoder = AutoEncoder()
-auto_encoder.train(np.array(all_data_x), 10)
+# all_data_x = X.loc[metadata_temp.index]
+# auto_encoder = AutoEncoder()
+# auto_encoder.train(np.array(all_data_x), 10)
 
 # df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-# model = create_nn(3, 0.0001, 0.1, 0.01)
-# history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
-# prediction_distribution = model(np.array(X_test))
-# results = model.evaluate(np.array(X_test), np.array(y_test), 32)
-# print("Testing metrics:", results) 
-# predictions = model.predict(np.array(X_test))
-# df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-# print(df_dict)
-
-model = create_nn(3, 0.0001, 0.2, 0.05)
-history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
-prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
-results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 16, verbose = 1)
-print("Validation metrics:", results) 
-predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
+model = create_nn(3, 0.0001, 0.1, 0.01)
+history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
+prediction_distribution = model(np.array(X_test))
+results = model.evaluate(np.array(X_test), np.array(y_test), 32)
+print("Testing metrics:", results) 
+predictions = model.predict(np.array(X_test))
 df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 print(df_dict)
+
+# model = create_nn(3, 0.0001, 0.1, 0.01)
+# history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
+# prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
+# results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 16, verbose = 1)
+# print("Validation metrics:", results) 
+# predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
+# df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+# print(df_dict)
 
 # experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
 
