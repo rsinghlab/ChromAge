@@ -390,18 +390,21 @@ class AutoEncoder(tf.keras.Model):
         self.batch_size = 32
         self.loss = tf.keras.losses.MeanSquaredError()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.latent_size = 250
-        self.hidden_dim = 1000
+        self.latent_size = 500
+        self.hidden_dim = 2000
         self.encoder = Sequential([
             Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            Dropout(0.1),
             Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            # Dropout(0.1),
-            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01))
+            Dropout(0.1),
+            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            Dropout(0.1),
         ])
         self.decoder = Sequential([
             Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            # Dropout(0.1),
+            Dropout(0.1),
             Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            Dropout(0.1),
             Dense(30321, activation=None)
         ])
 
