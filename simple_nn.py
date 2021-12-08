@@ -394,18 +394,16 @@ class AutoEncoder(tf.keras.Model):
         self.hidden_dim = 5000
         self.encoder = Sequential([
             Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            # ActivityRegularization(0.01),
+            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
             # Dropout(0.1),
             Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01))
         ])
         self.decoder = Sequential([
-            # ActivityRegularization(0.01),
-            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            # ActivityRegularization(0.01),
-            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            # Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
             # Dropout(0.1),
-            Dense(30321, activation='sigmoid')
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            Dense(30321, activation=None)
         ])
 
         # self.encoder = Sequential(layers=[
