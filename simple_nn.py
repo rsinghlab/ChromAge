@@ -473,12 +473,12 @@ metadata_temp = metadata.loc[samples, :]
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-model = create_nn(3, 0.0001, 0.1, 0.1)
+model = create_nn(3, 0.0001, 0.2, 0.1)
 history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
 prediction_distribution = model(np.array(X_test))
-results = model.evaluate(np.array(X_test), np.array(y_test), 32, verbose = 1)
-print("Validation metrics:", results) 
-predictions = model.predict(np.array(X_test), verbose = 1)
+results = model.evaluate(np.array(X_test), np.array(y_test), 32)
+print("Testing metrics:", results) 
+predictions = model.predict(np.array(X_test))
 df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 print(df_dict)
 
