@@ -499,7 +499,7 @@ X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
 # experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-model = create_nn(3, 0.0001, 0.05, 0.02)
+model = create_nn(3, 0.0002, 0.1, 0.02)
 history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
 prediction_distribution = model(np.array(X_test))
 results = model.evaluate(np.array(X_test), np.array(y_test), 32)
