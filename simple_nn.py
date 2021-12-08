@@ -388,46 +388,27 @@ class AutoEncoder(tf.keras.Model):
     def __init__(self):
         super(AutoEncoder, self).__init__()
         self.batch_size = 32
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.hidden_dim = 10000
+        self.loss = tf.keras.losses.MeanSquaredError()
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
         self.latent_size = 500
-        self.input_size = 30321
-
-        self.mu = Dense(self.latent_size)
-        self.log_var = Dense(self.latent_size)
-
+        self.hidden_dim = 5000
         self.encoder = Sequential([
+            Dense(30321, activation='selu'),
             Dense(self.hidden_dim, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
+            Dropout(0.1),
+            Dense(self.latent_size, activation='selu')
         ])
-
         self.decoder = Sequential([
+            Dense(self.latent_size, activation='selu'),
             Dense(self.hidden_dim, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
-            Dense(self.input_size, activation='sigmoid')
+            Dropout(0.1),
+            Dense(30321, activation=None)
         ])
     
     def call(self, inputs):
-        encoded_x = self.encoder(inputs)
-        mu = self.mu_layer(encoded_x)
-        logvar = self.logvar_layer(encoded_x)
-
-        epsilon = tf.random.normal(shape=mu.shape, mean=0, stddev=1)
-        sigma = tf.math.sqrt(tf.math.exp(logvar))
-        z = mu + sigma*epsilon
-
-        x_hat = self.decoder(z)
-
-        return x_hat, mu, logvar
+        encoder_output = self.encoder(inputs)
+        return self.decoder(encoder_output)
     
-    def loss(x_hat, x, mu, logvar):
-        reconstruction_loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, reduction=tf.keras.losses.Reduction.SUM)(x_hat, x)
-        kl_divergence = -0.5 * tf.reduce_sum(1 + logvar - tf.math.square(mu) - tf.math.exp(logvar))
-        return (reconstruction_loss + kl_divergence) / x.shape[0]
-
     def train(self, train_inputs, num_epochs):
         for i in range(num_epochs):
             loss_list = []
@@ -436,8 +417,8 @@ class AutoEncoder(tf.keras.Model):
             for i in range(0,len(train_inputs),self.batch_size):
                 batched_inputs = train_inputs[i:i+self.batch_size]
                 with tf.GradientTape() as tape:
-                    x_hat, mu, logvar = self.call(batched_inputs)
-                    loss = self.loss(x_hat,batched_inputs, mu, logvar)
+                    predictions = self.call(batched_inputs)
+                    loss = self.loss(predictions,batched_inputs)
                     loss_list.append(loss.numpy())
                 gradients = tape.gradient(loss, self.trainable_variables)
                 self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
@@ -486,9 +467,9 @@ X = histone_data_object.df
 samples = np.intersect1d(metadata.index, X.index)
 metadata_temp = metadata.loc[samples, :]
 
-# all_data_x = X.loc[metadata_temp.index]
-# auto_encoder = AutoEncoder()
-# auto_encoder.train(np.array(all_data_x), 10)
+all_data_x = X.loc[metadata_temp.index]
+auto_encoder = AutoEncoder()
+auto_encoder.train(np.array(all_data_x), 10)
 
 # df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
