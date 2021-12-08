@@ -25,7 +25,7 @@ import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
 from tensorflow.keras import regularizers, datasets, layers, models
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, MaxPooling2D, MaxPooling1D, Reshape
+from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, MaxPooling2D, MaxPooling1D, Reshape, UpSampling2D
 import tensorflow_probability as tfp
 import keras.backend as K
 from matplotlib import pyplot as plt
@@ -294,7 +294,7 @@ def k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(train_auto_encoder, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(val_auto_encoder, np.array(validation_y)))
         
-        results = model.evaluate(val_auto_encoder, np.array(validation_y), batch_size/2)
+        results = model.evaluate(val_auto_encoder, np.array(validation_y), int(batch_size/2))
         print("Validation metrics:", results)     
         prediction_distribution = model(val_auto_encoder)
         type_arr = np.full(np.array(validation_y).shape, model_type)
@@ -390,20 +390,37 @@ class AutoEncoder(tf.keras.Model):
         self.batch_size = 32
         self.loss = tf.keras.losses.MeanSquaredError()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.latent_size = 500
-        self.hidden_dim = 5000
-        self.encoder = Sequential([
-            Dense(30321, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
-            Dropout(0.1),
-            Dense(self.latent_size, activation='selu')
-        ])
-        self.decoder = Sequential([
-            Dense(self.latent_size, activation='selu'),
-            Dense(self.hidden_dim, activation='selu'),
-            Dropout(0.1),
-            Dense(30321, activation=None)
-        ])
+        # self.latent_size = 500
+        # self.hidden_dim = 5000
+        # self.encoder = Sequential([
+        #     Dense(30321, activation='selu'),
+        #     Dense(self.hidden_dim, activation='selu'),
+        #     Dropout(0.1),
+        #     Dense(self.latent_size, activation='selu')
+        # ])
+        # self.decoder = Sequential([
+        #     Dense(self.latent_size, activation='selu'),
+        #     Dense(self.hidden_dim, activation='selu'),
+        #     Dropout(0.1),
+        #     Dense(30321, activation=None)
+        # ])
+
+        self.encoder = Sequential(layers=[
+        Conv2D(32, (3,3), activation='relu', padding='same'),
+        MaxPooling2D((2,2), padding='same'),
+        Conv2D(16, (3,3), activation='relu', padding='same'),
+        MaxPooling2D((2,2), padding='same'),
+        Conv2D(8, (3,3), activation='relu', padding='same'),
+        MaxPooling2D((2,2), padding='same')])
+
+        self.decoder = Sequential(layers=[
+        Conv2D(8, (3,3), activation='relu', padding='same'),
+        UpSampling2D((2,2), padding='same'),
+        Conv2D(16, (3,3), activation='relu', padding='same'),
+        UpSampling2D((2,2), padding='same'),
+        Conv2D(32, (3,3), activation='relu', padding='same'),
+        UpSampling2D((2,2), padding='same'),
+        Conv2D(1, (3,3), activation='sigmoid', padding='same')])
     
     def call(self, inputs):
         encoder_output = self.encoder(inputs)
