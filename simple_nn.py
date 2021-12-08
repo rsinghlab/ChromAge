@@ -294,7 +294,7 @@ def k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
         model.fit(train_auto_encoder, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(val_auto_encoder, np.array(validation_y)))
         
-        results = model.evaluate(val_auto_encoder, np.array(validation_y), batch_size)
+        results = model.evaluate(val_auto_encoder, np.array(validation_y), batch_size/2)
         print("Validation metrics:", results)     
         prediction_distribution = model(val_auto_encoder)
         type_arr = np.full(np.array(validation_y).shape, model_type)
@@ -471,7 +471,7 @@ all_data_x = X.loc[metadata_temp.index]
 auto_encoder = AutoEncoder()
 auto_encoder.train(np.array(all_data_x), 10)
 
-# df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
+df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
@@ -487,7 +487,7 @@ auto_encoder.train(np.array(all_data_x), 10)
 model = create_nn(3, 0.0001, 0.1, 0.01)
 history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
 prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
-results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 32, verbose = 1)
+results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 16, verbose = 1)
 print("Validation metrics:", results) 
 predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
 df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
