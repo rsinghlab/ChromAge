@@ -389,7 +389,7 @@ class AutoEncoder(tf.keras.Model):
         super(AutoEncoder, self).__init__()
         self.batch_size = 32
         self.loss = tf.keras.losses.MeanSquaredError()
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.00001)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.latent_size = 500
         self.hidden_dim = 5000
         self.encoder = Sequential([
