@@ -25,7 +25,7 @@ import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
 from tensorflow.keras import regularizers, datasets, layers, models
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, MaxPooling2D, MaxPooling1D, Reshape, UpSampling1D
+from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, ActivityRegularization, Input, LSTM, ReLU, GRU, multiply, Lambda, PReLU, SimpleRNN, Dense, Activation, BatchNormalization, Conv2D, Conv1D, Flatten, LeakyReLU, Dropout, GaussianNoise, MaxPooling1D, Reshape, UpSampling1D
 import tensorflow_probability as tfp
 import keras.backend as K
 from matplotlib import pyplot as plt
@@ -406,24 +406,27 @@ class AutoEncoder(tf.keras.Model):
         # ])
 
         self.encoder = Sequential(layers=[
-        Conv1D(32, 3, activation='relu', padding='same'),
-        MaxPooling1D(2, padding='same'),
-        Conv1D(16, 3, activation='relu', padding='same'),
-        MaxPooling1D(2, padding='same'),
-        Conv1D(8, 3, activation='relu', padding='same'),
-        MaxPooling1D(2, padding='same')])
+            Reshape([32, 30321, 1], input_shape = [32, 32301]),
+            GaussianNoise(0.2),
+            Conv1D(32, 3, activation='relu', padding='same'),
+            MaxPooling1D(2, padding='same'),
+            Conv1D(16, 3, activation='relu', padding='same'),
+            MaxPooling1D(2, padding='same'),
+            Conv1D(8, 3, activation='relu', padding='same'),
+            MaxPooling1D(2, padding='same')])
 
         self.decoder = Sequential(layers=[
-        Conv1D(8, 3, activation='relu', padding='same'),
-        UpSampling1D(2),
-        Conv1D(16, 3, activation='relu', padding='same'),
-        UpSampling1D(2),
-        Conv1D(32, 3, activation='relu', padding='same'),
-        UpSampling1D(2),
-        Conv1D(30321, 3, activation='sigmoid', padding='same')])
+            Conv1D(8, 3, activation='relu', padding='same'),
+            UpSampling1D(2),
+            Conv1D(16, 3, activation='relu', padding='same'),
+            UpSampling1D(2),
+            Conv1D(32, 3, activation='relu', padding='same'),
+            UpSampling1D(2),
+            Conv1D(1, 3, activation='sigmoid', padding='same'),
+            Reshape([32, 30321])])
     
     def call(self, inputs):
-        encoder_output = self.encoder(tf.expand_dims(inputs, axis=0))
+        encoder_output = self.encoder(inputs)
         return tf.squeeze(self.decoder(encoder_output))
     
     def train(self, train_inputs, num_epochs):
