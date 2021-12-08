@@ -406,7 +406,7 @@ class AutoEncoder(tf.keras.Model):
         # ])
 
         self.encoder = Sequential(layers=[
-            Reshape([32, 30321, 1], input_shape = [32, 30321]),
+            Reshape([30321, 1], input_shape = [30321]),
             GaussianNoise(0.2),
             Conv1D(32, 3, activation='relu', padding='same'),
             MaxPooling1D(2, padding='same'),
@@ -423,7 +423,7 @@ class AutoEncoder(tf.keras.Model):
             Conv1D(32, 3, activation='relu', padding='same'),
             UpSampling1D(2),
             Conv1D(1, 3, activation='sigmoid', padding='same'),
-            Reshape([32, 30321])])
+            Reshape([30321])])
     
     def call(self, inputs):
         encoder_output = self.encoder(inputs)
