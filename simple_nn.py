@@ -393,21 +393,19 @@ class AutoEncoder(tf.keras.Model):
         self.latent_size = 500
         self.hidden_dim = 5000
         self.encoder = Sequential([
-            Dense(self.hidden_dim, activation='selu'),
-            ActivityRegularization(0.01),
-            Dense(self.hidden_dim, activation='selu'),
-            ActivityRegularization(0.01),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            # ActivityRegularization(0.01),
             # Dropout(0.1),
-            Dense(self.latent_size, activation='selu')
+            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01))
         ])
         self.decoder = Sequential([
-            ActivityRegularization(0.01),
-            Dense(self.latent_size, activation='selu'),
-            ActivityRegularization(0.01),
-            Dense(self.hidden_dim, activation='selu'),
-            ActivityRegularization(0.01),
+            # ActivityRegularization(0.01),
+            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
+            # ActivityRegularization(0.01),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
             # Dropout(0.1),
-            Dense(30321, activation=None)
+            Dense(30321, activation='sigmoid')
         ])
 
         # self.encoder = Sequential(layers=[
@@ -429,7 +427,6 @@ class AutoEncoder(tf.keras.Model):
         #     Conv1D(1, 3, activation='sigmoid', padding='same')])
     
     def call(self, inputs):
-        print(inputs.shape)
         encoder_output = self.encoder(inputs)
         return tf.squeeze(self.decoder(encoder_output))
     
