@@ -416,11 +416,11 @@ class AutoEncoder(tf.keras.Model):
         self.decoder = Sequential(layers=[
         Conv1D(8, 3, activation='relu', padding='same'),
         UpSampling1D(2),
-        Conv2D(16, 3, activation='relu', padding='same'),
+        Conv1D(16, 3, activation='relu', padding='same'),
         UpSampling1D(2),
-        Conv2D(32, 3, activation='relu', padding='same'),
+        Conv1D(32, 3, activation='relu', padding='same'),
         UpSampling1D(2),
-        Conv2D(1, 3, activation='sigmoid', padding='same')])
+        Conv1D(1, 3, activation='sigmoid', padding='same')])
     
     def call(self, inputs):
         encoder_output = self.encoder(tf.expand_dims(inputs, axis=0))
