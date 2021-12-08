@@ -421,7 +421,7 @@ class AutoEncoder(tf.keras.Model):
             UpSampling1D(2),
             Conv1D(32, 3, activation='relu', padding='same'),
             UpSampling1D(2),
-            Conv1D(1, 3, activation='sigmoid', padding='same'))
+            Conv1D(1, 3, activation='sigmoid', padding='same')])
     
     def call(self, inputs):
         print(inputs.shape)
