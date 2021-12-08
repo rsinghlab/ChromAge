@@ -489,7 +489,7 @@ all_data_x = X.loc[metadata_temp.index]
 auto_encoder = AutoEncoder()
 auto_encoder.train(np.array(all_data_x), 10)
 
-df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
+# df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
