@@ -254,7 +254,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
+def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
     metadata = metadata.drop(y_test.index)
 
     X = histone_data_object.df
@@ -285,18 +285,18 @@ def k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 
 
         validation_y_index = validation_y.index
 
-        train_auto_encoder = auto_encoder.predict(np.array(training_x))
-        val_auto_encoder = auto_encoder.predict(np.array(validation_x))
+        # train_auto_encoder = auto_encoder.predict(np.array(training_x))
+        # val_auto_encoder = auto_encoder.predict(np.array(validation_x))
 
-        mse = tf.keras.losses.MeanSquaredError()
-        print("Average validation mean squared error for auto-encoder:",np.mean(mse(val_auto_encoder,np.array(validation_x)).numpy()))
+        # mse = tf.keras.losses.MeanSquaredError()
+        # print("Average validation mean squared error for auto-encoder:",np.mean(mse(val_auto_encoder,np.array(validation_x)).numpy()))
 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(train_auto_encoder, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(val_auto_encoder, np.array(validation_y)))
+        model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=1, validation_data=(np.array(validation_x), np.array(validation_y)))
         
-        results = model.evaluate(val_auto_encoder, np.array(validation_y), int(batch_size/2))
+        results = model.evaluate(np.array(validation_x), np.array(validation_y), int(batch_size/2))
         print("Validation metrics:", results)     
-        prediction_distribution = model(val_auto_encoder)
+        prediction_distribution = model(np.array(validation_x))
         type_arr = np.full(np.array(validation_y).shape, model_type)
 
         if df is None:
@@ -449,11 +449,6 @@ class AutoEncoder(tf.keras.Model):
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
     df = None
-    # imputer = KNNImputer()
-    # scaler = StandardScaler()
-    # X_train, y_train = imputer.fit_transform(X= X_train, y = y_train)
-    # X_train, y_train = scaler.fit_transform(X= X_train, y = y_train)
-
     for epoch in param_grid['epochs']:
         for batch in param_grid['batch_size']:
             for hidden_layers in param_grid['hidden_layers']:
@@ -462,7 +457,8 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                         for coeff in param_grid['coeff']:
                             model_params = [hidden_layers, lr, dropout, coeff]
                             str_model_params = [str(param) for param in model_params]
-                            df = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, "simple_nn_new " + str(batch) +" "+" ".join(str_model_params), model_params, df)
+                            print("run for model " + "simple_nn " + str(batch) +" "+" ".join(str_model_params))
+                            df = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, "simple_nn " + str(batch) +" "+" ".join(str_model_params), model_params, df)
                             model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
                             history = model.fit(X_train,y_train, epochs = epoch, verbose=0)
                             # predictions = model.predict(X_test)
@@ -474,7 +470,7 @@ param_grid = {
     'batch_size': [16,32,48],
     'hidden_layers':[1,3,5,7],
     'lr':[0.00005, 0.0001, 0.001],
-    'dropout':[0.0,0.5,0.1,0.2],
+    'dropout':[0.0,0.05,0.1,0.2],
     'coeff':[0.01, 0.05, 0.1]
 }
 
@@ -483,6 +479,9 @@ metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/
 metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+
+# imputer = KNNImputer()
+# scaler = StandardScaler()
 
 # X = histone_data_object.df
 # samples = np.intersect1d(metadata.index, X.index)
@@ -496,7 +495,11 @@ X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-model = create_nn(3, 0.0001, 0.1, 0.01)
+# experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
+
+# experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
+
+model = create_nn(3, 0.0001, 0.1, 0.02)
 history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
 prediction_distribution = model(np.array(X_test))
 results = model.evaluate(np.array(X_test), np.array(y_test), 32)
@@ -513,7 +516,3 @@ print(df_dict)
 # predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
 # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 # print(df_dict)
-
-# experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
-
-# experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_new_results.csv')
