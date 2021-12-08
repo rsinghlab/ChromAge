@@ -260,7 +260,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
     X = histone_data_object.df
     samples = np.intersect1d(metadata.index, X.index)
     metadata_temp = metadata.loc[samples, :]
-    
+
     all_data_x = X.loc[metadata_temp.index]
     auto_encoder = AutoEncoder(5000)
     auto_encoder.train(np.array(all_data_x), 10)
@@ -289,17 +289,18 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder_output = auto_encoder.predict(np.array(validation_x))
+        train_auto_encoder = auto_encoder.predict(np.array(training_x))
+        val_auto_encoder = auto_encoder.predict(np.array(validation_x))
 
         mse = tf.keras.losses.MeanSquaredError()
-        print("Average validation mean squared error for auto-encoder:",np.mean(mse(auto_encoder_output,np.array(validation_x)).numpy()))
+        print("Average validation mean squared error for auto-encoder:",np.mean(mse(val_auto_encoder,np.array(validation_x)).numpy()))
 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=1, validation_data=(auto_encoder_output, np.array(validation_y)))
+        model.fit(train_auto_encoder, np.array(training_y), batch_size, epochs, verbose=1, validation_data=(val_auto_encoder, np.array(validation_y)))
         
-        results = model.evaluate(np.array(validation_x), np.array(validation_y), batch_size)
+        results = model.evaluate(val_auto_encoder, np.array(validation_y), batch_size)
         print("Validation metrics:", results)     
-        prediction_distribution = model(np.array(validation_x))
+        prediction_distribution = model(val_auto_encoder)
         type_arr = np.full(np.array(validation_y).shape, model_type)
 
         if df is None:
@@ -396,13 +397,13 @@ class AutoEncoder(tf.keras.Model):
         self.encoder = Sequential([
             tf.keras.layers.Dense(30321, activation='selu'),
             tf.keras.layers.Dense(10000, activation='selu'),
-            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dropout(0.1),
             tf.keras.layers.Dense(latent_size, activation='selu')
         ])
         self.decoder = Sequential([
             tf.keras.layers.Dense(5000, activation='selu'),
             tf.keras.layers.Dense(10000, activation='selu'),
-            tf.keras.layers.Dropout(0.3),
+            tf.keras.layers.Dropout(0.1),
             tf.keras.layers.Dense(30321, activation=None)
         ])
     
@@ -464,17 +465,21 @@ metadata = filter_metadata(metadata, biological_replicates = True)
 
 X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.2, 0.2], None)
+df = k_cross_validate_model(metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.1], None)
 
 df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
+# all_data_x = histone_data_object.df.loc[metadata.index]
+# auto_encoder = AutoEncoder(5000)
+# auto_encoder.train(np.array(all_data_x), 10)
+
 # model = create_nn(3, 0.001, 0.1,0)
-# history = model.fit(X_train,y_train, epochs = 1000, verbose=0)
-# prediction_distribution = model(np.asarray(X_test))
-# results = model.evaluate(np.asarray(X_test), np.asarray(y_test), 32, verbose = 1)
+# history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000, verbose=0)
+# prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
+# results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 32, verbose = 1)
 # print("Validation metrics:", results) 
-# predictions = model.predict(np.asarray(X_test), verbose = 1)
-# df_dict = {"Actual Age": np.asarray(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+# predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
+# df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 # print(df_dict)
 
 # experiment_DataFrame = run_grid_search(metadata, histone_data_object, param_grid)
@@ -484,31 +489,3 @@ df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 # history_cache = model.fit(X,y, epochs=100)
 
 # print('Final cost: {0:.4f}'.format(history_cache.history['loss'][-1]))
-
-# neural_network = KerasRegressor(build_fn = create_nn, verbose = 0)
-
-# scaler = StandardScaler()
-
-# # create parameter grid, as usual, but note that you can
-# # vary other model parameters such as 'epochs' (and others 
-# # such as 'batch_size' too)
-# param_grid = {
-#     'neural_network__epochs':[100,500],
-#     'neural_network__hidden_layers':[1,3,5],
-#     'neural_network__hidden_layer_sizes':[[64],[16,32,64],[16,32,64,64,64]],
-#     'neural_network__lr':[0.00001,0.00005, 0.001, 0.01],
-#     'neural_network__dropout':[0.0,0.1,0.3,0.5],
-#     'neural_network__coeff':[0.005, 0.05, 0.01],
-# }
-
-# pipeline = Pipeline(steps = [('imputer', KNNImputer()), ('scaler', StandardScaler()), ('neural_network', neural_network)])
-
-# # if you're not using a GPU, you can set n_jobs to something other than 1
-# grid = GridSearchCV(pipeline, cv=3, param_grid=param_grid)
-# grid.fit(X, y)
-
-# # summarize results
-# print("Best: %f using %s" % (grid.best_score_, grid.best_params_))
-# means = grid.cv_results_['mean_test_score']
-# stds = grid.cv_results_['std_test_score']
-# params = grid.cv_results_['params']
