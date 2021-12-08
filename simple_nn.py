@@ -390,38 +390,43 @@ class AutoEncoder(tf.keras.Model):
         self.batch_size = 32
         self.loss = tf.keras.losses.MeanSquaredError()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        # self.latent_size = 500
-        # self.hidden_dim = 5000
-        # self.encoder = Sequential([
-        #     Dense(30321, activation='selu'),
-        #     Dense(self.hidden_dim, activation='selu'),
-        #     Dropout(0.1),
-        #     Dense(self.latent_size, activation='selu')
-        # ])
-        # self.decoder = Sequential([
-        #     Dense(self.latent_size, activation='selu'),
-        #     Dense(self.hidden_dim, activation='selu'),
-        #     Dropout(0.1),
-        #     Dense(30321, activation=None)
-        # ])
+        self.latent_size = 500
+        self.hidden_dim = 5000
+        self.encoder = Sequential([
+            Dense(self.hidden_dim, activation='selu'),
+            ActivityRegularization(0.01),
+            Dense(self.hidden_dim, activation='selu'),
+            ActivityRegularization(0.01),
+            # Dropout(0.1),
+            Dense(self.latent_size, activation='selu')
+        ])
+        self.decoder = Sequential([
+            ActivityRegularization(0.01),
+            Dense(self.latent_size, activation='selu'),
+            ActivityRegularization(0.01),
+            Dense(self.hidden_dim, activation='selu'),
+            ActivityRegularization(0.01),
+            # Dropout(0.1),
+            Dense(30321, activation=None)
+        ])
 
-        self.encoder = Sequential(layers=[
-            GaussianNoise(0.2),
-            Conv1D(32, 3, activation='relu', padding='same'),
-            MaxPooling1D(2, padding='same'),
-            Conv1D(16, 3, activation='relu', padding='same'),
-            MaxPooling1D(2, padding='same'),
-            Conv1D(8, 3, activation='relu', padding='same'),
-            MaxPooling1D(2, padding='same')])
+        # self.encoder = Sequential(layers=[
+        #     GaussianNoise(0.2),
+        #     Conv1D(32, 3, activation='relu', padding='same'),
+        #     MaxPooling1D(2, padding='same'),
+        #     Conv1D(16, 3, activation='relu', padding='same'),
+        #     MaxPooling1D(2, padding='same'),
+        #     Conv1D(8, 3, activation='relu', padding='same'),
+        #     MaxPooling1D(2, padding='same')])
 
-        self.decoder = Sequential(layers=[
-            Conv1D(8, 3, activation='relu', padding='same'),
-            UpSampling1D(2),
-            Conv1D(16, 3, activation='relu', padding='same'),
-            UpSampling1D(2),
-            Conv1D(32, 3, activation='relu', padding='same'),
-            UpSampling1D(2),
-            Conv1D(1, 3, activation='sigmoid', padding='same')])
+        # self.decoder = Sequential(layers=[
+        #     Conv1D(8, 3, activation='relu', padding='same'),
+        #     UpSampling1D(2),
+        #     Conv1D(16, 3, activation='relu', padding='same'),
+        #     UpSampling1D(2),
+        #     Conv1D(32, 3, activation='relu', padding='same'),
+        #     UpSampling1D(2),
+        #     Conv1D(1, 3, activation='sigmoid', padding='same')])
     
     def call(self, inputs):
         print(inputs.shape)
