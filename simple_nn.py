@@ -406,12 +406,12 @@ class AutoEncoder(tf.keras.Model):
         # ])
 
         self.encoder = Sequential(layers=[
-        Conv1D(32, (3,3), activation='relu', padding='same'),
-        MaxPooling1D((2,2), padding='same'),
-        Conv1D(16, (3,3), activation='relu', padding='same'),
-        MaxPooling1D((2,2), padding='same'),
-        Conv1D(8, (3,3), activation='relu', padding='same'),
-        MaxPooling1D((2,2), padding='same')])
+        Conv1D(32, 3, activation='relu', padding='same'),
+        MaxPooling1D(2, padding='same'),
+        Conv1D(16, 3, activation='relu', padding='same'),
+        MaxPooling1D(2, padding='same'),
+        Conv1D(8, 3, activation='relu', padding='same'),
+        MaxPooling1D(2, padding='same')])
 
         self.decoder = Sequential(layers=[
         Conv1D(8, (3,3), activation='relu', padding='same'),
