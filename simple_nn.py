@@ -424,7 +424,7 @@ class AutoEncoder(tf.keras.Model):
     
     def call(self, inputs):
         encoder_output = self.encoder(tf.expand_dims(inputs, axis=0))
-        return self.decoder(encoder_output)
+        return tf.squeeze(self.decoder(encoder_output))
     
     def train(self, train_inputs, num_epochs):
         for i in range(num_epochs):
