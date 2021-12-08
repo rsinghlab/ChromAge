@@ -385,28 +385,49 @@ def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     return model
 
 class AutoEncoder(tf.keras.Model):
-    def __init__(self,latent_size):
+    def __init__(self):
         super(AutoEncoder, self).__init__()
         self.batch_size = 32
-        self.loss = tf.keras.losses.MeanSquaredError()
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+        self.hidden_dim = 10000
+        self.latent_size = 500
+        self.input_size = 30321
+
+        self.mu = Dense(self.latent_size)
+        self.log_var = Dense(self.latent_size)
+
         self.encoder = Sequential([
-            tf.keras.layers.Dense(30321, activation='selu'),
-            tf.keras.layers.Dense(10000, activation='selu'),
-            tf.keras.layers.Dropout(0.1),
-            tf.keras.layers.Dense(latent_size, activation='selu')
+            Dense(self.hidden_dim, activation='selu'),
+            Dense(self.hidden_dim, activation='selu'),
+            Dense(self.hidden_dim, activation='selu'),
+            Dense(self.hidden_dim, activation='selu'),
         ])
+
         self.decoder = Sequential([
-            tf.keras.layers.Dense(5000, activation='selu'),
-            tf.keras.layers.Dense(10000, activation='selu'),
-            tf.keras.layers.Dropout(0.1),
-            tf.keras.layers.Dense(30321, activation=None)
+            Dense(self.hidden_dim, activation='selu'),
+            Dense(self.hidden_dim, activation='selu'),
+            Dense(self.hidden_dim, activation='selu'),
+            Dense(self.input_size, activation='sigmoid')
         ])
     
     def call(self, inputs):
-        encoder_output = self.encoder(inputs)
-        return self.decoder(encoder_output)
+        encoded_x = self.encoder(inputs)
+        mu = self.mu_layer(encoded_x)
+        logvar = self.logvar_layer(encoded_x)
+
+        epsilon = tf.random.normal(shape=mu.shape, mean=0, stddev=1)
+        sigma = tf.math.sqrt(tf.math.exp(logvar))
+        z = mu + sigma*epsilon
+
+        x_hat = self.decoder(z)
+
+        return x_hat, mu, logvar
     
+    def loss(x_hat, x, mu, logvar):
+        reconstruction_loss = tf.keras.losses.BinaryCrossentropy(from_logits=False, reduction=tf.keras.losses.Reduction.SUM)(x_hat, x)
+        kl_divergence = -0.5 * tf.reduce_sum(1 + logvar - tf.math.square(mu) - tf.math.exp(logvar))
+        return (reconstruction_loss + kl_divergence) / x.shape[0]
+
     def train(self, train_inputs, num_epochs):
         for i in range(num_epochs):
             loss_list = []
@@ -415,8 +436,8 @@ class AutoEncoder(tf.keras.Model):
             for i in range(0,len(train_inputs),self.batch_size):
                 batched_inputs = train_inputs[i:i+self.batch_size]
                 with tf.GradientTape() as tape:
-                    predictions = self.call(batched_inputs)
-                    loss = self.loss(predictions,batched_inputs)
+                    x_hat, mu, logvar = self.call(batched_inputs)
+                    loss = self.loss(x_hat,batched_inputs, mu, logvar)
                     loss_list.append(loss.numpy())
                 gradients = tape.gradient(loss, self.trainable_variables)
                 self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
@@ -466,14 +487,14 @@ samples = np.intersect1d(metadata.index, X.index)
 metadata_temp = metadata.loc[samples, :]
 
 # all_data_x = X.loc[metadata_temp.index]
-# auto_encoder = AutoEncoder(5000)
+# auto_encoder = AutoEncoder()
 # auto_encoder.train(np.array(all_data_x), 10)
 
-# df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.1], None)
+# df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-model = create_nn(3, 0.0001, 0.2, 0.1)
+model = create_nn(3, 0.0001, 0.1, 0.01)
 history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
 prediction_distribution = model(np.array(X_test))
 results = model.evaluate(np.array(X_test), np.array(y_test), 32)
