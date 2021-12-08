@@ -474,7 +474,7 @@ auto_encoder.train(np.array(all_data_x), 10)
 # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
 model = create_nn(3, 0.0001, 0.1, 0.1)
-history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000, verbose=0)
+history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
 prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
 results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 32, verbose = 1)
 print("Validation metrics:", results) 
