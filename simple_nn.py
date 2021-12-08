@@ -389,7 +389,7 @@ class AutoEncoder(tf.keras.Model):
         super(AutoEncoder, self).__init__()
         self.batch_size = 32
         self.loss = tf.keras.losses.MeanSquaredError()
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.00001)
         self.latent_size = 500
         self.hidden_dim = 5000
         self.encoder = Sequential([
@@ -454,7 +454,7 @@ param_grid = {
     'hidden_layers':[1,3,5,7],
     'lr':[0.00005, 0.0001, 0.001],
     'dropout':[0.0,0.5,0.1,0.2],
-    'coeff':[0.5, 0.1, 0.2],
+    'coeff':[0.01, 0.05, 0.1]
 }
 
 histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
