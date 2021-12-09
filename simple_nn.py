@@ -596,6 +596,7 @@ def run_model():
         df_dict = {"Model": type_arr, "Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
         if test_df is None:
             test_df = pd.DataFrame(df_dict, index = y_test.index)
+            print(pd.DataFrame(df_dict, index = y_test.index))
         else:
             test_df.append(pd.DataFrame(df_dict, index = y_test.index))
             print(pd.DataFrame(df_dict, index = y_test.index))
