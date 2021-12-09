@@ -1,12 +1,12 @@
 from collections import defaultdict
-import re
 import numpy as np
 import pandas as pd
 import random
 import pickle
 import gc
-from tensorflow.python.keras import metrics
-from tensorflow.python.keras.utils.generic_utils import default
+import ast
+import json
+import os
 
 from tensorflow.python.ops.gen_nn_ops import Selu
 
@@ -462,6 +462,58 @@ class AutoEncoder(tf.keras.Model):
                 self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
             print(sum(loss_list)/len(loss_list))
 
+def analyze_metrics(file_path):
+    metric_dict = defaultdict(list)
+    with open(file_path, "r") as file:
+        contents = file.read()
+        dictionary = ast.literal_eval(contents)
+        for model_types in dictionary:
+            for metrics in dictionary[model_types]:
+                if (metrics != 'val_metrics'):
+                    mean_metric = np.mean(dictionary[model_types][metrics])
+                    metric_dict["mean"+metrics[3:]].append(mean_metric)
+        df = pd.DataFrame(metric_dict, index = list(dictionary.keys()))
+        df.to_csv("simple_nn_grid_metrics.csv")
+        best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
+        best_train_loss_models.to_csv("best_train_loss_models.csv")
+        best_val_loss_models = df.nsmallest(10, 'mean_val_loss')
+        best_val_loss_models.to_csv("best_val_loss_models.csv")
+
+        best_train_mse_models = df.nsmallest(10, 'mean_train_mse')
+        best_train_mse_models.to_csv("best_train_mse_models.csv")
+        best_val_mse_models = df.nsmallest(10, 'mean_val_mse')
+        best_val_mse_models.to_csv("best_val_mse_models.csv")
+
+        best_train_mae_models = df.nsmallest(10, 'mean_train_mae')
+        best_train_mae_models.to_csv("best_train_mae_models.csv")
+        best_val_mae_models = df.nsmallest(10, 'mean_val_mae')
+        best_val_mae_models.to_csv("best_val_mae_models.csv")
+        
+        best_val_models = set()
+        best_train_models = set()
+
+        for model in best_val_loss_models.index:
+            if model in best_val_mse_models.index or model in best_val_mae_models.index:
+                best_val_models.add(model)
+        for model in best_val_mse_models.index:
+            if model in best_val_loss_models.index or model in best_val_mae_models.index:
+                best_val_models.add(model)
+        for model in best_val_mae_models.index:
+            if model in best_val_loss_models.index or model in best_val_mse_models.index:
+                best_val_models.add(model)
+        
+        for model in best_train_loss_models.index:
+            if model in best_train_mse_models.index and model in best_train_mae_models.index:
+                best_train_models.add(model)
+        for model in best_train_mse_models.index:
+            if model in best_train_loss_models.index and model in best_train_mae_models.index:
+                best_train_models.add(model)
+        for model in best_train_mae_models.index:
+            if model in best_train_mse_models.index and model in best_train_mae_models.index:
+                best_train_models.add(model)
+
+        print("Best val models:", *list(best_val_models), sep='\n')
+        print("Best train models:", *list(best_train_models), sep='\n')
 
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
@@ -491,45 +543,51 @@ param_grid = {
     'coeff':[0.01, 0.02, 0.05, 0.1]
 }
 
-histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-metadata = filter_metadata(metadata, biological_replicates = True)
+def run_model():
+    histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
+    metadata = filter_metadata(metadata, biological_replicates = True)
 
-X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+    X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-# imputer = KNNImputer()
-# scaler = StandardScaler()
+    # imputer = KNNImputer()
+    # scaler = StandardScaler()
 
-# X = histone_data_object.df
-# samples = np.intersect1d(metadata.index, X.index)
-# metadata_temp = metadata.loc[samples, :]
+    X = histone_data_object.df
+    samples = np.intersect1d(metadata.index, X.index)
+    metadata_temp = metadata.loc[samples, :]
 
-# all_data_x = X.loc[metadata_temp.index]
-# auto_encoder = AutoEncoder()
-# auto_encoder.train(np.array(all_data_x), 10)
+    all_data_x = X.loc[metadata_temp.index]
+    auto_encoder = AutoEncoder()
+    auto_encoder.train(np.array(all_data_x), 10)
 
-# df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
+    # df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
-# df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
+    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
 
-experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
-experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
-print(metrics_dict)
+    # experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
+    # experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
+    # with open('metrics-output.txt', 'w') as convert_file:
+    #     convert_file.write(json.dumps(metrics_dict))
 
-# model = create_nn(3, 0.0002, 0.1, 0.05)
-# history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000)
-# prediction_distribution = model(np.array(X_test))
-# results = model.evaluate(np.array(X_test), np.array(y_test), 32)
-# print("Testing metrics:", results) 
-# predictions = model.predict(np.array(X_test))
-# df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-# print(df_dict)
+    model = create_nn(3, 0.0002, 0.0, 0.01)
+    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=16)
+    prediction_distribution = model(np.array(X_test))
+    results = model.evaluate(np.array(X_test), np.array(y_test), 16)
+    print("Testing metrics:", results) 
+    predictions = model.predict(np.array(X_test))
+    df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    print(df_dict)
 
-# model = create_nn(3, 0.0001, 0.1, 0.01)
-# history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
-# prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
-# results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 16, verbose = 1)
-# print("Validation metrics:", results) 
-# predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
-# df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-# print(df_dict)
+    # model = create_nn(3, 0.0001, 0.1, 0.01)
+    # history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
+    # prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
+    # results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 16, verbose = 1)
+    # print("Validation metrics:", results) 
+    # predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
+    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    # print(df_dict)
+
+if __name__ == '__main__':
+    run_model()
+    analyze_metrics(os.getcwd() + "/metrics-output.txt")
