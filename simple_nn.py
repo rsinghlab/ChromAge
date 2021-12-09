@@ -557,9 +557,9 @@ def run_model():
     samples = np.intersect1d(metadata.index, X.index)
     metadata_temp = metadata.loc[samples, :]
 
-    all_data_x = X.loc[metadata_temp.index]
-    auto_encoder = AutoEncoder()
-    auto_encoder.train(np.array(all_data_x), 10)
+    # all_data_x = X.loc[metadata_temp.index]
+    # auto_encoder = AutoEncoder()
+    # auto_encoder.train(np.array(all_data_x), 10)
 
     # df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
