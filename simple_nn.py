@@ -576,11 +576,11 @@ def run_model():
 
     for model in best_val_models:
         model_params = model.split(" ")
-        batch_size = model_params[1]
-        num_layers = model_params[2]
-        learning_rate = model_params[3]
-        dropout = model_params[4]
-        coeff = model_params[5]
+        batch_size = int(model_params[1])
+        num_layers = int(model_params[2])
+        learning_rate = float(model_params[3])
+        dropout = float(model_params[4])
+        coeff = float(model_params[5])
 
         model = create_nn(num_layers, learning_rate, dropout, coeff)
         history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
