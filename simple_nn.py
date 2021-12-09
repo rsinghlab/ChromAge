@@ -476,30 +476,30 @@ def analyze_metrics(file_path):
         df.to_csv("simple_nn_grid_metrics.csv")
         best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
         best_train_loss_models.to_csv("best_train_loss_models.csv")
-        best_val_loss_models = df.nsmallest(10, 'mean_val_loss')
+        best_val_loss_models = df.nsmallest(20, 'mean_val_loss')
         best_val_loss_models.to_csv("best_val_loss_models.csv")
 
         best_train_mse_models = df.nsmallest(10, 'mean_train_mse')
         best_train_mse_models.to_csv("best_train_mse_models.csv")
-        best_val_mse_models = df.nsmallest(10, 'mean_val_mse')
+        best_val_mse_models = df.nsmallest(20, 'mean_val_mse')
         best_val_mse_models.to_csv("best_val_mse_models.csv")
 
         best_train_mae_models = df.nsmallest(10, 'mean_train_mae')
         best_train_mae_models.to_csv("best_train_mae_models.csv")
-        best_val_mae_models = df.nsmallest(10, 'mean_val_mae')
+        best_val_mae_models = df.nsmallest(20, 'mean_val_mae')
         best_val_mae_models.to_csv("best_val_mae_models.csv")
         
         best_val_models = set()
         best_train_models = set()
 
         for model in best_val_loss_models.index:
-            if model in best_val_mse_models.index or model in best_val_mae_models.index:
+            if model in best_val_mse_models.index and model in best_val_mae_models.index:
                 best_val_models.add(model)
         for model in best_val_mse_models.index:
-            if model in best_val_loss_models.index or model in best_val_mae_models.index:
+            if model in best_val_loss_models.index and model in best_val_mae_models.index:
                 best_val_models.add(model)
         for model in best_val_mae_models.index:
-            if model in best_val_loss_models.index or model in best_val_mse_models.index:
+            if model in best_val_loss_models.index and model in best_val_mse_models.index:
                 best_val_models.add(model)
         
         for model in best_train_loss_models.index:
@@ -570,8 +570,8 @@ def run_model():
     # with open('metrics-output.txt', 'w') as convert_file:
     #     convert_file.write(json.dumps(metrics_dict))
 
-    model = create_nn(3, 0.0002, 0.0, 0.01)
-    history = model.fit(np.array(X_train),np.array(y_train), epochs = 500, batch_size=16)
+    model = create_nn(3, 0.0003, 0.125, 0.01)
+    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=16)
     prediction_distribution = model(np.array(X_test))
     results = model.evaluate(np.array(X_test), np.array(y_test), 16)
     print("Testing metrics:", results) 
