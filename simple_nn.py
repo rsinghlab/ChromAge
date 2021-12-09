@@ -555,9 +555,9 @@ def run_model():
     # imputer = KNNImputer()
     # scaler = StandardScaler()
 
-    X = histone_data_object.df
-    samples = np.intersect1d(metadata.index, X.index)
-    metadata_temp = metadata.loc[samples, :]
+    # X = histone_data_object.df
+    # samples = np.intersect1d(metadata.index, X.index)
+    # metadata_temp = metadata.loc[samples, :]
 
     # all_data_x = X.loc[metadata_temp.index]
     # auto_encoder = AutoEncoder()
@@ -574,8 +574,8 @@ def run_model():
 
     best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output.txt")
 
-    for model in best_val_models:
-        model_params = model.split(" ")
+    for model_name in best_val_models:
+        model_params = model_name.split(" ")
         batch_size = int(model_params[1])
         num_layers = int(model_params[2])
         learning_rate = float(model_params[3])
@@ -584,12 +584,12 @@ def run_model():
 
         model = create_nn(num_layers, learning_rate, dropout, coeff)
         history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
-        print("Model: ", model, "with min loss: ", np.min(history.history['loss']), "with min mse", np.min(history.history['mse']), "with min mae", np.min(history.history['mae']))
+        print("Model: ", model, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
         prediction_distribution = model(np.array(X_test))
         results = model.evaluate(np.array(X_test), np.array(y_test), batch_size)
-        print("Testing metrics for model:", model, results) 
+        print("Testing metrics (loss, mse, mae) for model:", model_name, results) 
         predictions = model.predict(np.array(X_test))
-        df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+        df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
         df = pd.DataFrame(df_dict, index = y_test.index)
         print(df)
 
