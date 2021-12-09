@@ -536,15 +536,6 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                             print(metrics_dict)
     return df, metrics_dict
 
-param_grid = {
-    'epochs':[1000],
-    'batch_size': [16,32,48],
-    'hidden_layers':[1,3,5],
-    'lr':[0.0001, 0.0002, 0.0003],
-    'dropout':[0.0,0.05, 0.1, 0.125],
-    'coeff':[0.01, 0.02, 0.05, 0.1]
-}
-
 def run_model():
     histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
@@ -566,6 +557,15 @@ def run_model():
     # df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
 
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
+
+    # param_grid = {
+    #     'epochs':[1000],
+    #     'batch_size': [16,32,48],
+    #     'hidden_layers':[1,3,5],
+    #     'lr':[0.0001, 0.0002, 0.0003],
+    #     'dropout':[0.0,0.05, 0.1, 0.125],
+    #     'coeff':[0.01, 0.02, 0.05, 0.1]
+    # }
 
     # experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
     # experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
