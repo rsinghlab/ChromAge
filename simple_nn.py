@@ -514,6 +514,8 @@ def analyze_metrics(file_path):
 
         print("Best val models:", *list(best_val_models), sep='\n')
         print("Best train models:", *list(best_train_models), sep='\n')
+    
+    return list(best_val_models), list(best_train_models)
 
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
@@ -570,14 +572,26 @@ def run_model():
     # with open('metrics-output.txt', 'w') as convert_file:
     #     convert_file.write(json.dumps(metrics_dict))
 
-    model = create_nn(3, 0.0001, 0.0, 0.1)
-    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=16)
-    prediction_distribution = model(np.array(X_test))
-    results = model.evaluate(np.array(X_test), np.array(y_test), 16)
-    print("Testing metrics:", results) 
-    predictions = model.predict(np.array(X_test))
-    df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    print(df_dict)
+    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output.txt")
+
+    for model in best_val_models:
+        model_params = model.split(" ")
+        batch_size = model_params[1]
+        num_layers = model_params[2]
+        learning_rate = model_params[3]
+        dropout = model_params[4]
+        coeff = model_params[5]
+
+        model = create_nn(num_layers, learning_rate, dropout, coeff)
+        history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
+        print("Model: ", model, "with min loss: ", np.min(history.history['loss']), "with min mse", np.min(history.history['mse']), "with min mae", np.min(history.history['mae']))
+        prediction_distribution = model(np.array(X_test))
+        results = model.evaluate(np.array(X_test), np.array(y_test), batch_size)
+        print("Testing metrics for model:", model, results) 
+        predictions = model.predict(np.array(X_test))
+        df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+        df = pd.DataFrame(df_dict, index = y_test.index)
+        print(df)
 
     # model = create_nn(3, 0.0001, 0.1, 0.01)
     # history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
@@ -590,4 +604,3 @@ def run_model():
 
 if __name__ == '__main__':
     run_model()
-    analyze_metrics(os.getcwd() + "/metrics-output.txt")
