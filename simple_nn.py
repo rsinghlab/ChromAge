@@ -571,7 +571,7 @@ def run_model():
     #     convert_file.write(json.dumps(metrics_dict))
 
     model = create_nn(3, 0.0002, 0.0, 0.01)
-    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=16)
+    history = model.fit(np.array(X_train),np.array(y_train), epochs = 500, batch_size=16)
     prediction_distribution = model(np.array(X_test))
     results = model.evaluate(np.array(X_test), np.array(y_test), 16)
     print("Testing metrics:", results) 
