@@ -570,7 +570,7 @@ def run_model():
     # with open('metrics-output.txt', 'w') as convert_file:
     #     convert_file.write(json.dumps(metrics_dict))
 
-    model = create_nn(3, 0.0002, 0.0, 0.01)
+    model = create_nn(3, 0.0001, 0.0, 0.1)
     history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=16)
     prediction_distribution = model(np.array(X_test))
     results = model.evaluate(np.array(X_test), np.array(y_test), 16)
