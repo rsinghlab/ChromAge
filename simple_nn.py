@@ -584,7 +584,7 @@ def run_model():
 
         model = create_nn(num_layers, learning_rate, dropout, coeff)
         history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
-        print("Model: ", model, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+        print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
         prediction_distribution = model(np.array(X_test))
         results = model.evaluate(np.array(X_test), np.array(y_test), batch_size)
         print("Testing metrics (loss, mse, mae) for model:", model_name, results) 
