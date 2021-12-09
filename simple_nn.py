@@ -601,7 +601,7 @@ def run_model():
             print(pd.DataFrame(df_dict, index = y_test.index))
     
     print(test_df)
-    test_df.csv("Best_Models_testing.csv")
+    test_df.to_csv("Best_Models_testing.csv")
 
     # model = create_nn(3, 0.0001, 0.1, 0.01)
     # history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
