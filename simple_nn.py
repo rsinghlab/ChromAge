@@ -476,17 +476,17 @@ def analyze_metrics(file_path):
         df.to_csv("simple_nn_grid_metrics.csv")
         best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
         best_train_loss_models.to_csv("best_train_loss_models.csv")
-        best_val_loss_models = df.nsmallest(10, 'mean_val_loss')
+        best_val_loss_models = df.nsmallest(20, 'mean_val_loss')
         best_val_loss_models.to_csv("best_val_loss_models.csv")
 
         best_train_mse_models = df.nsmallest(10, 'mean_train_mse')
         best_train_mse_models.to_csv("best_train_mse_models.csv")
-        best_val_mse_models = df.nsmallest(10, 'mean_val_mse')
+        best_val_mse_models = df.nsmallest(20, 'mean_val_mse')
         best_val_mse_models.to_csv("best_val_mse_models.csv")
 
         best_train_mae_models = df.nsmallest(10, 'mean_train_mae')
         best_train_mae_models.to_csv("best_train_mae_models.csv")
-        best_val_mae_models = df.nsmallest(10, 'mean_val_mae')
+        best_val_mae_models = df.nsmallest(20, 'mean_val_mae')
         best_val_mae_models.to_csv("best_val_mae_models.csv")
         
         best_val_models = set()
@@ -598,7 +598,7 @@ def run_model():
             test_df = pd.DataFrame(df_dict, index = y_test.index)
             print(pd.DataFrame(df_dict, index = y_test.index))
         else:
-            test_df.append(pd.DataFrame(df_dict, index = y_test.index))
+            test_df = test_df.append(pd.DataFrame(df_dict, index = y_test.index))
             print(pd.DataFrame(df_dict, index = y_test.index))
     
     print(test_df)
