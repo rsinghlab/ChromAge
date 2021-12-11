@@ -575,43 +575,43 @@ def run_model():
     best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output.txt")
     test_df = None
 
-    for model_name in best_val_models:
-        model_params = model_name.split(" ")
-        batch_size = int(model_params[1])
-        num_layers = int(model_params[2])
-        learning_rate = float(model_params[3])
-        dropout = float(model_params[4])
-        coeff = float(model_params[5])
+    # for model_name in best_val_models:
+    #     model_params = model_name.split(" ")
+    #     batch_size = int(model_params[1])
+    #     num_layers = int(model_params[2])
+    #     learning_rate = float(model_params[3])
+    #     dropout = float(model_params[4])
+    #     coeff = float(model_params[5])
 
-        model = create_nn(num_layers, learning_rate, dropout, coeff)
-        history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
-        print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    #     model = create_nn(num_layers, learning_rate, dropout, coeff)
+    #     history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
+    #     print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
 
-        prediction_distribution = model(np.array(X_test))
-        results = model.evaluate(np.array(X_test), np.array(y_test), batch_size)
-        print("Testing metrics (loss, mse, mae) for model:", model_name, results) 
-        predictions = model.predict(np.array(X_test))
+    #     prediction_distribution = model(np.array(X_test))
+    #     results = model.evaluate(np.array(X_test), np.array(y_test), batch_size)
+    #     print("Testing metrics (loss, mse, mae) for model:", model_name, results) 
+    #     predictions = model.predict(np.array(X_test))
 
-        type_arr = np.full(np.array(y_test).shape, model_name)
-        df_dict = {"Model": type_arr, "Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-        if test_df is None:
-            test_df = pd.DataFrame(df_dict, index = y_test.index)
-            print(pd.DataFrame(df_dict, index = y_test.index))
-        else:
-            test_df = test_df.append(pd.DataFrame(df_dict, index = y_test.index))
-            print(pd.DataFrame(df_dict, index = y_test.index))
+    #     type_arr = np.full(np.array(y_test).shape, model_name)
+    #     df_dict = {"Model": type_arr, "Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    #     if test_df is None:
+    #         test_df = pd.DataFrame(df_dict, index = y_test.index)
+    #         print(pd.DataFrame(df_dict, index = y_test.index))
+    #     else:
+    #         test_df = test_df.append(pd.DataFrame(df_dict, index = y_test.index))
+    #         print(pd.DataFrame(df_dict, index = y_test.index))
     
-    print(test_df)
-    test_df.to_csv("Best_Models_testing.csv")
+    # print(test_df)
+    # test_df.to_csv("Best_Models_testing.csv")
 
-    # model = create_nn(3, 0.0001, 0.1, 0.01)
-    # history = model.fit(auto_encoder.predict(np.array(X_train)),np.array(y_train), epochs = 1000)
-    # prediction_distribution = model(auto_encoder.predict(np.array(X_test)))
-    # results = model.evaluate(auto_encoder.predict(np.array(X_test)), np.array(y_test), 16, verbose = 1)
-    # print("Validation metrics:", results) 
-    # predictions = model.predict(auto_encoder.predict(np.array(X_test)), verbose = 1)
-    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    # print(df_dict)
+    model = create_nn(3, 0.0003, 0.02, 0.01)
+    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48)
+    prediction_distribution = model(np.array(X_test))
+    results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 1)
+    print("Validation metrics:", results) 
+    predictions = model.predict(np.array(X_test), verbose = 1)
+    df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    print(pd.DataFrame(df_dict, index = y_test.index))
 
 if __name__ == '__main__':
     run_model()
