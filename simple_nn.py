@@ -23,6 +23,7 @@ from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.model_selection import train_test_split, KFold, cross_validate, GridSearchCV
 from sklearn.preprocessing import StandardScaler, RobustScaler, QuantileTransformer
 from sklearn.impute import KNNImputer
+from sklearn.metrics import median_absolute_error
 
 import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
@@ -609,8 +610,8 @@ def run_model():
     print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
     prediction_distribution = model(np.array(X_test))
     results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 0)
-    print("Testing metrics:", results) 
     predictions = model.predict(np.array(X_test), verbose = 0)
+    print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten())) 
     df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
     print(pd.DataFrame(df_dict, index = y_test.index))
 
