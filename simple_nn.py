@@ -604,11 +604,11 @@ def run_model():
     # print(test_df)
     # test_df.to_csv("Best_Models_testing.csv")
 
-    model = create_nn(3, 0.0003, 0.015, 0.015)
-    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
+    model = create_nn(5, 0.0003, 0.0, 0.02) # create_nn(3, 0.0003, 0.015, 0.015) best for 48
+    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=16, verbose=0)
     print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
     prediction_distribution = model(np.array(X_test))
-    results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 0)
+    results = model.evaluate(np.array(X_test), np.array(y_test), 16, verbose = 0)
     print("Testing metrics:", results) 
     predictions = model.predict(np.array(X_test), verbose = 0)
     df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
