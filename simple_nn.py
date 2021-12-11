@@ -605,11 +605,11 @@ def run_model():
     # test_df.to_csv("Best_Models_testing.csv")
 
     model = create_nn(3, 0.0003, 0.02, 0.01)
-    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48)
+    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
     prediction_distribution = model(np.array(X_test))
-    results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 1)
+    results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 0)
     print("Validation metrics:", results) 
-    predictions = model.predict(np.array(X_test), verbose = 1)
+    predictions = model.predict(np.array(X_test), verbose = 0)
     df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
     print(pd.DataFrame(df_dict, index = y_test.index))
 
