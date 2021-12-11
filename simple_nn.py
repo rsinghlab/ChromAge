@@ -221,7 +221,7 @@ def split_data(metadata, histone_data_object, split = 0.2):
 
     metadata_temp = metadata.loc[samples, :]
 
-    experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split)
+    experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
 
     training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
     training_metadata = metadata_temp.loc[training_list, :]
