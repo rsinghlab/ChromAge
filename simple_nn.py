@@ -604,7 +604,7 @@ def run_model():
     # print(test_df)
     # test_df.to_csv("Best_Models_testing.csv")
 
-    model = create_nn(3, 0.0003, 0.0, 0.015)
+    model = create_nn(3, 0.0003, 0.0, 0.02)
     history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
     print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
     prediction_distribution = model(np.array(X_test))
