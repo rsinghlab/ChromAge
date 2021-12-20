@@ -285,7 +285,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                     print ("Running the encode pipeline for" + str(h3k4me3_json))
                     print ("The command used was: " + h3k4me3_pipeline_call)
                     subprocess.call(h3k4me3_pipeline_call, shell=True)
-                    subprocess.call("sh extract_output.sh", shell=True)
+                    #subprocess.call("sh extract_output.sh", shell=True)
             else:
                 if (len(h3k27ac_json) != 0):
                     h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
