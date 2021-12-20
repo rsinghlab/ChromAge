@@ -322,7 +322,6 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
                 print ("The command used was: " + h3k36me3_pipeline_call)
                 subprocess.call(h3k36me3_pipeline_call, shell=True)
                 subprocess.call("sh extract_output.sh", shell=True)
-        break
         print("ROW " + str(i) + " finished")
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
