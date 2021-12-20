@@ -2,9 +2,8 @@
 
 #SBATCH -n 30
 #SBATCH --mem=100G
-#SBATCH -t 600:00:00
+#SBATCH -t 480:00:00
 #SBATCH -o pipeline-run-%j.out
-#SBATCH -A cbc-condo
 
 module load python/3.7.4
 source /gpfs/home/masif/data/masif/miniconda3/etc/profile.d/conda.sh
