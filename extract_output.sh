@@ -5,6 +5,8 @@ part1="/gpfs/data/rsingh47/masif/ChromAge/chip/"
 part2="call-macs2_signal_track/shard-0/execution"
 part3="call-qc_report"
 
+
+echo "Conda ready to use"
 conda activate encode-chip-seq-pipeline
 
 for d in */ ; do
