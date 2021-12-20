@@ -6,6 +6,7 @@ part2="call-macs2_signal_track/shard-0/execution"
 part3="call-qc_report"
 
 
+source /gpfs/home/masif/data/masif/miniconda3/etc/profile.d/conda.sh
 echo "Conda ready to use"
 conda activate encode-chip-seq-pipeline
 
