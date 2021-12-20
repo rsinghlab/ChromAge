@@ -328,7 +328,7 @@ local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
 run_pipeline()
 # run_pipeline(H3K4me3=False)
-#run_pipeline(priority=False)
+# run_pipeline(priority=False)
 
 
 # json_example = {
