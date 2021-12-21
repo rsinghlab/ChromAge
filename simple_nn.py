@@ -557,26 +557,36 @@ def run_model():
 
     best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output.txt")
 
-    for model_name in best_val_models:
-        model_params = model_name.split(" ")
-        batch_size = int(model_params[1])
-        num_layers = int(model_params[2])
-        learning_rate = float(model_params[3])
-        dropout = float(model_params[4])
-        coeff = float(model_params[5])
+    # for model_name in best_val_models:
+    #     model_params = model_name.split(" ")
+    #     batch_size = int(model_params[1])
+    #     num_layers = int(model_params[2])
+    #     learning_rate = float(model_params[3])
+    #     dropout = float(model_params[4])
+    #     coeff = float(model_params[5])
 
-        train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+    #     train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
 
-        model = create_nn(num_layers, learning_rate, dropout, coeff)
-        history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=batch_size, verbose = 0)
-        print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    #     model = create_nn(num_layers, learning_rate, dropout, coeff)
+    #     history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=batch_size, verbose = 0)
+    #     print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
 
-        prediction_distribution = model(np.array(val_x))
-        results = model.evaluate(np.array(val_x), np.array(val_y), batch_size, verbose = 0)
-        predictions = model.predict(np.array(val_x), verbose = 0)
-        print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
-        df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-        print(pd.DataFrame(df_dict, index = val_y.index))
+    #     prediction_distribution = model(np.array(val_x))
+    #     results = model.evaluate(np.array(val_x), np.array(val_y), batch_size, verbose = 0)
+    #     predictions = model.predict(np.array(val_x), verbose = 0)
+    #     print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
+    #     df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    #     print(pd.DataFrame(df_dict, index = val_y.index))
+
+    train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+
+    model = create_nn(3, 0.0003, 0.0, 0.01)
+    history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
+    print("Model: ", "simple_nn 48 3 0.0003 0.0 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+
+    results = model.evaluate(np.array(val_x), np.array(val_y), 48, verbose = 0)
+    predictions = model.predict(np.array(val_x), verbose = 0)
+    print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
 
     # model = create_nn(3, 0.0003, 0.0165, 0.0165) # best for 48 # create_nn(5, 0.0003, 0.0, 0.015) best for 16
     # history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
