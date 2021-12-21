@@ -565,7 +565,7 @@ def run_model():
         dropout = float(model_params[4])
         coeff = float(model_params[5])
 
-        train_x, train_y, val_x, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+        train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
 
         model = create_nn(num_layers, learning_rate, dropout, coeff)
         history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=batch_size, verbose = 0)
