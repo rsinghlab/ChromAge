@@ -583,11 +583,14 @@ def run_model():
     model = create_nn(3, 0.0003, 0.0165, 0.0165)
     history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
     print("Model: ", "simple_nn 48 3 0.0003 0.0165 0.0165", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-
+    # prediction_distribution = model(np.array(X_test))
     results = model.evaluate(np.array(val_x), np.array(val_y), 48, verbose = 0)
     predictions = model.predict(np.array(val_x), verbose = 0)
     print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
+    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    # print(pd.DataFrame(df_dict, index = y_test.index))
 
+    
     # model = create_nn(3, 0.0003, 0.0165, 0.0165) # best for 48 # create_nn(5, 0.0003, 0.0, 0.015) best for 16
     # history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
     # print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
