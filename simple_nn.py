@@ -311,7 +311,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_val_mse_array.append(np.min(history.history['val_mse']))
         min_val_mae_array.append(np.min(history.history['val_mae']))
 
-        results = model.evaluate(np.array(validation_x), np.array(validation_y), int(batch_size/2))
+        results = model.evaluate(np.array(validation_x), np.array(validation_y), int(batch_size/2), verbose=0)
         # print("Validation metrics:", results)     
         val_metrics_array.append(results)
 
@@ -325,7 +325,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
-        print(df)
+        # print(df)
     return df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array
 
 def loss_function(targets, estimated_distribution):
@@ -568,9 +568,16 @@ def run_model():
         model = create_nn(num_layers, learning_rate, dropout, coeff)
         history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
         print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+
         df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, 1000, model_name, [num_layers, learning_rate, dropout, coeff], None)
 
         print("Model: ", model_name, "with validation metrics for 4 folds:", val_metrics_array)
+        print("Model: ", model_name, "with minimum training loss for 4 folds:", min_train_loss_array)
+        print("Model: ", model_name, "with minimum training mse for 4 folds:", min_train_mse_array)
+        print("Model: ", model_name, "with minimum training mae for 4 folds:", min_train_mae_array)
+        print("Model: ", model_name, "with minimum val loss for 4 folds:", min_val_loss_array)
+        print("Model: ", model_name, "with minimum val mse for 4 folds:", min_val_mse_array)
+        print("Model: ", model_name, "with minimum val mae for 4 folds:", min_val_mae_array)
 
         print(df)
 
