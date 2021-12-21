@@ -569,15 +569,15 @@ def run_model():
         history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
         print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
 
-        df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, 1000, model_name, [num_layers, learning_rate, dropout, coeff], None)
+        df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, 1000, model_name, [num_layers, learning_rate, dropout, coeff], None, 1)
 
-        print("Model: ", model_name, "with validation metrics for 4 folds:", val_metrics_array)
-        print("Model: ", model_name, "with minimum training loss for 4 folds:", min_train_loss_array)
-        print("Model: ", model_name, "with minimum training mse for 4 folds:", min_train_mse_array)
-        print("Model: ", model_name, "with minimum training mae for 4 folds:", min_train_mae_array)
-        print("Model: ", model_name, "with minimum val loss for 4 folds:", min_val_loss_array)
-        print("Model: ", model_name, "with minimum val mse for 4 folds:", min_val_mse_array)
-        print("Model: ", model_name, "with minimum val mae for 4 folds:", min_val_mae_array)
+        print("Model: ", model_name, "with validation metrics:", val_metrics_array)
+        print("Model: ", model_name, "with minimum training loss:", min_train_loss_array)
+        print("Model: ", model_name, "with minimum training mse:", min_train_mse_array)
+        print("Model: ", model_name, "with minimum training mae:", min_train_mae_array)
+        print("Model: ", model_name, "with minimum val loss:", min_val_loss_array)
+        print("Model: ", model_name, "with minimum val mse:", min_val_mse_array)
+        print("Model: ", model_name, "with minimum val mae:", min_val_mae_array)
 
         print(df)
 
