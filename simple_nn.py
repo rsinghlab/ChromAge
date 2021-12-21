@@ -565,22 +565,18 @@ def run_model():
         dropout = float(model_params[4])
         coeff = float(model_params[5])
 
+        train_x, train_y, val_x, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+
         model = create_nn(num_layers, learning_rate, dropout, coeff)
-        history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
+        history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=batch_size, verbose = 0)
         print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
 
-        df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, 1000, model_name, [num_layers, learning_rate, dropout, coeff], None, 1)
-
-        print("Model: ", model_name, "with validation metrics:", val_metrics_array)
-        print("Model: ", model_name, "with minimum training loss:", min_train_loss_array)
-        print("Model: ", model_name, "with minimum training mse:", min_train_mse_array)
-        print("Model: ", model_name, "with minimum training mae:", min_train_mae_array)
-        print("Model: ", model_name, "with minimum val loss:", min_val_loss_array)
-        print("Model: ", model_name, "with minimum val mse:", min_val_mse_array)
-        print("Model: ", model_name, "with minimum val mae:", min_val_mae_array)
-
-        print(df)
-
+        prediction_distribution = model(np.array(val_x))
+        results = model.evaluate(np.array(val_x), np.array(val_y), batch_size, verbose = 0)
+        predictions = model.predict(np.array(val_x), verbose = 0)
+        print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
+        df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+        print(pd.DataFrame(df_dict, index = val_y.index))
 
     # model = create_nn(3, 0.0003, 0.0165, 0.0165) # best for 48 # create_nn(5, 0.0003, 0.0, 0.015) best for 16
     # history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
