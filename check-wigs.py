@@ -42,8 +42,8 @@ def check_files(file_path, verbose = True): #makes sure that files are not corru
     bw.close()
 
 def main():
-    print(sys.argv[1][-7])
-    if len(sys.argv) != 2 or sys.argv[1][-7] != ".bigwig":
+    print(sys.argv[1][-7:])
+    if len(sys.argv) != 2 or sys.argv[1][-7:] != ".bigwig":
         print("USAGE: python assignment.py <Big Wig File Name>")
         print("<Big Wig File Name>: [_.bigwig]")
         exit()
