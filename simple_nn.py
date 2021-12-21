@@ -425,24 +425,6 @@ class AutoEncoder(tf.keras.Model):
             # Dropout(0.1),
             Dense(30321, activation=None)
         ])
-
-        # self.encoder = Sequential(layers=[
-        #     GaussianNoise(0.2),
-        #     Conv1D(32, 3, activation='relu', padding='same'),
-        #     MaxPooling1D(2, padding='same'),
-        #     Conv1D(16, 3, activation='relu', padding='same'),
-        #     MaxPooling1D(2, padding='same'),
-        #     Conv1D(8, 3, activation='relu', padding='same'),
-        #     MaxPooling1D(2, padding='same')])
-
-        # self.decoder = Sequential(layers=[
-        #     Conv1D(8, 3, activation='relu', padding='same'),
-        #     UpSampling1D(2),
-        #     Conv1D(16, 3, activation='relu', padding='same'),
-        #     UpSampling1D(2),
-        #     Conv1D(32, 3, activation='relu', padding='same'),
-        #     UpSampling1D(2),
-        #     Conv1D(1, 3, activation='sigmoid', padding='same')])
     
     def call(self, inputs):
         encoder_output = self.encoder(inputs)
@@ -574,46 +556,34 @@ def run_model():
     #     convert_file.write(json.dumps(metrics_dict))
 
     best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output.txt")
-    test_df = None
 
-    # for model_name in best_val_models:
-    #     model_params = model_name.split(" ")
-    #     batch_size = int(model_params[1])
-    #     num_layers = int(model_params[2])
-    #     learning_rate = float(model_params[3])
-    #     dropout = float(model_params[4])
-    #     coeff = float(model_params[5])
+    for model_name in best_val_models:
+        model_params = model_name.split(" ")
+        batch_size = int(model_params[1])
+        num_layers = int(model_params[2])
+        learning_rate = float(model_params[3])
+        dropout = float(model_params[4])
+        coeff = float(model_params[5])
 
-    #     model = create_nn(num_layers, learning_rate, dropout, coeff)
-    #     history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
-    #     print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+        model = create_nn(num_layers, learning_rate, dropout, coeff)
+        history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=batch_size, verbose = 0)
+        print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+        df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, 1000, model_name, [num_layers, learning_rate, dropout, coeff], None)
 
-    #     prediction_distribution = model(np.array(X_test))
-    #     results = model.evaluate(np.array(X_test), np.array(y_test), batch_size)
-    #     print("Testing metrics (loss, mse, mae) for model:", model_name, results) 
-    #     predictions = model.predict(np.array(X_test))
+        print("Model: ", model_name, "with validation metrics for 4 folds:", val_metrics_array)
 
-    #     type_arr = np.full(np.array(y_test).shape, model_name)
-    #     df_dict = {"Model": type_arr, "Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    #     if test_df is None:
-    #         test_df = pd.DataFrame(df_dict, index = y_test.index)
-    #         print(pd.DataFrame(df_dict, index = y_test.index))
-    #     else:
-    #         test_df = test_df.append(pd.DataFrame(df_dict, index = y_test.index))
-    #         print(pd.DataFrame(df_dict, index = y_test.index))
-    
-    # print(test_df)
-    # test_df.to_csv("Best_Models_testing.csv")
+        print(df)
 
-    model = create_nn(3, 0.0003, 0.0165, 0.0165) # best for 48 # create_nn(5, 0.0003, 0.0, 0.015) best for 16
-    history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
-    print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    prediction_distribution = model(np.array(X_test))
-    results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 0)
-    predictions = model.predict(np.array(X_test), verbose = 0)
-    print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten())) 
-    df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    print(pd.DataFrame(df_dict, index = y_test.index))
+
+    # model = create_nn(3, 0.0003, 0.0165, 0.0165) # best for 48 # create_nn(5, 0.0003, 0.0, 0.015) best for 16
+    # history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
+    # print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    # prediction_distribution = model(np.array(X_test))
+    # results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 0)
+    # predictions = model.predict(np.array(X_test), verbose = 0)
+    # print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten())) 
+    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    # print(pd.DataFrame(df_dict, index = y_test.index))
 
 if __name__ == '__main__':
     run_model()
