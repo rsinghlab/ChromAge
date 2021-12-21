@@ -580,7 +580,7 @@ def run_model():
 
     train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
 
-    model = create_nn(3, 0.0003, 0.0, 0.01)
+    model = create_nn(3, 0.0003, 0.0, 0.015)
     history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
     print("Model: ", "simple_nn 48 3 0.0003 0.0 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
 
