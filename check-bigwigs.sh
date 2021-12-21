@@ -7,6 +7,6 @@ cd /gpfs/data/rsingh47/masif/caper_output/bigWigs/
 part1="/gpfs/data/rsingh47/masif/caper_output/bigWigs/"
 
 for d in * ; do
-python3 check-wigs.py "$part1$d"
+python3 /gpfs/data/rsingh47/masif/ChromAge/check-wigs.py "$part1$d"
 done
 
