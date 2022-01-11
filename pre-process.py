@@ -34,9 +34,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-check = False
-
-def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True):
+def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", priority=True, H3K4me3 = True, check = False):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
