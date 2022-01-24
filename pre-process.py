@@ -76,7 +76,7 @@ def run_pipeline(path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv", p
         h3k36me3_GEO = process_srr_val(df["H3K36me3 GEO"][i])
 
         if (len(h3k4me3_GEO) > 0):
-            if (h3k4me3_GEO[0] == 'GSM4106263'):
+            if (h3k4me3_GEO[0] == 'GSM4106272'):
                 check = True
 
         if check:
