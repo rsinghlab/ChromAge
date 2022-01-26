@@ -494,9 +494,6 @@ def analyze_metrics(file_path):
         for model in best_train_mae_models.index:
             if model in best_train_mse_models.index and model in best_train_mae_models.index:
                 best_train_models.add(model)
-
-        print("Best val models:", *list(best_val_models), sep='\n')
-        print("Best train models:", *list(best_train_models), sep='\n')
     
     return list(best_val_models), list(best_train_models)
 
@@ -519,87 +516,64 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                             print(metrics_dict)
     return df, metrics_dict
 
-def run_model():
-    histone_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+def post_process(metadata, histone_data_object, histone_mark_str, y_test):
+    
+    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-" + histone_mark_str + "output.txt")
+
+    print("Best val models:", *list(best_val_models), sep='\n')
+    print("Best train models:", *list(best_train_models), sep='\n')
+
+    train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+
+    # Try improving the MAE, MSE and the loss for the best models here
+
+    auto_encoder = AutoEncoder()
+    auto_encoder.train(np.array(train_x), 10)
+
+    model = create_nn(3, 0.0003, 0.0, 0.01)
+    history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
+    print("Model: ", "simple_nn 48 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    results = model.evaluate(np.array(val_x), np.array(val_y), 48, verbose = 0)
+    prediction_distribution = model(np.array(val_x))
+    predictions = model.predict(np.array(val_x), verbose = 0)
+    print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten()))
+
+    df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+
+    df = pd.DataFrame(df_dict, index = val_y.index)
+    print(df)
+    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
+
+def main(histone_data_object, histone_mark_str, process = False):
+
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
     metadata = filter_metadata(metadata, biological_replicates = True)
 
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
-    # imputer = KNNImputer()
-    # scaler = StandardScaler()
+    if process == True:
+        post_process(metadata, histone_data_object, histone_mark_str, y_test)
+    else:
+        imputer = KNNImputer()
+        scaler = StandardScaler()
 
-    # X = histone_data_object.df
-    # samples = np.intersect1d(metadata.index, X.index)
-    # metadata_temp = metadata.loc[samples, :]
+        param_grid = {
+            'epochs':[1000],
+            'batch_size': [16,32,48],
+            'hidden_layers':[1,3,5],
+            'lr':[0.0001, 0.0002, 0.0003],
+            'dropout':[0.0,0.05, 0.1, 0.125, 0.15],
+            'coeff':[0.01, 0.02, 0.05, 0.1, 0.15]
+        }
 
-    # all_data_x = X.loc[metadata_temp.index]
-    # auto_encoder = AutoEncoder()
-    # auto_encoder.train(np.array(all_data_x), 10)
-
-    # df = k_cross_validate_model(auto_encoder, metadata, histone_data_object, y_test, 32, 1000, "", [3, 0.0001, 0.1, 0.01], None)
-
-    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
-
-    # param_grid = {
-    #     'epochs':[1000],
-    #     'batch_size': [16,32,48],
-    #     'hidden_layers':[1,3,5],
-    #     'lr':[0.0001, 0.0002, 0.0003],
-    #     'dropout':[0.0,0.05, 0.1, 0.125],
-    #     'coeff':[0.01, 0.02, 0.05, 0.1]
-    # }
-
-    # experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
-    # experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/simple_nn_results.csv')
-    # with open('metrics-output.txt', 'w') as convert_file:
-    #     convert_file.write(json.dumps(metrics_dict))
-
-    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output.txt")
-
-    # for model_name in best_val_models:
-    #     model_params = model_name.split(" ")
-    #     batch_size = int(model_params[1])
-    #     num_layers = int(model_params[2])
-    #     learning_rate = float(model_params[3])
-    #     dropout = float(model_params[4])
-    #     coeff = float(model_params[5])
-
-    #     train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
-
-    #     model = create_nn(num_layers, learning_rate, dropout, coeff)
-    #     history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=batch_size, verbose = 0)
-    #     print("Model: ", model_name, "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-
-    #     prediction_distribution = model(np.array(val_x))
-    #     results = model.evaluate(np.array(val_x), np.array(val_y), batch_size, verbose = 0)
-    #     predictions = model.predict(np.array(val_x), verbose = 0)
-    #     print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
-    #     df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    #     print(pd.DataFrame(df_dict, index = val_y.index))
-
-    train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
-
-    model = create_nn(3, 0.0003, 0.0165, 0.0165)
-    history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
-    print("Model: ", "simple_nn 48 3 0.0003 0.0165 0.0165", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    # prediction_distribution = model(np.array(X_test))
-    results = model.evaluate(np.array(val_x), np.array(val_y), 48, verbose = 0)
-    predictions = model.predict(np.array(val_x), verbose = 0)
-    print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten())) 
-    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    # print(pd.DataFrame(df_dict, index = y_test.index))
-
-    
-    # model = create_nn(3, 0.0003, 0.0165, 0.0165) # best for 48 # create_nn(5, 0.0003, 0.0, 0.015) best for 16
-    # history = model.fit(np.array(X_train),np.array(y_train), epochs = 1000, batch_size=48, verbose=0)
-    # print("Min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    # prediction_distribution = model(np.array(X_test))
-    # results = model.evaluate(np.array(X_test), np.array(y_test), 48, verbose = 0)
-    # predictions = model.predict(np.array(X_test), verbose = 0)
-    # print("Testing metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten())) 
-    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    # print(pd.DataFrame(df_dict, index = y_test.index))
+        experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
+        experiment_DataFrame.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
+        with open('metrics-output-' + histone_mark_str + '.txt', 'w') as convert_file:
+            convert_file.write(json.dumps(metrics_dict))
 
 if __name__ == '__main__':
-    run_model()
+    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    # main(H3K4me3_data_object, "H3K4me3")
+
+    # post-processing
+    main(H3K4me3_data_object, "H3K4me3", True)
