@@ -365,43 +365,6 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
 
     return model
 
-def create_LSTM(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
-    hidden_layer_sizes = []
-
-    if hidden_layers == 1:
-        hidden_layer_sizes.append(64)
-    else:
-        for i in range(hidden_layers):
-            hidden_layer_sizes.append(16 * (i+1))
-
-    inputs = Input(shape = (30321,))
-    x = BatchNormalization()(inputs)
-    # x = ActivityRegularization(coeff, coeff)(inputs)
-    
-    x = tf.expand_dims(tf.convert_to_tensor(x), axis = 0)
-
-    x, _, _ = LSTM(hidden_layer_sizes[0], return_sequences=True, return_state=True)(x)
-
-    x = tf.squeeze(x, axis=0)
-
-    for i in range(1, hidden_layers):
-        x = Dense(hidden_layer_sizes[i],activation = 'selu',
-                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
-                  activity_regularizer= tf.keras.regularizers.l1_l2(coeff, coeff))(x)
-        x = BatchNormalization()(x)
-        x = Dropout(dropout)(x)
-
-    distribution_params = Dense(2, activation='relu')(x)
-    outputs = tfp.layers.DistributionLambda(
-      lambda t: tfp.distributions.Normal(loc=t[..., :1],
-                           scale=1e-3 + tf.math.softplus(0.01 * t[...,1:])))(distribution_params)
-    model = Model(inputs, outputs)
-    
-    optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
-    model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
-
-    return model
-
 class AutoEncoder(tf.keras.Model):
     def __init__(self):
         super(AutoEncoder, self).__init__()
@@ -518,10 +481,10 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-" + histone_mark_str + "output.txt")
+    # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt")
 
-    print("Best val models:", *list(best_val_models), sep='\n')
-    print("Best train models:", *list(best_train_models), sep='\n')
+    # print("Best val models:", *list(best_val_models), sep='\n')
+    # print("Best train models:", *list(best_train_models), sep='\n')
 
     train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
 
