@@ -494,11 +494,11 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     auto_encoder.train(np.array(train_x), 10)
 
     model = create_nn(3, 0.0003, 0.0, 0.01)
-    history = model.fit(np.array(train_x),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
+    history = model.fit(auto_encoder.call(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
     print("Model: ", "simple_nn 48 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    results = model.evaluate(np.array(val_x), np.array(val_y), 48, verbose = 0)
-    prediction_distribution = model(np.array(val_x))
-    predictions = model.predict(np.array(val_x), verbose = 0)
+    results = model.evaluate(auto_encoder.call(np.array(val_x)), np.array(val_y), 48, verbose = 0)
+    prediction_distribution = model(auto_encoder.call(np.array(val_x)))
+    predictions = model.predict(auto_encoder.call(np.array(val_x)), verbose = 0)
     print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten()))
 
     df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
