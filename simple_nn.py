@@ -381,7 +381,6 @@ class AutoEncoder(tf.keras.Model):
             Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
             Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
-            Dropout(self.dropout_rate),
         ])
         self.decoder = Sequential([
             Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
