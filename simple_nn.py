@@ -373,19 +373,21 @@ class AutoEncoder(tf.keras.Model):
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.latent_size = 1500
         self.hidden_dim = 6000
+        self.dropout_rate = 0.15
+        self.coeff = 0.01
         self.encoder = Sequential([
-            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            Dropout(0.15),
-            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            Dropout(0.15),
-            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            Dropout(0.15),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dropout(self.dropout_rate),
+            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dropout(self.dropout_rate),
+            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dropout(self.dropout_rate),
         ])
         self.decoder = Sequential([
-            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            Dropout(0.15),
-            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1(0.01)),
-            Dropout(0.15),
+            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dropout(self.dropout_rate),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dropout(self.dropout_rate),
             Dense(30321, activation=None)
         ])
     
