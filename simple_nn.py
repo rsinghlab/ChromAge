@@ -369,8 +369,8 @@ class AutoEncoder(tf.keras.Model):
     def __init__(self):
         super(AutoEncoder, self).__init__()
         self.batch_size = 32
-        self.loss = tf.keras.losses.MeanSquaredError()
-        self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+        # self.loss = tf.keras.losses.MeanSquaredError()
+        # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.latent_size = 1500
         self.hidden_dim = 6000
         self.dropout_rate = 0.15
@@ -393,21 +393,21 @@ class AutoEncoder(tf.keras.Model):
     def call(self, inputs):
         encoder_output = self.encoder(inputs)
         return tf.squeeze(self.decoder(encoder_output))
-    
-    def train(self, train_inputs, num_epochs):
-        for i in range(num_epochs):
-            loss_list = []
-            indices = tf.random.shuffle([x for x in range(len(train_inputs))])
-            train_inputs = tf.gather(train_inputs,indices)
-            for i in range(0,len(train_inputs),self.batch_size):
-                batched_inputs = train_inputs[i:i+self.batch_size]
-                with tf.GradientTape() as tape:
-                    predictions = self.call(batched_inputs)
-                    loss = self.loss(predictions,batched_inputs)
-                    loss_list.append(loss.numpy())
-                gradients = tape.gradient(loss, self.trainable_variables)
-                self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
-            print(sum(loss_list)/len(loss_list))
+
+    # def train(self, train_inputs, num_epochs):
+    #     for i in range(num_epochs):
+    #         loss_list = []
+    #         indices = tf.random.shuffle([x for x in range(len(train_inputs))])
+    #         train_inputs = tf.gather(train_inputs,indices)
+    #         for i in range(0,len(train_inputs),self.batch_size):
+    #             batched_inputs = train_inputs[i:i+self.batch_size]
+    #             with tf.GradientTape() as tape:
+    #                 predictions = self.call(batched_inputs)
+    #                 loss = self.loss(predictions,batched_inputs)
+    #                 loss_list.append(loss.numpy())
+    #             gradients = tape.gradient(loss, self.trainable_variables)
+    #             self.optimizer.apply_gradients(zip(gradients, self.trainable_variables))
+    #         print(sum(loss_list)/len(loss_list))
 
 def analyze_metrics(file_path):
     metric_dict = defaultdict(list)
@@ -492,14 +492,25 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # Try improving the MAE, MSE and the loss for the best models here
 
     auto_encoder = AutoEncoder()
-    auto_encoder.train(np.array(train_x), 10)
+    auto_encoder.compile(
+    loss='mae',
+    metrics=['mae'],
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+
+    history = auto_encoder.fit(
+        train_x, 
+        train_y, 
+        epochs=10, 
+        batch_size=48, 
+        validation_data=(val_x, val_y)
+    )
 
     model = create_nn(3, 0.0003, 0.0, 0.01)
-    history = model.fit(auto_encoder.call(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
+    history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
     print("Model: ", "simple_nn 48 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    results = model.evaluate(auto_encoder.call(np.array(val_x)), np.array(val_y), 48, verbose = 0)
-    prediction_distribution = model(auto_encoder.call(np.array(val_x)))
-    predictions = model.predict(auto_encoder.call(np.array(val_x)), verbose = 0)
+    results = model.evaluate(np.array(val_x), np.array(val_y), 48, verbose = 0)
+    prediction_distribution = model(auto_encoder.encoder(np.array(val_x)))
+    predictions = model.predict(auto_encoder.encoder(np.array(val_x)), verbose = 0)
     print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten()))
 
     df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
