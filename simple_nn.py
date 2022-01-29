@@ -311,7 +311,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         )
 
         model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
-        history = model.fit(np.array(training_x), np.array(training_y), batch_size, epochs, verbose=0, validation_data=(np.array(validation_x), np.array(validation_y)))
+        history = model.fit(auto_encoder.encoder(np.array(training_x)), np.array(training_y), batch_size, epochs, verbose=0, validation_data=(np.array(validation_x), np.array(validation_y)))
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
         min_train_mae_array.append(np.min(history.history['mae']))
@@ -319,11 +319,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_val_mse_array.append(np.min(history.history['val_mse']))
         min_val_mae_array.append(np.min(history.history['val_mae']))
 
-        results = model.evaluate(np.array(validation_x), np.array(validation_y), int(batch_size/2), verbose=0)
+        results = model.evaluate(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y), int(batch_size/2), verbose=0)
         # print("Validation metrics:", results)     
         val_metrics_array.append(results)
 
-        prediction_distribution = model(np.array(validation_x))
+        prediction_distribution = model(auto_encoder.encoder(np.array(validation_x)))
         type_arr = np.full(np.array(validation_y).shape, model_type)
 
         if df is None:
@@ -498,19 +498,23 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
         validation_data=(val_x, val_y)
     )
 
-    model = create_nn(3, 0.0003, 0.0, 0.01)
-    history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
-    print("Model: ", "simple_nn 48 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    results = model.evaluate(auto_encoder.encoder(np.array(val_x)), np.array(val_y), 48, verbose = 0)
-    prediction_distribution = model(auto_encoder.encoder(np.array(val_x)))
-    predictions = model.predict(auto_encoder.encoder(np.array(val_x)), verbose = 0)
-    print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten()))
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], None)
 
-    df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
-    df = pd.DataFrame(df_dict, index = val_y.index)
-    print(df)
-    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
+    # model = create_nn(3, 0.0003, 0.0, 0.01)
+    # history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
+    # print("Model: ", "simple_nn 48 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    # results = model.evaluate(auto_encoder.encoder(np.array(val_x)), np.array(val_y), 48, verbose = 0)
+    # prediction_distribution = model(auto_encoder.encoder(np.array(val_x)))
+    # predictions = model.predict(auto_encoder.encoder(np.array(val_x)), verbose = 0)
+    # print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten()))
+
+    # df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+
+    # df = pd.DataFrame(df_dict, index = val_y.index)
+    # print(df)
+    # # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(histone_data_object, histone_mark_str, process = False):
 
