@@ -379,8 +379,8 @@ class AutoEncoder(tf.keras.Model):
         self.batch_size = 32
         # self.loss = tf.keras.losses.MeanSquaredError()
         # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.latent_size = 1500
-        self.hidden_dim = 6000
+        self.latent_size = 150
+        self.hidden_dim = 600
         self.dropout_rate = 0.1
         self.coeff = 0.01
         self.encoder = Sequential([
@@ -485,18 +485,18 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # Try improving the MAE, MSE and the loss for the best models here
 
     auto_encoder = AutoEncoder()
-    auto_encoder.compile(
-    loss='mae',
-    metrics=['mae'],
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+    # auto_encoder.compile(
+    # loss='mae',
+    # metrics=['mae'],
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
 
-    history = auto_encoder.fit(
-        train_x, 
-        train_y, 
-        epochs=10, 
-        batch_size=48, 
-        validation_data=(val_x, val_y)
-    )
+    # history = auto_encoder.fit(
+    #     train_x, 
+    #     train_y, 
+    #     epochs=10, 
+    #     batch_size=48, 
+    #     validation_data=(val_x, val_y)
+    # )
 
     df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], None)
 
