@@ -381,8 +381,8 @@ class AutoEncoder(tf.keras.Model):
         # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.latent_size = 750
         self.hidden_dim = 3000
-        self.dropout_rate = 0.1
-        self.coeff = 0.01
+        self.dropout_rate = 0.2
+        self.coeff = 0.1
         self.encoder = Sequential([
             Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
