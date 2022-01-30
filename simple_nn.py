@@ -310,7 +310,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             validation_data=(validation_x, validation_y)
         )
 
-        model = create_nn(150, model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_nn(750, model_params[0], model_params[1], model_params[2], model_params[3])
         history = model.fit(auto_encoder.encoder(np.array(training_x)), np.array(training_y), batch_size, epochs, verbose=0, validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)))
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
@@ -379,8 +379,8 @@ class AutoEncoder(tf.keras.Model):
         self.batch_size = 32
         # self.loss = tf.keras.losses.MeanSquaredError()
         # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.latent_size = 150
-        self.hidden_dim = 1200
+        self.latent_size = 750
+        self.hidden_dim = 3000
         self.dropout_rate = 0.1
         self.coeff = 0.01
         self.encoder = Sequential([
@@ -388,13 +388,9 @@ class AutoEncoder(tf.keras.Model):
             Dropout(self.dropout_rate),
             Dense(self.hidden_dim/2, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(int(self.hidden_dim/4), activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
-            Dropout(self.dropout_rate),
             Dense(self.latent_size, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
         ])
         self.decoder = Sequential([
-            Dense(int(self.hidden_dim/4), activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
-            Dropout(self.dropout_rate),
             Dense(int(self.hidden_dim/2), activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
             Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
