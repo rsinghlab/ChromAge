@@ -305,12 +305,12 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=10, 
+            epochs=100, 
             batch_size=48, 
             validation_data=(validation_x, validation_y)
         )
 
-        model = create_nn(model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_nn(150, model_params[0], model_params[1], model_params[2], model_params[3])
         history = model.fit(auto_encoder.encoder(np.array(training_x)), np.array(training_y), batch_size, epochs, verbose=0, validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)))
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
@@ -340,7 +340,7 @@ def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
 
 #create neural network with adjustable parameters
-def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
+def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     hidden_layer_sizes = []
 
     # hidden layer size
@@ -349,7 +349,7 @@ def create_nn(hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
     
     model = Sequential()
 
-    model.add(Input(shape = (1500,)))
+    model.add(Input(shape = (input_size,)))
     model.add(BatchNormalization())
     # model.add(ActivityRegularization(coeff, coeff))
     
