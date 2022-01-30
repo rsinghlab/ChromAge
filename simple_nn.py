@@ -319,7 +319,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_val_mse_array.append(np.min(history.history['val_mse']))
         min_val_mae_array.append(np.min(history.history['val_mae']))
 
-        results = model.evaluate(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y), int(batch_size/2), verbose=0)
+        results = model.evaluate(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y), int(batch_size/2))
         # print("Validation metrics:", results)     
         val_metrics_array.append(results)
 
