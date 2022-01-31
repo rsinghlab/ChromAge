@@ -52,7 +52,8 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
         # print(len(arr5[~pd.isna(arr5)]))
         # return
     print("Finished reading data!")
-
+    
+    check = False
     for i in range(df.shape[0]):
         control_srr_1 = process_srr_val(df["Control SRR list 1"][i])
         control_srr_2 = process_srr_val(df["Control SRR list 2"][i])
@@ -290,12 +291,16 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
                 subprocess.call("sh extract_output.sh", shell=True)
 
         if (histone_str == 'H3K27ac'):  
-            if (len(h3k27ac_json) != 0):
-                h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
-                print ("Running the encode pipeline for" + str(h3k27ac_json))
-                print ("The command used was: " + h3k27ac_pipeline_call)
-                subprocess.call(h3k27ac_pipeline_call, shell=True)
-                subprocess.call("sh extract_output.sh", shell=True)
+            if (h3k27ac_GEO[0] == 'GSM1571907'):
+                check = True
+            
+            if check:
+                if (len(h3k27ac_json) != 0):
+                    h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
+                    print ("Running the encode pipeline for" + str(h3k27ac_json))
+                    print ("The command used was: " + h3k27ac_pipeline_call)
+                    subprocess.call(h3k27ac_pipeline_call, shell=True)
+                    subprocess.call("sh extract_output.sh", shell=True)
 
         if (histone_str == 'H3K4me1'):  
             if (len(h3k4me1_json) != 0):
