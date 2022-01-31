@@ -291,11 +291,11 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
                 subprocess.call("sh extract_output.sh", shell=True)
 
         if (histone_str == 'H3K27ac'):  
-            if (h3k27ac_GEO[0] == 'GSM1571907'):
-                check = True
-            
-            if check:
-                if (len(h3k27ac_json) != 0):
+            if (len(h3k27ac_json) != 0):
+                if (h3k27ac_GEO[0] == 'GSM1571907'):
+                    check = True
+
+                if check:
                     h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
                     print ("Running the encode pipeline for" + str(h3k27ac_json))
                     print ("The command used was: " + h3k27ac_pipeline_call)
