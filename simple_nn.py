@@ -296,11 +296,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder()
+        auto_encoder = DeNoisingAutoEncoder()
         auto_encoder.compile(
-        loss='mae',
+        loss='binary_crossentropy',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=0.001))
 
         history = auto_encoder.fit(
             training_x, 
@@ -372,6 +372,36 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
     model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
 
     return model
+
+class DeNoisingAutoEncoder(tf.keras.Model):
+    def __init__(self):
+        super(AutoEncoder, self).__init__()
+        self.batch_size = 32
+        # self.loss = tf.keras.losses.MeanSquaredError()
+        # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+        self.latent_size = 750
+        self.hidden_dim = 16
+        self.dropout_rate = 0.2
+        self.coeff = 0.1
+        self.encoder = Sequential([
+            GaussianNoise(0.2),
+            Conv1D(16, kernel_size=3, padding="SAME", activation="selu"),
+            MaxPooling1D(pool_size=2),
+            Conv1D(32, kernel_size=3, padding="SAME", activation="selu"),
+            MaxPooling1D(pool_size=2),
+            Conv1D(64, kernel_size=3, padding="SAME", activation="selu"),
+            MaxPooling1D(pool_size=2)
+        ])
+        self.decoder = Sequential([
+            Conv1DTranspose(32, kernel_size=3, strides=2, padding="VALID", activation="selu",
+                                        input_shape=[3, 3, 64]),
+            Conv1DTranspose(16, kernel_size=3, strides=2, padding="SAME", activation="selu"),
+            Conv1DTranspose(1, kernel_size=3, strides=2, padding="SAME", activation="sigmoid")
+        ])
+    
+    def call(self, inputs):
+        encoder_output = self.encoder(inputs)
+        return tf.squeeze(self.decoder(encoder_output))
 
 class AutoEncoder(tf.keras.Model):
     def __init__(self):
