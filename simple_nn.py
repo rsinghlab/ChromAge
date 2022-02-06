@@ -375,7 +375,7 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
 
 class DeNoisingAutoEncoder(tf.keras.Model):
     def __init__(self):
-        super(AutoEncoder, self).__init__()
+        super(DeNoisingAutoEncoder, self).__init__()
         self.batch_size = 32
         # self.loss = tf.keras.losses.MeanSquaredError()
         # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
