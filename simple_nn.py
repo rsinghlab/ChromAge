@@ -404,15 +404,15 @@ class DeNoisingAutoEncoder(tf.keras.Model):
         return tf.squeeze(self.decoder(encoder_output))
 
 class AutoEncoder(tf.keras.Model):
-    def __init__(self):
-        super(AutoEncoder, self).__init__()
-        self.batch_size = 32
+    def __init__(self, batch_size, latent_size, hidden_dim, dropout_rate, coeff):
+        super(AutoEncoder, self,).__init__()
+        self.batch_size = batch_size ## 32
         # self.loss = tf.keras.losses.MeanSquaredError()
         # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.latent_size = 1500
-        self.hidden_dim = 6000
-        self.dropout_rate = 0.2
-        self.coeff = 0.01
+        self.latent_size = latent_size # 1500
+        self.hidden_dim = hidden_dim #6000
+        self.dropout_rate = dropout_rate #0.2
+        self.coeff = coeff #0.01
         self.encoder = Sequential([
             GaussianNoise(0.2),
             Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
@@ -552,14 +552,14 @@ def main(histone_data_object, histone_mark_str, process = False):
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
     metadata = filter_metadata(metadata, biological_replicates = True)
 
-    X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+    imputer = KNNImputer()
+    scaler = StandardScaler()
 
+    X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+    X_train, X_test, y_train, y_test = scaler.fit_transform(X_train), scaler.fit_transform(X_test), scaler.fit_transform(y_train), scaler.fit_transform(y_test)
     if process == True:
         post_process(metadata, histone_data_object, histone_mark_str, y_test)
     else:
-        imputer = KNNImputer()
-        scaler = StandardScaler()
-
         param_grid = {
             'epochs':[1000],
             'batch_size': [16,32,48],
