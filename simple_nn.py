@@ -384,6 +384,7 @@ class DeNoisingAutoEncoder(tf.keras.Model):
         self.dropout_rate = 0.2
         self.coeff = 0.1
         self.encoder = Sequential([
+            Reshape([30321, 1], input_shape=[30321,]),
             GaussianNoise(0.2),
             Conv1D(16, kernel_size=3, padding="SAME", activation="selu"),
             MaxPooling1D(pool_size=2),
@@ -393,8 +394,7 @@ class DeNoisingAutoEncoder(tf.keras.Model):
             MaxPooling1D(pool_size=2)
         ])
         self.decoder = Sequential([
-            Conv1DTranspose(32, kernel_size=3, strides=2, padding="VALID", activation="selu",
-                                        input_shape=[3, 3, 64]),
+            Conv1DTranspose(32, kernel_size=3, strides=2, padding="VALID", activation="selu"),
             Conv1DTranspose(16, kernel_size=3, strides=2, padding="SAME", activation="selu"),
             Conv1DTranspose(1, kernel_size=3, strides=2, padding="SAME", activation="sigmoid")
         ])
