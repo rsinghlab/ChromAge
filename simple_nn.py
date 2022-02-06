@@ -298,14 +298,14 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         auto_encoder = DeNoisingAutoEncoder()
         auto_encoder.compile(
-        loss='binary_crossentropy',
+        loss='mae',
         metrics=['mae'],
         optimizer = tf.keras.optimizers.Adam(learning_rate=0.001))
 
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=100, 
+            epochs=20, 
             batch_size=48, 
             validation_data=(validation_x, validation_y)
         )
