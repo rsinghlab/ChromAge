@@ -296,11 +296,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = DeNoisingAutoEncoder()
+        auto_encoder = AutoEncoder()
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.SGD(lr=0.5))
+        optimizer = tf.keras.optimizers.Adam(lr=0.0001))
 
         history = auto_encoder.fit(
             training_x, 
@@ -414,6 +414,7 @@ class AutoEncoder(tf.keras.Model):
         self.dropout_rate = 0.2
         self.coeff = 0.1
         self.encoder = Sequential([
+            GaussianNoise(0.2),
             Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
             Dense(self.hidden_dim/2, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
