@@ -502,7 +502,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 150, 0.4, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 150, 0.3, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
@@ -540,7 +540,7 @@ def main(histone_data_object, histone_mark_str, process = False):
             'dropout':[0.0, 0.05, 0.1, 0.15, 0.2],
             'coeff':[0.01, 0.02, 0.05, 0.1, 0.15],
             'latent_size':[50,150,300,450],
-            'gaussian_noise':[0.0,0.1,0.2,0.3],
+            'gaussian_noise':[0.1,0.2,0.3]
         }
 
         experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
