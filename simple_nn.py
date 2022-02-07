@@ -258,7 +258,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, df, k = 4):
+def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, gaussian_noise, df, k = 4):
     metadata = metadata.drop(y_test.index)
 
     X = histone_data_object.df
@@ -296,7 +296,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3])
+        auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
@@ -374,7 +374,7 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
     return model
 
 class AutoEncoder(tf.keras.Model):
-    def __init__(self, batch_size, latent_size, dropout_rate, coeff):
+    def __init__(self, batch_size, latent_size, dropout_rate, coeff, gaussian_noise):
         super(AutoEncoder, self,).__init__()
         self.batch_size = batch_size ## 32
         # self.loss = tf.keras.losses.MeanSquaredError()
@@ -384,7 +384,7 @@ class AutoEncoder(tf.keras.Model):
         self.dropout_rate = dropout_rate #0.2
         self.coeff = coeff #0.01
         self.encoder = Sequential([
-            GaussianNoise(0.2),
+            GaussianNoise(gaussian_noise),
             Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
             Dense(self.hidden_dim/2, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
@@ -466,13 +466,14 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                     for dropout in param_grid['dropout']:
                         for coeff in param_grid['coeff']:
                             for latent_size in param_grid['latent_size']:
-                                model_params = [hidden_layers, lr, dropout, coeff]
-                                str_model_params = [str(param) for param in model_params]
-                                model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params)
-                                df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, latent_size, df)
-                                metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
-                                print("run for model " + model_name)
-                                print(metrics_dict)
+                                for gn in param_grid['gaussian_noise']:
+                                    model_params = [hidden_layers, lr, dropout, coeff]
+                                    str_model_params = [str(param) for param in model_params]
+                                    model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params)
+                                    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, latent_size, gn, df)
+                                    metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
+                                    print("run for model " + model_name)
+                                    print(metrics_dict)
     return df, metrics_dict
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
@@ -501,7 +502,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 1500, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 1500, 0.3, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
@@ -538,7 +539,8 @@ def main(histone_data_object, histone_mark_str, process = False):
             'lr':[0.0001, 0.0002, 0.0003],
             'dropout':[0.0, 0.05, 0.1, 0.15, 0.2],
             'coeff':[0.01, 0.02, 0.05, 0.1, 0.15],
-            'latent_size':[250,500,750,1500,2000]
+            'latent_size':[250,500,750,1500,2000],
+            'gaussian_noise':[0.0,0.1,0.2,0.3],
         }
 
         experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
