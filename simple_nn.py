@@ -258,7 +258,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, df, k = 4):
+def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, df, k = 4):
     metadata = metadata.drop(y_test.index)
 
     X = histone_data_object.df
@@ -296,21 +296,21 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder()
+        auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3])
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(lr=0.0001))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
 
         history = auto_encoder.fit(
             training_x, 
             training_y, 
             epochs=100, 
-            batch_size=48, 
+            batch_size=batch_size, 
             validation_data=(validation_x, validation_y)
         )
 
-        model = create_nn(1500, model_params[0], model_params[1], model_params[2], model_params[3])
+        model = create_nn(latent_size, model_params[0], model_params[1], model_params[2], model_params[3])
         history = model.fit(auto_encoder.encoder(np.array(training_x)), np.array(training_y), batch_size, epochs, verbose=0, validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)))
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
@@ -373,44 +373,14 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
 
     return model
 
-class DeNoisingAutoEncoder(tf.keras.Model):
-    def __init__(self):
-        super(DeNoisingAutoEncoder, self).__init__()
-        self.batch_size = 32
-        # self.loss = tf.keras.losses.MeanSquaredError()
-        # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
-        self.latent_size = 750
-        self.hidden_dim = 16
-        self.dropout_rate = 0.2
-        self.coeff = 0.1
-        self.encoder = Sequential([
-            Reshape([30321, 1], input_shape=[30321,]),
-            GaussianNoise(0.2),
-            Conv1D(16, kernel_size=3, padding="SAME", activation="selu"),
-            MaxPooling1D(pool_size=2),
-            Conv1D(32, kernel_size=3, padding="SAME", activation="selu"),
-            MaxPooling1D(pool_size=2),
-            Conv1D(64, kernel_size=3, padding="SAME", activation="selu"),
-            MaxPooling1D(pool_size=2)
-        ])
-        self.decoder = Sequential([
-            Conv1DTranspose(32, kernel_size=3, strides=2, padding="VALID", activation="selu"),
-            Conv1DTranspose(16, kernel_size=3, strides=2, padding="SAME", activation="selu"),
-            Conv1DTranspose(1, kernel_size=3, strides=2, padding="SAME", activation="sigmoid")
-        ])
-    
-    def call(self, inputs):
-        encoder_output = self.encoder(inputs)
-        return tf.squeeze(self.decoder(encoder_output))
-
 class AutoEncoder(tf.keras.Model):
-    def __init__(self, batch_size, latent_size, hidden_dim, dropout_rate, coeff):
+    def __init__(self, batch_size, latent_size, dropout_rate, coeff):
         super(AutoEncoder, self,).__init__()
         self.batch_size = batch_size ## 32
         # self.loss = tf.keras.losses.MeanSquaredError()
         # self.optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
         self.latent_size = latent_size # 1500
-        self.hidden_dim = hidden_dim #6000
+        self.hidden_dim = latent_size * 4 #6000
         self.dropout_rate = dropout_rate #0.2
         self.coeff = coeff #0.01
         self.encoder = Sequential([
@@ -495,13 +465,14 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                 for lr in param_grid['lr']:
                     for dropout in param_grid['dropout']:
                         for coeff in param_grid['coeff']:
-                            model_params = [hidden_layers, lr, dropout, coeff]
-                            str_model_params = [str(param) for param in model_params]
-                            model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params)
-                            df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, df)
-                            metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
-                            print("run for model " + model_name)
-                            print(metrics_dict)
+                            for latent_size in param_grid['latent_size']:
+                                model_params = [hidden_layers, lr, dropout, coeff]
+                                str_model_params = [str(param) for param in model_params]
+                                model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params)
+                                df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, latent_size, df)
+                                metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
+                                print("run for model " + model_name)
+                                print(metrics_dict)
     return df, metrics_dict
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
@@ -512,6 +483,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # print("Best train models:", *list(best_train_models), sep='\n')
 
     train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+    # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
 
     # Try improving the MAE, MSE and the loss for the best models here
 
@@ -529,7 +501,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 1500, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
@@ -556,7 +528,6 @@ def main(histone_data_object, histone_mark_str, process = False):
     scaler = StandardScaler()
 
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
-    X_train, X_test, y_train, y_test = scaler.fit_transform(X_train), scaler.fit_transform(X_test), scaler.fit_transform(y_train), scaler.fit_transform(y_test)
     if process == True:
         post_process(metadata, histone_data_object, histone_mark_str, y_test)
     else:
@@ -565,8 +536,9 @@ def main(histone_data_object, histone_mark_str, process = False):
             'batch_size': [16,32,48],
             'hidden_layers':[1,3,5],
             'lr':[0.0001, 0.0002, 0.0003],
-            'dropout':[0.0,0.05, 0.1, 0.125, 0.15],
-            'coeff':[0.01, 0.02, 0.05, 0.1, 0.15]
+            'dropout':[0.0, 0.05, 0.1, 0.15, 0.2],
+            'coeff':[0.01, 0.02, 0.05, 0.1, 0.15],
+            'latent_size':[250,500,750,1500,2000]
         }
 
         experiment_DataFrame, metrics_dict = run_grid_search(metadata, histone_data_object, param_grid)
