@@ -482,12 +482,12 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # print("Best val models:", *list(best_val_models), sep='\n')
     # print("Best train models:", *list(best_train_models), sep='\n')
 
-    train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
+    # train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
     # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
 
     # Try improving the MAE, MSE and the loss for the best models here
 
-    auto_encoder = AutoEncoder()
+    # auto_encoder = AutoEncoder()
     # auto_encoder.compile(
     # loss='mae',
     # metrics=['mae'],
