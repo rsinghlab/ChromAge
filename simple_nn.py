@@ -502,7 +502,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 750, 0.3, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 2000, 0.3, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
