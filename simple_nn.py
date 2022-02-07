@@ -305,7 +305,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=500, 
+            epochs=1000, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y)
         )
@@ -502,7 +502,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 150, 0.3, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 150, 0.4, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
@@ -539,7 +539,7 @@ def main(histone_data_object, histone_mark_str, process = False):
             'lr':[0.0001, 0.0002, 0.0003],
             'dropout':[0.0, 0.05, 0.1, 0.15, 0.2],
             'coeff':[0.01, 0.02, 0.05, 0.1, 0.15],
-            'latent_size':[250,500,750,1500,2000],
+            'latent_size':[50,150,300,450],
             'gaussian_noise':[0.0,0.1,0.2,0.3],
         }
 
