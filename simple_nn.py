@@ -535,11 +535,11 @@ def main(histone_data_object, histone_mark_str, process = False):
     else:
         param_grid = {
             'epochs':[1000],
-            'batch_size': [16,32,48],
-            'hidden_layers':[1,3,5],
+            'batch_size': [16,48],
+            'hidden_layers':[3,5],
             'lr':[0.0001, 0.0002, 0.0003],
-            'dropout':[0.0, 0.05, 0.1, 0.15, 0.2],
-            'coeff':[0.01, 0.02, 0.05, 0.1, 0.15],
+            'dropout':[0.0, 0.05, 0.1, 0.2],
+            'coeff':[0.01, 0.05, 0.1],
             'latent_size':[50,150,300,450],
             'gaussian_noise':[0.1,0.2,0.3]
         }
