@@ -305,7 +305,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=1000, 
+            epochs=600, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y)
         )
@@ -525,8 +525,8 @@ def main(histone_data_object, histone_mark_str, process = False):
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
     metadata = filter_metadata(metadata, biological_replicates = True)
 
-    imputer = KNNImputer()
-    scaler = StandardScaler()
+    # imputer = KNNImputer()
+    # scaler = StandardScaler()
 
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
     if process == True:
@@ -550,7 +550,7 @@ def main(histone_data_object, histone_mark_str, process = False):
 
 if __name__ == '__main__':
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    # main(H3K4me3_data_object, "H3K4me3")
+    main(H3K4me3_data_object, "H3K4me3")
 
     # post-processing
-    main(H3K4me3_data_object, "H3K4me3", True)
+    # main(H3K4me3_data_object, "H3K4me3", True)
