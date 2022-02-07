@@ -321,7 +321,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_val_mae_array.append(np.min(history.history['val_mae']))
 
         results = model.evaluate(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y), int(batch_size/2))
-        print("Validation metrics:", results)     
+        # print("Validation metrics:", results)     
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(np.array(validation_x)))
@@ -551,7 +551,7 @@ def main(histone_data_object, histone_mark_str, process = False):
 
 if __name__ == '__main__':
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    # main(H3K4me3_data_object, "H3K4me3")
+    main(H3K4me3_data_object, "H3K4me3")
 
     # post-processing
-    main(H3K4me3_data_object, "H3K4me3", True)
+    # main(H3K4me3_data_object, "H3K4me3", True)
