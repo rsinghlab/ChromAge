@@ -470,7 +470,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                                 for gn in param_grid['gaussian_noise']:
                                     model_params = [hidden_layers, lr, dropout, coeff]
                                     str_model_params = [str(param) for param in model_params]
-                                    model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params)
+                                    model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params) + " " + str(latent_size) + " " + str(gn)
                                     df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, latent_size, gn, df)
                                     metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
                                     print("run for model " + model_name)
