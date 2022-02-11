@@ -292,7 +292,7 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
 
         if (histone_str == 'H3K27ac'):  
             if (len(h3k27ac_json) != 0):
-                if (h3k27ac_GEO[0] == 'GSM1571907'):
+                if (h3k27ac_GEO[0] == 'GSM1847874'):
                     check = True
 
                 if check:
