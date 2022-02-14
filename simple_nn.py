@@ -305,7 +305,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=600, 
+            epochs=200, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
         )
@@ -385,16 +385,16 @@ class AutoEncoder(tf.keras.Model):
         self.coeff = coeff #0.01
         self.encoder = Sequential([
             GaussianNoise(gaussian_noise),
-            Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(self.hidden_dim/2, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.hidden_dim/2, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(self.latent_size, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
         ])
         self.decoder = Sequential([
-            Dense(int(self.hidden_dim/2), activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
             Dense(30321, activation=None)
         ])
@@ -506,7 +506,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # simple_nn 16 3 0.0001 0.0 0.01 450 0.1
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0001 0.0 0.01 450 0.1", [3, 0.0001, 0.0, 0.01], 450, 0.1, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0001 0.0 0.01 450 0.1", [3, 0.0001, 0.02, 0.01], 450, 0.1, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
