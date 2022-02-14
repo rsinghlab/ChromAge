@@ -506,7 +506,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # simple_nn 16 3 0.0001 0.0 0.01 450 0.1
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3 0.0001 0.0 0.01 450 0.1", [3, 0.0001, 0.02, 0.01], 450, 0.1, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0001 0.0 0.01 450 0.1", [3, 0.0001, 0.02, 0.01], 450, 0.1, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
@@ -538,7 +538,7 @@ def main(histone_data_object, histone_mark_str, process = False):
     else:
         param_grid = {
             'epochs':[1000],
-            'batch_size': [16,48],
+            'batch_size': [48],
             'hidden_layers':[3,5],
             'lr':[0.0001, 0.0002, 0.0003],
             'dropout':[0.0, 0.05, 0.1, 0.2],
