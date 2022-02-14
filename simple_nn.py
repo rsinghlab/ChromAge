@@ -481,10 +481,10 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
     # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt")
 
-    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
+    # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
 
-    print("Best val models:", *list(best_val_models), sep='\n')
-    print("Best train models:", *list(best_train_models), sep='\n')
+    # print("Best val models:", *list(best_val_models), sep='\n')
+    # print("Best train models:", *list(best_train_models), sep='\n')
 
     # train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
     # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
@@ -505,7 +505,9 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 48, 1000, "simple_nn 48 3, 0.0003, 0.0, 0.01", [3, 0.0003, 0.0, 0.01], 150, 0.3, None)
+    # simple_nn 16 3 0.0001 0.0 0.01 450 0.1
+
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0001 0.0 0.01 450 0.1", [3, 0.0001, 0.0, 0.01], 450, 0.1, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
