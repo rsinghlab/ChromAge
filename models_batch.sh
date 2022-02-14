@@ -2,8 +2,8 @@
 
 #SBATCH -n 96
 #SBATCH --mem=100G
-#SBATCH -t 100:00:00
-#SBATCH -o simple-nn-run-2.out
+#SBATCH -t 400:00:00
+#SBATCH -o simple-nn-autoencoder_run.out
 #SBATCH -A cbc-condo
 
 module load python/3.7.4
