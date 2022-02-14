@@ -404,7 +404,7 @@ class AutoEncoder(tf.keras.Model):
         encoder_output = self.encoder(inputs)
         return tf.squeeze(self.decoder(encoder_output))
 
-def analyze_metrics(file_path):
+def analyze_metrics(file_path, histone_mark_str):
     metric_dict = defaultdict(list)
     with open(file_path, "r") as file:
         contents = file.read()
@@ -415,21 +415,21 @@ def analyze_metrics(file_path):
                     mean_metric = np.mean(dictionary[model_types][metrics])
                     metric_dict["mean"+metrics[3:]].append(mean_metric)
         df = pd.DataFrame(metric_dict, index = list(dictionary.keys()))
-        df.to_csv("simple_nn_grid_metrics.csv")
+        df.to_csv("simple_nn_grid_metrics_" +  histone_mark_str + ".csv")
         best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
-        best_train_loss_models.to_csv("best_train_loss_models.csv")
+        best_train_loss_models.to_csv("best_train_loss_models_" +  histone_mark_str + ".csv")
         best_val_loss_models = df.nsmallest(20, 'mean_val_loss')
-        best_val_loss_models.to_csv("best_val_loss_models.csv")
+        best_val_loss_models.to_csv("best_val_loss_models_" +  histone_mark_str + ".csv")
 
         best_train_mse_models = df.nsmallest(10, 'mean_train_mse')
-        best_train_mse_models.to_csv("best_train_mse_models.csv")
+        best_train_mse_models.to_csv("best_train_mse_models_" +  histone_mark_str + ".csv")
         best_val_mse_models = df.nsmallest(20, 'mean_val_mse')
-        best_val_mse_models.to_csv("best_val_mse_models.csv")
+        best_val_mse_models.to_csv("best_val_mse_models_" +  histone_mark_str + ".csv")
 
         best_train_mae_models = df.nsmallest(10, 'mean_train_mae')
-        best_train_mae_models.to_csv("best_train_mae_models.csv")
+        best_train_mae_models.to_csv("best_train_mae_models_" +  histone_mark_str + ".csv")
         best_val_mae_models = df.nsmallest(20, 'mean_val_mae')
-        best_val_mae_models.to_csv("best_val_mae_models.csv")
+        best_val_mae_models.to_csv("best_val_mae_models_" +  histone_mark_str + ".csv")
         
         best_val_models = set()
         best_train_models = set()
@@ -481,7 +481,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
     # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt")
 
-    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt")
+    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
 
     print("Best val models:", *list(best_val_models), sep='\n')
     print("Best train models:", *list(best_train_models), sep='\n')
