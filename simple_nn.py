@@ -305,7 +305,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=100, 
+            epochs=600, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
         )
