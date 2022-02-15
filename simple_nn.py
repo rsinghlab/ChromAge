@@ -300,7 +300,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
 
         history = auto_encoder.fit(
             training_x, 
