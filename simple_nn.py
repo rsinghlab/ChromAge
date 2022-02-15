@@ -478,12 +478,12 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt")
+    # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", "H3K4me3")
 
     best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
 
-    # print("Best val models:", *list(best_val_models), sep='\n')
-    # print("Best train models:", *list(best_train_models), sep='\n')
+    print("Best val models:", *list(best_val_models), sep='\n')
+    print("Best train models:", *list(best_train_models), sep='\n')
 
     # train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
     # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
@@ -554,7 +554,7 @@ def main(histone_data_object, histone_mark_str, process = False):
 
 if __name__ == '__main__':
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    main(H3K4me3_data_object, "H3K4me3")
+    # main(H3K4me3_data_object, "H3K4me3")
 
     # post-processing
-    # main(H3K4me3_data_object, "H3K4me3", True)
+    main(H3K4me3_data_object, "H3K4me3", True)
