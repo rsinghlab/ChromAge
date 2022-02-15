@@ -554,7 +554,7 @@ def main(histone_data_object, histone_mark_str, process = False):
 
 if __name__ == '__main__':
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    # main(H3K4me3_data_object, "H3K4me3")
+    main(H3K4me3_data_object, "H3K4me3")
 
     # post-processing
-    main(H3K4me3_data_object, "H3K4me3", True)
+    # main(H3K4me3_data_object, "H3K4me3", True)
