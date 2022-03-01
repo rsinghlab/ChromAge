@@ -296,16 +296,16 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, 0.1, model_params[3], gaussian_noise)
+        auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
 
         history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=600, 
+            epochs=300, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
         )
