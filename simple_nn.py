@@ -296,7 +296,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, 0.0, model_params[3], gaussian_noise)
+        auto_encoder = AutoEncoder(batch_size, latent_size, 0.07, model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
@@ -310,7 +310,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             validation_data=(validation_x, validation_y),
         )
 
-        model = create_nn(latent_size, model_params[0], model_params[1], 0.02, model_params[3])
+        model = create_nn(latent_size, model_params[0], model_params[1], 0.07, model_params[3])
         history = model.fit(auto_encoder.encoder(np.array(training_x)), np.array(training_y), batch_size, epochs, validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)))
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
