@@ -102,8 +102,8 @@ class histone_data:
 
 #------------------------------------------------------------------------------------------------------
     def add_file_names(self, fc_or_pval_path):
-        # directory = 'encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/' + fc_or_pval_path
-        directory = 'GEO_histone_data/' + self.histone + '/raw_data/' + fc_or_pval_path
+        # directory = '/users/masif/scratch/ChromAge/encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/raw_data/' + fc_or_pval_path
+        directory = '/users/masif/scratch/GEO_histone_data/' + self.histone + '/raw_data/' + fc_or_pval_path
         histone_files = [f for f in listdir(directory) if isfile(join(directory, f))]
         histone_files.sort()
         histone_files.pop(0)
@@ -255,8 +255,8 @@ class histone_data:
         
 #------------------------------------------------------------------------------------------------------
     def save(self, name):
-        # filehandler = open('encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
-        filehandler = open('GEO_histone_data/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
+        # filehandler = open('/users/masif/scratch/ChromAge/encode_histone_data/' + self.organism + '/' + self.data_type + '/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
+        filehandler = open('/users/masif/scratch/GEO_histone_data/' + self.histone + '/processed_data/' + name + '.pkl', 'wb+') 
         pickle.dump(self, filehandler)
 
 #------------------------------------------------------------------------------------------------------
