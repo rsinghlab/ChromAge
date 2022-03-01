@@ -478,12 +478,12 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", "H3K4me3")
+    # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", "H3K4me3")
 
     # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
 
-    print("Best val models:", *list(best_val_models), sep='\n')
-    print("Best train models:", *list(best_train_models), sep='\n')
+    # print("Best val models:", *list(best_val_models), sep='\n')
+    # print("Best train models:", *list(best_train_models), sep='\n')
 
     # train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
     # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
@@ -504,11 +504,11 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    # simple_nn 16 3 0.0001 0.0 0.01 450 0.1
+    # simple_nn 16 5 0.0003 0.0 0.01 300 0.1
 
-    # df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0003 0.0 0.01 50 0.2", [5, 0.0003, 0.05, 0.03], 50, 0.2, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.0, 0.01], 300, 0.1, None)
 
-    # print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
+    print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
     # model = create_nn(3, 0.0003, 0.0, 0.01)
     # history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
@@ -522,7 +522,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # df = pd.DataFrame(df_dict, index = val_y.index)
     # print(df)
-    # # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
+    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(histone_data_object, histone_mark_str, process = False):
 
@@ -538,7 +538,7 @@ def main(histone_data_object, histone_mark_str, process = False):
     else:
         param_grid = {
             'epochs':[1000],
-            'batch_size': [16, 48],
+            'batch_size': [16],
             'hidden_layers':[3,5],
             'lr':[0.0001, 0.0002, 0.0003],
             'dropout':[0.0, 0.05, 0.1, 0.2],
