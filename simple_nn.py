@@ -506,7 +506,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # simple_nn 16 5 0.0003 0.0 0.01 300 0.1
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.0, 0.01], 300, 0.1, None)
+    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.07, 0.01], 300, 0.1, None)
 
     print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
@@ -556,7 +556,7 @@ if __name__ == '__main__':
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # main(H3K4me3_data_object, "H3K4me3")
-    main(H3K27ac_data_object, "H3K27ac")
+    # main(H3K27ac_data_object, "H3K27ac")
 
     # post-processing
-    # main(H3K4me3_data_object, "H3K4me3", True)
+    main(H3K4me3_data_object, "H3K4me3", True)
