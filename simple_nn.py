@@ -385,16 +385,16 @@ class AutoEncoder(tf.keras.Model):
         self.coeff = coeff #0.01
         self.encoder = Sequential([
             GaussianNoise(gaussian_noise),
-            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(self.hidden_dim/2, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.hidden_dim/2, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(self.latent_size, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.latent_size, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
         ])
         self.decoder = Sequential([
-            Dense(int(self.hidden_dim/2), activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(int(self.hidden_dim/2), activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
-            Dense(self.hidden_dim, activation='selu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
+            Dense(self.hidden_dim, activation='relu', activity_regularizer=tf.keras.regularizers.l1_l2(self.coeff, self.coeff)),
             Dropout(self.dropout_rate),
             Dense(30321, activation=None)
         ])
