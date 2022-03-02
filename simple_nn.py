@@ -312,7 +312,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             epochs=300, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
-            verbose = 0
+            # verbose = 0
         )
 
         min_auto_encoder_train_mse_array.append(np.min(auto_history.history['loss']))
@@ -326,7 +326,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             batch_size, 
             epochs,
             validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)),
-            verbose = 0
+            # verbose = 0
         )
         
         min_train_loss_array.append(np.min(history.history['loss']))
