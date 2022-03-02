@@ -300,11 +300,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
+        auto_encoder = AutoEncoder(batch_size, latent_size, 0.1, model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
 
         auto_history = auto_encoder.fit(
             training_x, 
@@ -550,7 +550,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # simple_nn 16 5 0.0003 0.0 0.01 300 0.1
 
-    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.07, 0.01], 300, 0.1, None)
+    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.1, 0.015], 300, 0.1, None)
 
     print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Min-autoencoder-train-MSE:", min_auto_encoder_train_mse_array, "\n Min-autoencoder-train-MAE:", min_auto_encoder_train_mae_array, "\n Min-autoencoder-val-MSE:", min_auto_encoder_val_mse_array, "\n Min-autoencoder-val-MAE:", min_auto_encoder_val_mae_array,  "\n Min-train-loss:", min_train_loss_array, "\n Min-train-mse:", min_train_mse_array, "\n Min-train-mae:", min_train_mae_array, "\n Min-val-loss:", min_val_loss_array, "\n Min-val-mse:",min_val_mse_array, "\n Min-val-mae:", min_val_mae_array)
 
@@ -597,19 +597,19 @@ def main(histone_data_object, histone_mark_str, process = False):
             convert_file.write(json.dumps(metrics_dict))
 
 if __name__ == '__main__':
-    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
     # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
     # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
-    H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
+    # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
     
     # main(H3K4me3_data_object, "H3K4me3")
     # main(H3K27ac_data_object, "H3K27ac")
     # main(H3K27me3_data_object, "H3K27me3")
     # main(H3K36me3_data_object, "H3K36me3")
     # main(H3K4me1_data_object, "H3K4me1")
-    main(H3K9me3_data_object, "H3K9me3")
+    # main(H3K9me3_data_object, "H3K9me3")
 
     # post-processing
-    # main(H3K4me3_data_object, "H3K4me3", True)
+    main(H3K4me3_data_object, "H3K4me3", True)
