@@ -219,30 +219,31 @@ class histone_data:
 def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
     #GEO
-    metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
+    # metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
 
-    # samples = np.intersect1d(metadata.index, X.index)
+    # metadata_temp = metadata[metadata["H3K4me3 SRR list"].isin(X.index)]
 
-    metadata_temp = metadata[metadata["H3K4me3 SRR list"].isin(X.index)]
+    # y = metadata_temp["Age"]
+    # X = X.loc[y.index]
+    # X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
 
-    y = metadata_temp["Age"]
-    X = X.loc[y.index]
-    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
-    # metadata_temp = metadata.loc[samples, :]
+    samples = np.intersect1d(metadata.index, X.index)
 
-    # experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
+    metadata_temp = metadata.loc[samples, :]
 
-    # training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
-    # training_metadata = metadata_temp.loc[training_list, :]
+    experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
 
-    # X_train = X.loc[training_metadata.index]
-    # y_train = training_metadata.loc[X_train.index].age
+    training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
+    training_metadata = metadata_temp.loc[training_list, :]
+
+    X_train = X.loc[training_metadata.index]
+    y_train = training_metadata.loc[X_train.index].age
     
-    # testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
-    # testing_metadata = metadata_temp.loc[testing_list, :]
+    testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
+    testing_metadata = metadata_temp.loc[testing_list, :]
 
-    # X_test = X.loc[testing_metadata.index]
-    # y_test = testing_metadata.loc[X_test.index].age
+    X_test = X.loc[testing_metadata.index]
+    y_test = testing_metadata.loc[X_test.index].age
 
     return X_train, X_test, y_train, y_test
 
@@ -577,7 +578,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False):
-    # metadata = filter_metadata(metadata, biological_replicates = True)  ---------TAKEN OUT FOR GEO
+    metadata = filter_metadata(metadata, biological_replicates = True) # Take out for GEO
 
     # imputer = KNNImputer()
     # scaler = StandardScaler()
@@ -606,11 +607,11 @@ def main(metadata, histone_data_object, histone_mark_str, process = False):
 if __name__ == '__main__':
 
     #GEO
-    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
+    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    # metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
-    # metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
+    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
     # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
