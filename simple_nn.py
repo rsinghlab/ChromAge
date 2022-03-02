@@ -220,25 +220,29 @@ def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
     #GEO
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
-    samples = np.intersect1d(metadata["H3K4me3 SRR list"], X.index)
 
     # samples = np.intersect1d(metadata.index, X.index)
 
-    metadata_temp = metadata.loc[samples, :]
+    metadata_temp = metadata[metadata["H3K4me3 SRR list"].isin(X.index)]
 
-    experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
+    y = metadata_temp["Age"]
+    X = X.loc[y.index]
+    X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
+    # metadata_temp = metadata.loc[samples, :]
 
-    training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
-    training_metadata = metadata_temp.loc[training_list, :]
+    # experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
 
-    X_train = X.loc[training_metadata.index]
-    y_train = training_metadata.loc[X_train.index].age
+    # training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
+    # training_metadata = metadata_temp.loc[training_list, :]
+
+    # X_train = X.loc[training_metadata.index]
+    # y_train = training_metadata.loc[X_train.index].age
     
-    testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
-    testing_metadata = metadata_temp.loc[testing_list, :]
+    # testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
+    # testing_metadata = metadata_temp.loc[testing_list, :]
 
-    X_test = X.loc[testing_metadata.index]
-    y_test = testing_metadata.loc[X_test.index].age
+    # X_test = X.loc[testing_metadata.index]
+    # y_test = testing_metadata.loc[X_test.index].age
 
     return X_train, X_test, y_train, y_test
 
