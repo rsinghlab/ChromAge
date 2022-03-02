@@ -219,9 +219,9 @@ class histone_data:
 def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
     #GEO
-    samples = np.intersect1d(metadata.index, X.index)
-    print(X)
-    print(metadata)
+    metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
+    samples = np.intersect1d(metadata["H3K4me3 SRR list"], X.index)
+
     # samples = np.intersect1d(metadata.index, X.index)
 
     metadata_temp = metadata.loc[samples, :]
@@ -573,12 +573,13 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False):
-    metadata = filter_metadata(metadata, biological_replicates = True)
+    # metadata = filter_metadata(metadata, biological_replicates = True)  ---------TAKEN OUT FOR GEO
 
     # imputer = KNNImputer()
     # scaler = StandardScaler()
 
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+
     if process == True:
         post_process(metadata, histone_data_object, histone_mark_str, y_test)
     else:
