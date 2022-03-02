@@ -218,6 +218,7 @@ class histone_data:
 
 def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
+    print(X)
     samples = np.intersect1d(metadata.index, X.index)
 
     metadata_temp = metadata.loc[samples, :]
