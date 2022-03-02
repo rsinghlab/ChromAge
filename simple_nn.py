@@ -602,7 +602,7 @@ if __name__ == '__main__':
 
     #GEO
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    metadata = pd.read_csv('/users/masif/data/masif/GEO_metdata.csv')
+    metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metdata.csv')
 
     # metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
     # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
