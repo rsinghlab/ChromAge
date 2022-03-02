@@ -269,6 +269,10 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
     kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
     val_metrics_array = []
+    min_auto_encoder_train_mse_array = []
+    min_auto_encoder_train_mae_array = []
+    min_auto_encoder_val_mse_array = []
+    min_auto_encoder_val_mae_array = []
     min_train_loss_array = []
     min_train_mse_array = []
     min_train_mae_array = []
@@ -302,16 +306,29 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         metrics=['mae'],
         optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
 
-        history = auto_encoder.fit(
+        auto_history = auto_encoder.fit(
             training_x, 
             training_y, 
             epochs=600, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
+            verbose = 0
         )
 
-        model = create_nn(latent_size, model_params[0], model_params[1], 0.07, model_params[3])
-        history = model.fit(auto_encoder.encoder(np.array(training_x)), np.array(training_y), batch_size, epochs, validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)))
+        min_auto_encoder_train_mse_array.append(auto_history.history['loss'])
+        min_auto_encoder_train_mae_array.append(auto_history.history['mae'])
+        min_auto_encoder_val_mse_array.append(auto_history.history['val_loss'])
+        min_auto_encoder_val_mae_array.append(auto_history.history['val_mae'])
+
+        model = create_nn(latent_size, model_params[0], model_params[1], model_params[2], model_params[3])
+        history = model.fit(auto_encoder.encoder(np.array(training_x)),
+            np.array(training_y),
+            batch_size, 
+            epochs,
+            validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)),
+            verbose = 0
+        )
+        
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
         min_train_mae_array.append(np.min(history.history['mae']))
@@ -334,7 +351,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             df = df.append(df2)
         # print(df)
-    return df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array
+    return df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array
 
 def loss_function(targets, estimated_distribution):
     return -estimated_distribution.log_prob(targets)
@@ -415,6 +432,17 @@ def analyze_metrics(file_path, histone_mark_str):
                     metric_dict["mean"+metrics[3:]].append(mean_metric)
         df = pd.DataFrame(metric_dict, index = list(dictionary.keys()))
         df.to_csv("simple_nn_grid_metrics_" +  histone_mark_str + ".csv")
+
+        best_auto_train_mse_models = df.nsmallest(10, 'mean_train_auto_mse')
+        best_auto_train_mse_models.to_csv("best_auto_encoder_train_mse_models_" +  histone_mark_str + ".csv")
+        best_auto_val_mse_models = df.nsmallest(20, 'mean_val_auto_mse')
+        best_auto_val_mse_models.to_csv("best_auto_encoder_val_mse_models_" +  histone_mark_str + ".csv")
+
+        best_auto_train_mae_models = df.nsmallest(10, 'mean_train_auto_mae')
+        best_auto_train_mae_models.to_csv("best_auto_encoder_train_mae_models_" +  histone_mark_str + ".csv")
+        best_auto_val_mae_models = df.nsmallest(20, 'mean_val_auto_mae')
+        best_auto_val_mae_models.to_csv("best_auto_encoder_val_mae_models_" +  histone_mark_str + ".csv")
+
         best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
         best_train_loss_models.to_csv("best_train_loss_models_" +  histone_mark_str + ".csv")
         best_val_loss_models = df.nsmallest(20, 'mean_val_loss')
@@ -430,8 +458,24 @@ def analyze_metrics(file_path, histone_mark_str):
         best_val_mae_models = df.nsmallest(20, 'mean_val_mae')
         best_val_mae_models.to_csv("best_val_mae_models_" +  histone_mark_str + ".csv")
         
+        best_auto_train_models = set()
+        best_auto_val_models = set()
         best_val_models = set()
         best_train_models = set()
+        
+        for model in best_auto_val_mse_models.index:
+            if model in best_auto_val_mae_models.index:
+                best_auto_val_models.add(model)
+        for model in best_auto_val_mae_models.index:
+            if model in best_auto_val_mse_models.index:
+                best_auto_val_models.add(model)
+        
+        for model in best_auto_train_mse_models.index:
+            if model in best_auto_train_mae_models.index:
+                best_auto_train_models.add(model)
+        for model in best_auto_train_mae_models.index:
+            if model in best_auto_train_mse_models.index:
+                best_auto_train_models.add(model)
 
         for model in best_val_loss_models.index:
             if model in best_val_mse_models.index or model in best_val_mae_models.index:
@@ -453,7 +497,7 @@ def analyze_metrics(file_path, histone_mark_str):
             if model in best_train_mse_models.index and model in best_train_mae_models.index:
                 best_train_models.add(model)
     
-    return list(best_val_models), list(best_train_models)
+    return list(best_auto_val_models), list(best_auto_train_models), list(best_val_models), list(best_train_models)
 
 def run_grid_search(metadata, histone_data_object, param_grid):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
@@ -470,17 +514,17 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                                     model_params = [hidden_layers, lr, dropout, coeff]
                                     str_model_params = [str(param) for param in model_params]
                                     model_name = "simple_nn " + str(batch) +" "+" ".join(str_model_params) + " " + str(latent_size) + " " + str(gn)
-                                    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, latent_size, gn, df)
-                                    metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
+                                    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, batch, epoch, model_name, model_params, latent_size, gn, df)
+                                    metrics_dict[model_name] = dict({"val_metrics" : val_metrics_array, "min_train_auto_mse": min_auto_encoder_train_mse_array, "min_val_auto_mse": min_auto_encoder_val_mse_array, "min_train_auto_mae": min_auto_encoder_train_mae_array, "min_val_auto_mae": min_auto_encoder_val_mae_array, "min_train_loss" : min_train_loss_array, "min_val_loss" : min_val_loss_array, "min_train_mse" : min_train_mse_array, "min_val_mse" : min_val_mse_array, "min_train_mae" : min_train_mae_array, "min_val_mae" : min_val_mae_array})
                                     print("run for model " + model_name)
                                     print(metrics_dict)
     return df, metrics_dict
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", "H3K4me3")
+    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", "H3K4me3")
 
-    # best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
+    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-auto-middle.txt", "H3K4me3")
 
     # print("Best val models:", *list(best_val_models), sep='\n')
     # print("Best train models:", *list(best_train_models), sep='\n')
@@ -506,9 +550,9 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # simple_nn 16 5 0.0003 0.0 0.01 300 0.1
 
-    df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.0, 0.015], 300, 0.1, None)
+    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.0, 0.015], 300, 0.1, None)
 
-    print(df, val_metrics_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
+    print(df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array)
 
     # model = create_nn(3, 0.0003, 0.0, 0.01)
     # history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
@@ -538,7 +582,7 @@ def main(histone_data_object, histone_mark_str, process = False):
     else:
         param_grid = {
             'epochs':[1000],
-            'batch_size': [16],
+            'batch_size': [16, 48],
             'hidden_layers':[3,5],
             'lr':[0.0001, 0.0002, 0.0003],
             'dropout':[0.0, 0.05, 0.1, 0.2],
@@ -554,9 +598,18 @@ def main(histone_data_object, histone_mark_str, process = False):
 
 if __name__ == '__main__':
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
-    # main(H3K4me3_data_object, "H3K4me3")
+    # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
+    # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
+    # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
+    # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
+    # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
+    
+    main(H3K4me3_data_object, "H3K4me3")
     # main(H3K27ac_data_object, "H3K27ac")
+    # main(H3K27me3_data_object, "H3K27me3")
+    # main(H3K36me3_data_object, "H3K36me3")
+    # main(H3K4me1_data_object, "H3K4me1")
+    # main(H3K9me3_data_object, "H3K9me3")
 
     # post-processing
-    main(H3K4me3_data_object, "H3K4me3", True)
+    # main(H3K4me3_data_object, "H3K4me3", True)
