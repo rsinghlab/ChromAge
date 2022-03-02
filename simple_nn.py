@@ -304,7 +304,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
 
         auto_history = auto_encoder.fit(
             training_x, 
@@ -312,13 +312,13 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             epochs=300, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
-            # verbose = 0
+            verbose = 0
         )
 
-        min_auto_encoder_train_mse_array.append(auto_history.history['loss'])
-        min_auto_encoder_train_mae_array.append(auto_history.history['mae'])
-        min_auto_encoder_val_mse_array.append(auto_history.history['val_loss'])
-        min_auto_encoder_val_mae_array.append(auto_history.history['val_mae'])
+        min_auto_encoder_train_mse_array.append(np.min(auto_history.history['loss']))
+        min_auto_encoder_train_mae_array.append(np.min(auto_history.history['mae']))
+        min_auto_encoder_val_mse_array.append(np.min(auto_history.history['val_loss']))
+        min_auto_encoder_val_mae_array.append(np.min(auto_history.history['val_mae']))
 
         model = create_nn(latent_size, model_params[0], model_params[1], model_params[2], model_params[3])
         history = model.fit(auto_encoder.encoder(np.array(training_x)),
@@ -326,7 +326,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             batch_size, 
             epochs,
             validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)),
-            # verbose = 0
+            verbose = 0
         )
         
         min_train_loss_array.append(np.min(history.history['loss']))
@@ -552,7 +552,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.07, 0.01], 300, 0.1, None)
 
-    print("Dataframe: \n", df, "Val-metrics array: \n", val_metrics_array, "Min-autoencoder-train-MSE: \n", min_auto_encoder_train_mse_array, "Min-autoencoder-train-MAE: \n", min_auto_encoder_train_mae_array, "Min-autoencoder-val-MSE: \n", min_auto_encoder_val_mse_array, "Min-autoencoder-val-MAE: \n", min_auto_encoder_val_mae_array,  "Min-train-loss: \n", min_train_loss_array, "Min-train-mse: \n", min_train_mse_array, "Min-train-mae: \n", min_train_mae_array, "Min-val-loss: \n", min_val_loss_array, "Min-val-mse: \n",min_val_mse_array, "Min-val-mae: \n", min_val_mae_array)
+    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Min-autoencoder-train-MSE:", min_auto_encoder_train_mse_array, "\n Min-autoencoder-train-MAE:", min_auto_encoder_train_mae_array, "\n Min-autoencoder-val-MSE:", min_auto_encoder_val_mse_array, "\n Min-autoencoder-val-MAE:", min_auto_encoder_val_mae_array,  "\n Min-train-loss:", min_train_loss_array, "\n Min-train-mse:", min_train_mse_array, "\n Min-train-mae:", min_train_mae_array, "\n Min-val-loss:", min_val_loss_array, "\n Min-val-mse:",min_val_mse_array, "\n Min-val-mae:", min_val_mae_array)
 
     # model = create_nn(3, 0.0003, 0.0, 0.01)
     # history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
@@ -604,7 +604,7 @@ if __name__ == '__main__':
     # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
     # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
     
-    # main(H3K4me3_data_object, "H3K4me3")
+    main(H3K4me3_data_object, "H3K4me3")
     # main(H3K27ac_data_object, "H3K27ac")
     # main(H3K27me3_data_object, "H3K27me3")
     # main(H3K36me3_data_object, "H3K36me3")
@@ -612,4 +612,4 @@ if __name__ == '__main__':
     # main(H3K9me3_data_object, "H3K9me3")
 
     # post-processing
-    main(H3K4me3_data_object, "H3K4me3", True)
+    # main(H3K4me3_data_object, "H3K4me3", True)
