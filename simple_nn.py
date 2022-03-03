@@ -309,7 +309,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, 0.1, model_params[3], gaussian_noise)
+        auto_encoder = AutoEncoder(batch_size, latent_size, 0.15, model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
@@ -318,7 +318,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         auto_history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=300, 
+            epochs=600, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
             # verbose = 0
@@ -559,7 +559,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # simple_nn 16 5 0.0003 0.0 0.01 300 0.1
 
-    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.1, 0.015], 300, 0.1, None)
+    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.02, 0.01], 300, 0.1, None)
 
     print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Min-autoencoder-train-MSE:", min_auto_encoder_train_mse_array, "\n Min-autoencoder-train-MAE:", min_auto_encoder_train_mae_array, "\n Min-autoencoder-val-MSE:", min_auto_encoder_val_mse_array, "\n Min-autoencoder-val-MAE:", min_auto_encoder_val_mae_array,  "\n Min-train-loss:", min_train_loss_array, "\n Min-train-mse:", min_train_mse_array, "\n Min-train-mae:", min_train_mae_array, "\n Min-val-loss:", min_val_loss_array, "\n Min-val-mse:",min_val_mse_array, "\n Min-val-mae:", min_val_mae_array)
 
