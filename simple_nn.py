@@ -7,6 +7,7 @@ import gc
 import ast
 import json
 import os
+import re
 
 from tensorflow.python.ops.gen_nn_ops import Selu
 
@@ -222,9 +223,8 @@ def split_data(metadata, histone_data_object, split = 0.2):
     #GEO
     print(metadata[metadata["Cell line, primary cell, organoid, or tissue"] == "tissue"])
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
-    metadata["H3K4me3 SRR list"] = metadata["H3K4me3 SRR list"].str.strip()
-    metadata["H3K4me3 SRR list"] = metadata["H3K4me3 SRR list"].str.strip("\n")
-    metadata["H3K4me3 SRR list"] = metadata["H3K4me3 SRR list"].str.strip("\t")
+    print(metadata["H3K4me3 SRR list"])
+    metadata["H3K4me3 SRR list"] = metadata["H3K4me3 SRR list"].apply(lambda x: re.search('SRR\d*',x)[0])
 
     print(metadata["H3K4me3 SRR list"])
     metadata = metadata.dropna(subset=["Age"])
