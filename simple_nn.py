@@ -224,7 +224,7 @@ def split_data(metadata, histone_data_object, split = 0.2):
     print(metadata[metadata["Cell line, primary cell, organoid, or tissue"] == "tissue"])
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
     print(metadata["H3K4me3 SRR list"])
-    metadata["H3K4me3 SRR list"] = metadata["H3K4me3 SRR list"].apply(lambda x: re.search('SRR\d*',x)[0])
+    metadata.loc[:,["H3K4me3 SRR list"]] = metadata["H3K4me3 SRR list"].apply(lambda x: re.search('SRR\d*',x)[0])
 
     print(metadata["H3K4me3 SRR list"])
     metadata = metadata.dropna(subset=["Age"])
