@@ -229,6 +229,10 @@ def split_data(metadata, histone_data_object, split = 0.2):
     print(metadata["Cell line, primary cell, organoid, or tissue"] == "tissue")
 
     metadata_temp = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x in X.index)]
+    print(metadata_temp)
+    metadata_temp = metadata[metadata["Control SRR list 1"].apply(lambda x: x in X.index)]
+    print(metadata_temp)
+    metadata_temp = metadata[metadata["Control SRR list 2"].apply(lambda x: x in X.index)]
 
     print(metadata_temp)
 
