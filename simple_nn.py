@@ -222,6 +222,9 @@ def split_data(metadata, histone_data_object, split = 0.2):
     #GEO
     print(metadata[metadata["Cell line, primary cell, organoid, or tissue"] == "tissue"])
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
+    metadata = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x.strip())]
+    metadata = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x.strip("\n"))]
+    metadata = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x.strip("\t"))]
     metadata = metadata.dropna(subset=["Age"])
 
     print(metadata["H3K4me3 SRR list"])
