@@ -220,13 +220,13 @@ def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
     print(X)
     #GEO
-    print(metadata["Cell line, primary cell, organoid, or tissue"] == "tissue")
+    print(metadata[metadata["Cell line, primary cell, organoid, or tissue"] == "tissue"])
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
     metadata = metadata.dropna(subset=["Age"])
 
     print(metadata["H3K4me3 SRR list"])
     print(metadata["Age"])
-    print(metadata["Cell line, primary cell, organoid, or tissue"] == "tissue")
+    print(metadata[metadata["Cell line, primary cell, organoid, or tissue"] == "tissue"])
 
     metadata_temp = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x in X.index)]
     print(metadata_temp)
