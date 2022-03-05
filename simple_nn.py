@@ -221,8 +221,11 @@ def split_data(metadata, histone_data_object, split = 0.2):
     print(X)
     #GEO
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
+    metadata = metadata.dropna(subset=["Age"])
+
     print(metadata["H3K4me3 SRR list"])
-    
+    print(metadata["Age"])
+
     metadata_temp = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x in X.index)]
 
     print(metadata_temp)
