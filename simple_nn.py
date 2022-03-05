@@ -227,6 +227,10 @@ def split_data(metadata, histone_data_object, split = 0.2):
     # X = X.loc[y.index]
     # X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
 
+    print(X)
+
+    exit()
+
     samples = np.intersect1d(metadata.index, X.index)
 
     metadata_temp = metadata.loc[samples, :]
@@ -607,18 +611,18 @@ def main(metadata, histone_data_object, histone_mark_str, process = False):
 if __name__ == '__main__':
 
     #GEO
-    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    # metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
+    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
-    metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    # metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
+    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
     # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
     # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
     # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
     
-    # main(metadata, H3K4me3_data_object, "H3K4me3")
+    main(metadata, H3K4me3_data_object, "H3K4me3")
     # main(metadata, H3K27ac_data_object, "H3K27ac")
     # main(metadata, H3K27me3_data_object, "H3K27me3")
     # main(metadata, H3K36me3_data_object, "H3K36me3")
@@ -626,4 +630,4 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # post-processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", True)
+    # main(metadata, H3K4me3_data_object, "H3K4me3", True)
