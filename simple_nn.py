@@ -218,18 +218,18 @@ class histone_data:
 
 def split_data(metadata, histone_data_object, split = 0.2):
     X = histone_data_object.df
+    print(X)
     #GEO
     metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
-
-    metadata_temp = metadata[metadata["H3K4me3 SRR list"].isin(X.index)]
+    print(metadata["H3K4me3 SRR list"])
+    
+    metadata_temp = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x in X.index)]
 
     print(metadata_temp)
 
     # y = metadata_temp["Age"]
     # X = X.loc[y.index]
     # X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
-
-    print(X)
 
     exit()
 
