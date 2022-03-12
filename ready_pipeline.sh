@@ -2,7 +2,7 @@
 
 #SBATCH -n 30
 #SBATCH --mem=100G
-#SBATCH -t 600:00:00
+#SBATCH -t 300:00:00
 #SBATCH -o pipeline-run-%j.out
 
 module load python/3.7.4
