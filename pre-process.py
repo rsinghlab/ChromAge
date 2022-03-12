@@ -292,15 +292,11 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
 
         if (histone_str == 'H3K27ac'):  
             if (len(h3k27ac_json) != 0):
-                if (h3k27ac_GEO[0] == 'GSM3324474'):
-                    check = True
-
-                if check:
-                    h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
-                    print ("Running the encode pipeline for" + str(h3k27ac_json))
-                    print ("The command used was: " + h3k27ac_pipeline_call)
-                    subprocess.call(h3k27ac_pipeline_call, shell=True)
-                    subprocess.call("sh extract_output.sh", shell=True)
+                h3k27ac_pipeline_call = call_pipeline_base + "/h3k27ac/" + "h3k27ac_" + h3k27ac_GEO[0] + ".json"
+                print ("Running the encode pipeline for" + str(h3k27ac_json))
+                print ("The command used was: " + h3k27ac_pipeline_call)
+                subprocess.call(h3k27ac_pipeline_call, shell=True)
+                subprocess.call("sh extract_output.sh", shell=True)
 
         if (histone_str == 'H3K4me1'):  
             if (len(h3k4me1_json) != 0):
@@ -337,7 +333,7 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
-run_pipeline(histone_str='H3K27ac')
+run_pipeline(histone_str='H3K4me1')
 
 
 # json_example = {
