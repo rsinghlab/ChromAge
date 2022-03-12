@@ -3,7 +3,7 @@
 #SBATCH -n 100
 #SBATCH --mem=100G
 #SBATCH -t 48:00:00
-#SBATCH -o H3K4me3-binnig.out
+#SBATCH -o H3K27ac-binnig.out
 
 module load python/3.7.4
 
