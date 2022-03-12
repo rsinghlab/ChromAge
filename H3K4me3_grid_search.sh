@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#SBATCH -n 96
-#SBATCH --mem=100G
-#SBATCH -t 400:00:00
-#SBATCH -o simple-nn-autoencoder_run.out
+#SBATCH -n 16
+#SBATCH --mem=45G
+#SBATCH -t 500:00:00
+#SBATCH -o H3K4me3-search.out
 #SBATCH -A cbc-condo
 
 module load python/3.7.4

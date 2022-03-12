@@ -2,8 +2,10 @@
 
 #SBATCH -n 100
 #SBATCH --mem=100G
-#SBATCH -t 180:00:00
-#SBATCH -o my-output-%j.out
+#SBATCH -t 48:00:00
+#SBATCH -o H3K4me3-binnig.out
+
+module load python/3.7.4
 
 source ChromAge_venv/bin/activate
 

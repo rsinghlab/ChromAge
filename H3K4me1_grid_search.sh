@@ -1,9 +1,10 @@
 #!/bin/bash
 
-#SBATCH -n 30
-#SBATCH --mem=100G
-#SBATCH -t 250:00:00
-#SBATCH -o simple-nn-autoencoder_run_1.out
+#SBATCH -n 16
+#SBATCH --mem=45G
+#SBATCH -t 500:00:00
+#SBATCH -o H3K4me1-search.out
+#SBATCH -A cbc-condo
 
 module load python/3.7.4
 source ChromAge_venv/bin/activate
