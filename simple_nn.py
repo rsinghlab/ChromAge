@@ -275,7 +275,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, gaussian_noise, df, k = 4, geo_train_x = None, geo_train_y = None):
+def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, gaussian_noise, df, k = 4, geo_train_x = None, geo_train_y = None, data_transform = None, age_transform = None):
     metadata = metadata.drop(y_test.index)
 
     X = histone_data_object.df
@@ -311,13 +311,14 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_list = [i in experiment_val for i in np.array(metadata_temp['Experiment accession'])]
         val_metadata = metadata_temp.loc[val_list, :]
 
-        training_x = X.loc[train_metadata.index]
-        training_y = train_metadata.loc[training_x.index].age
+        training_x = np.array(X.loc[train_metadata.index])
+        training_y = np.array(train_metadata.loc[training_x.index].age)
 
-        validation_x = X.loc[val_metadata.index]
+        validation_x = np.array(X.loc[val_metadata.index])
         validation_y = val_metadata.loc[validation_x.index].age
 
         validation_y_index = validation_y.index
+        validation_y = np.array(validation_y)
 
         #GEO DATASET
         # training_x, training_y = np.array(geo_train_x)[train_index], np.expand_dims(np.array(geo_train_y)[train_index],1)
@@ -327,6 +328,31 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         # print(training_y.shape)
         # print(validation_x.shape)
         # print(validation_y.shape)
+
+        # Data + Age transform
+
+        if data_transform == "scaler":
+            transformer = StandardScaler()
+            training_x = transformer.fit_transform(training_x)
+            validation_x = transformer.fit_transform(validation_x)
+        
+        if data_transform == "robust":
+            transformer = RobustScaler()
+            training_x = transformer.fit_transform(training_x)
+            validation_x = transformer.fit_transform(validation_x)
+        
+        if data_transform == "quantile":
+            transformer = QuantileTransformer(output_distribution='normal', random_state=42)
+            training_x = transformer.fit_transform(training_x)
+            validation_x = transformer.fit_transform(validation_x)
+        
+        if age_transform == "loglinear":
+            transformer = LogLinearTransformer()
+            training_y = transformer.fit(training_y)
+            training_y = transformer.transform(training_y)
+            validation_y = transformer.fit(validation_y)
+            validation_y = transformer.transform(validation_y)
+
 
         auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
@@ -349,11 +375,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_auto_encoder_val_mae_array.append(np.min(auto_history.history['val_mae']))
 
         model = create_nn(latent_size, model_params[0], model_params[1], model_params[2], model_params[3])
-        history = model.fit(auto_encoder.encoder(np.array(training_x)),
-            np.array(training_y),
+        history = model.fit(auto_encoder.encoder(training_x),
+            training_y,
             batch_size, 
             epochs,
-            validation_data=(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y)),
+            validation_data=(auto_encoder.encoder(validation_x), validation_y),
             # verbose = 0
         )
         
@@ -364,20 +390,23 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_val_mse_array.append(np.min(history.history['val_mse']))
         min_val_mae_array.append(np.min(history.history['val_mae']))
 
-        results = model.evaluate(auto_encoder.encoder(np.array(validation_x)), np.array(validation_y), batch_size)
+        results = model.evaluate(auto_encoder.encoder(validation_x), validation_y, batch_size)
         # print("Validation metrics:", results)     
         val_metrics_array.append(results)
 
-        prediction_distribution = model(auto_encoder.encoder(np.array(validation_x)))
-        type_arr = np.full(np.array(validation_y).shape, model_type)
+        prediction_distribution = model(auto_encoder.encoder(validation_x))
+        type_arr = np.full(validation_y.shape, model_type)
+
+        if age_transform == "loglinear":
+            validation_y = transformer.inverse_transform(validation_y)
 
         if df is None:
             # change to np.squeeze for GEO
-            df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
             # df = pd.DataFrame(df_dict) # GEO
         else:
-            df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             # df2 = pd.DataFrame(df_dict) # GEO
             df = df.append(df2)
@@ -562,7 +591,10 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # print("Best val models:", *list(best_val_models), sep='\n')
     # print("Best train models:", *list(best_train_models), sep='\n')
 
-    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None)
+    scaler_list = ["standard", "robust", "quantile"]
+    age_transform_list = ["loglinear"]
+
+    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, data_transform=scaler_list[0], age_transform=age_transform_list[0])
 
     print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
 
@@ -637,8 +669,33 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         with open('metrics-output-' + histone_mark_str + '.txt', 'w') as convert_file:
             convert_file.write(json.dumps(metrics_dict))
 
-if __name__ == '__main__':
+class LogLinearTransformer(BaseEstimator, TransformerMixin):
+    
+    def __init__(self, adult_age = 20):
+        self.adult_age = adult_age
 
+    def fit(self, target):
+        return self
+
+    def transform(self, target):
+        target_ = target.copy().astype(float)
+        for i in range(len(target_)):
+            if target_[i] < self.adult_age:
+                target_[i] = np.log((target_[i] + 1)/(self.adult_age + 1))
+            else:
+                target_[i] = (target_[i] - self.adult_age)/(1 + self.adult_age)
+        return target_
+    
+    def inverse_transform(self, target):
+        target_ = target.copy().astype(float)
+        for i in range(len(target_)):
+            if target_[i] < 0:
+                target_[i] = (1 + self.adult_age)*(np.exp(target_[i]))-1
+            else:
+                target_[i] = (1 + self.adult_age)*target_[i] + self.adult_age
+        return target_
+
+if __name__ == '__main__':
     #GEO
     # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
