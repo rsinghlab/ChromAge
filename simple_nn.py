@@ -601,7 +601,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
     return
 
-def test(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
+def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
     # Testing
 
     y_train = np.expand_dims(np.array(y_train),1)
@@ -646,7 +646,6 @@ def test(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = No
     model = create_nn(50, 5, 0.0002, 0.1, 0.05)
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16)
     
-    y_train = np.squeeze(y_train)
     y_test = np.squeeze(y_test)
 
     prediction_distribution = model(auto_encoder.encoder(X_test))
@@ -682,16 +681,13 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         testing_x = np.concatenate((np.array(X_train), np.array(X_test)), axis=0)
         testing_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
 
-        test(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
+        # test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
 
-        model = ElasticNetCV(n_alphas = 10, max_iter=1000, random_state = 42)
-        results = cross_validate(model, X_train, y_train, cv = 4, scoring = {'mae':'neg_median_absolute_error', 'mse':'neg_mean_squared_error', 'r2':'r2'})
-                        
-        #evaluation metrics
-        mae = np.mean(np.abs(results['test_mae']))
-        std_mae = np.std(np.abs(results['test_mae']))
-        mse = np.mean(np.abs(results['test_mse']))
-        std_mse = np.std(np.abs(results['test_mse']))
+        model = ElasticNet(n_alphas = 10, max_iter=1000, random_state = 42)
+        model.fit(training_x, training_y)
+        predictions = model.predict(testing_x)
+        mse = mean_squared_error(testing_y, predictions)
+        mae = median_absolute_error(testing_y, predictions)
 
         print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     else:
