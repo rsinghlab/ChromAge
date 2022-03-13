@@ -339,7 +339,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         auto_history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=600, 
+            epochs=70, # GEO 70
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
             # verbose = 0
@@ -375,10 +375,12 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         if df is None:
             df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
-            df = pd.DataFrame(df_dict, index = geo_train_x.index)
+            # df = pd.DataFrame(df_dict, index = geo_train_x.index)
+            df = pd.DataFrame(df_dict) #GEO
         else:
             df_dict = {"Actual Age": np.array(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
-            df2 = pd.DataFrame(df_dict, index = geo_train_x.index)
+            # df2 = pd.DataFrame(df_dict, index = geo_train_x.index)
+            df2 = pd.DataFrame(df_dict) #GEO
             df = df.append(df2)
         # print(df)
     return df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array
