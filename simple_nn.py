@@ -373,6 +373,12 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             # verbose = 0
         )
 
+        if age_transform == "loglinear":
+            auto_history.history['loss'] = train_age_transformer.inverse_transform(auto_history.history['loss'])
+            auto_history.history['mae'] = train_age_transformer.inverse_transform(auto_history.history['mae'])
+            auto_history.history['val_loss'] = val_age_transformer.inverse_transform(auto_history.history['val_loss'])
+            auto_history.history['val_mae'] = val_age_transformer.inverse_transform(auto_history.history['val_mae'])
+
         min_auto_encoder_train_mse_array.append(np.min(auto_history.history['loss']))
         min_auto_encoder_train_mae_array.append(np.min(auto_history.history['mae']))
         min_auto_encoder_val_mse_array.append(np.min(auto_history.history['val_loss']))
@@ -387,6 +393,14 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             # verbose = 0
         )
         
+        if age_transform == "loglinear":
+            history.history['loss'] = train_age_transformer.inverse_transform(history.history['loss'])
+            history.history['mse'] = train_age_transformer.inverse_transform(history.history['mse'])
+            history.history['mae'] = train_age_transformer.inverse_transform(history.history['mae'])
+            history.history['val_loss'] = val_age_transformer.inverse_transform(history.history['val_loss'])
+            history.history['val_mae'] = val_age_transformer.inverse_transform(history.history['val_mae'])
+            history.history['val_mse'] = val_age_transformer.inverse_transform(history.history['val_mse'])
+
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
         min_train_mae_array.append(np.min(history.history['mae']))
@@ -395,7 +409,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_val_mae_array.append(np.min(history.history['val_mae']))
 
         results = model.evaluate(auto_encoder.encoder(validation_x), validation_y, batch_size)
-        # print("Validation metrics:", results)     
+        if age_transform == "loglinear":
+            print("Validation metrics:", val_age_transformer.inverse_transform(results))     
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(validation_x))
