@@ -324,7 +324,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, 0.3, model_params[3], gaussian_noise)
+        auto_encoder = AutoEncoder(batch_size, latent_size, 0.2, model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
@@ -333,7 +333,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         auto_history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=600, 
+            epochs=500, 
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
             # verbose = 0
