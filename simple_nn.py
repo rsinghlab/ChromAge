@@ -544,7 +544,7 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                                     print(metrics_dict)
     return df, metrics_dict
 
-def post_process(metadata, histone_data_object, histone_mark_str, y_test):
+def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test):
     
     # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
 
@@ -555,41 +555,37 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     # print("Best val models:", *list(best_val_models), sep='\n')
     # print("Best train models:", *list(best_train_models), sep='\n')
 
-    # train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
-    # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
+    # df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0003 0.0 0.01 50 0.2", [3, 0.0003, 0.0, 0.01], 50, 0.2, None)
 
-    # Try improving the MAE, MSE and the loss for the best models here
+    # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
 
-    # auto_encoder = AutoEncoder()
-    # auto_encoder.compile(
-    # loss='mae',
-    # metrics=['mae'],
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+    # Testing 
+    auto_encoder = AutoEncoder(16, 50, 0.0, 0.01, 0.2)
+    auto_encoder.compile(
+    loss='mae',
+    metrics=['mae'],
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
 
-    # history = auto_encoder.fit(
-    #     train_x, 
-    #     train_y, 
-    #     epochs=10, 
-    #     batch_size=48, 
-    #     validation_data=(val_x, val_y)
-    # )
+    history = auto_encoder.fit(
+        X_train, 
+        y_train, 
+        epochs=600, 
+        batch_size=16, 
+        validation_data=(X_test, y_test)
+    )
 
-    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0003 0.0 0.01 50 0.2", [3, 0.0003, 0.0, 0.01], 50, 0.2, None)
+    model = create_nn(3, 0.0003, 0.0, 0.01)
+    history = model.fit(auto_encoder.encoder(np.array(X_train)),np.array(y_train), epochs = 1000, batch_size=16)
+    print("Model: ", "simple_nn 16 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    results = model.evaluate(auto_encoder.encoder(np.array(X_test)), np.array(y_test), 16)
+    prediction_distribution = model(auto_encoder.encoder(np.array(X_test)))
+    predictions = model.predict(auto_encoder.encoder(np.array(X_test)))
+    print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten()))
 
-    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
+    df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 
-    # model = create_nn(3, 0.0003, 0.0, 0.01)
-    # history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
-    # print("Model: ", "simple_nn 48 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    # results = model.evaluate(auto_encoder.encoder(np.array(val_x)), np.array(val_y), 48, verbose = 0)
-    # prediction_distribution = model(auto_encoder.encoder(np.array(val_x)))
-    # predictions = model.predict(auto_encoder.encoder(np.array(val_x)), verbose = 0)
-    # print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(val_y), np.array(predictions).flatten()))
-
-    # df_dict = {"Actual Age": np.array(val_y), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-
-    # df = pd.DataFrame(df_dict, index = val_y.index)
-    # print(df)
+    df = pd.DataFrame(df_dict, index = y_test.index)
+    print(df)
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False):
@@ -601,7 +597,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
     if process == True:
-        post_process(metadata, histone_data_object, histone_mark_str, y_test)
+        post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     else:
         param_grid = {
             'epochs':[1000],
