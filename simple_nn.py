@@ -322,8 +322,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         # validation_y_index = validation_y.index
 
         #GEO DATASET
-        training_x, training_y = geo_train_x[train_index], geo_train_x[val_index]
-        validation_x, validation_y = geo_train_y[train_index], geo_train_y[val_index]
+        training_x, training_y = np.array(geo_train_x[train_index]), np.array(geo_train_x[val_index])
+        validation_x, validation_y = np.array(geo_train_y[train_index]), np.array(geo_train_y[val_index])
 
         auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
@@ -613,7 +613,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
             batch_size=16
         )
 
-        df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None)
+        df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, geo_train_x=X_train, geo_train_y=y_train)
                         
         #evaluation metrics
         print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
