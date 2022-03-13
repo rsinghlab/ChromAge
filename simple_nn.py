@@ -230,7 +230,7 @@ def split_data(metadata, histone_data_object, split = 0.2, histone_str = None):
     metadata_temp = metadata[metadata[histone_str].apply(lambda x: x in X.index)]
 
     y = metadata_temp["Age"]
-    X = X.loc[metadata_temp["H3K4me3 SRR list"]]
+    X = X.loc[metadata_temp[histone_str]]
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
 
     ##### ENCODE DATA PROCESSING
