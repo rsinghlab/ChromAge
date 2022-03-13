@@ -671,7 +671,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
     if process:
-        post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
+        post_process(metadata, histone_data_object, histone_mark_str, y_test)
     elif GEO:
         training_x = np.concatenate((np.array(X_train), np.array(X_test)), axis=0)
         training_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
