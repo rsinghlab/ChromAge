@@ -589,7 +589,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # print(df)
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
-def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = false):
+def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = False):
     # metadata = filter_metadata(metadata, biological_replicates = True) # Take out for GEO
 
     # imputer = KNNImputer()
