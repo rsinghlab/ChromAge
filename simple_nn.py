@@ -560,7 +560,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
 
     # Testing 
-    auto_encoder = AutoEncoder(48, 50, 0.05, 0.01, 0.2)
+    auto_encoder = AutoEncoder(48, 50, 0.015, 0.015, 0.2)
     auto_encoder.compile(
     loss='mae',
     metrics=['mae'],
