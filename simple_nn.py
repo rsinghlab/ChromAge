@@ -224,7 +224,6 @@ class histone_data:
 def split_data(metadata, histone_data_object, split = 0.2, histone_str = None, GEO = False):
     X = histone_data_object.df
     # ####### GEO DATA PROCESSING
-    # metadata = metadata.dropna(subset=[histone_str])
     if GEO:
         metadata = metadata.dropna(subset=[histone_str])
 
