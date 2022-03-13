@@ -282,7 +282,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
     samples = np.intersect1d(metadata.index, X.index)
     metadata_temp = metadata.loc[samples, :]
 
-    kf = KFold(n_splits=k, shuffle=True)
+    kf = KFold(n_splits=k, shuffle=True, random_state=42)
 
     kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
     val_metrics_array = []
