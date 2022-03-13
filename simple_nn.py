@@ -320,7 +320,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y = val_metadata.loc[validation_x.index].age
 
         validation_y_index = validation_y.index
-        
+
         validation_x = np.array(validation_x)
         validation_y = np.array(validation_y)
 
@@ -351,11 +351,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             validation_x = transformer.fit_transform(validation_x)
         
         if age_transform == "loglinear":
-            transformer = LogLinearTransformer()
-            training_y = transformer.fit(training_y)
-            training_y = transformer.transform(training_y)
-            validation_y = transformer.fit(validation_y)
-            validation_y = transformer.transform(validation_y)
+            age_transformer = LogLinearTransformer()
+            training_y = age_transformer.fit(target = training_y)
+            training_y = age_transformer.transform(target = training_y)
+            validation_y = age_transformer.fit(target = validation_y)
+            validation_y = age_transformer.transform(target = validation_y)
 
 
         auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
@@ -402,7 +402,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         type_arr = np.full(validation_y.shape, model_type)
 
         if age_transform == "loglinear":
-            validation_y = transformer.inverse_transform(validation_y)
+            validation_y = age_transformer.inverse_transform(validation_y)
 
         if df is None:
             # change to np.squeeze for GEO
