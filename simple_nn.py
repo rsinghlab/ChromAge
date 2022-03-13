@@ -25,6 +25,7 @@ from sklearn.model_selection import train_test_split, KFold, cross_validate, Gri
 from sklearn.preprocessing import StandardScaler, RobustScaler, QuantileTransformer
 from sklearn.impute import KNNImputer
 from sklearn.metrics import median_absolute_error
+from sklearn.linear_model import ElasticNet, ElasticNetCV
 
 import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
@@ -238,7 +239,6 @@ def split_data(metadata, histone_data_object, split = 0.2):
 
     y = metadata_temp["Age"]
     X = X.loc[metadata_temp["H3K4me3 SRR list"]]
-    print(X)
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
 
     ##### ENCODE DATA PROCESSING
@@ -596,7 +596,40 @@ def main(metadata, histone_data_object, histone_mark_str, process = False):
     # scaler = StandardScaler()
 
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
-    exit()
+
+    auto_encoder = AutoEncoder(16, 50, 0.1, 0.05, 0.1)
+
+    auto_encoder.fit(
+        X_train, 
+        y_train, 
+        epochs=600, 
+        batch_size=16
+    )
+
+    model = create_nn(50, 5, 0.0002, 0.1, 0.05)
+    results = cross_validate(model, X_train, y_train, cv = 4, scoring = {'mae':'neg_median_absolute_error', 'mse':'neg_mean_squared_error', 'r2':'r2'})
+                    
+    #evaluation metrics
+    mae = np.mean(np.abs(results['test_mae']))
+    std_mae = np.std(np.abs(results['test_mae']))
+    mse = np.mean(np.abs(results['test_mse']))
+    std_mse = np.std(np.abs(results['test_mse']))
+
+    print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
+
+    model = ElasticNetCV(n_alphas = 10, max_iter=1000, random_state = 42)
+    results = cross_validate(model, X_train, y_train, cv = 4, scoring = {'mae':'neg_median_absolute_error', 'mse':'neg_mean_squared_error', 'r2':'r2'})
+                    
+    #evaluation metrics
+    mae = np.mean(np.abs(results['test_mae']))
+    std_mae = np.std(np.abs(results['test_mae']))
+    mse = np.mean(np.abs(results['test_mse']))
+    std_mse = np.std(np.abs(results['test_mse']))
+
+    print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
+
+    return
+
     if process == True:
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     else:
