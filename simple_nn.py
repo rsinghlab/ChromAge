@@ -218,17 +218,16 @@ class histone_data:
 
 #------------------------------------------------------------------------------------------------------
 
-def split_data(metadata, histone_data_object, split = 0.2):
+def split_data(metadata, histone_data_object, split = 0.2, histone_str = None):
     X = histone_data_object.df
-    # print(X)
     # ####### GEO DATA PROCESSING
-    metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
+    metadata = metadata.dropna(subset=[histone_str])
 
-    metadata.loc[:,["H3K4me3 SRR list"]] = metadata["H3K4me3 SRR list"].apply(lambda x: re.search('SRR\d*',x)[0])
-    metadata = metadata.dropna(subset=["H3K4me3 SRR list"])
+    metadata.loc[:,[histone_str]] = metadata[histone_str].apply(lambda x: re.search('SRR\d*',x)[0])
+    metadata = metadata.dropna(subset=[histone_str])
     metadata = metadata.dropna(subset=["Age"])
 
-    metadata_temp = metadata[metadata["H3K4me3 SRR list"].apply(lambda x: x in X.index)]
+    metadata_temp = metadata[metadata[histone_str].apply(lambda x: x in X.index)]
 
     y = metadata_temp["Age"]
     X = X.loc[metadata_temp["H3K4me3 SRR list"]]
@@ -597,16 +596,13 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = False):
-    # metadata = filter_metadata(metadata, biological_replicates = True) # Take out for GEO
-
-    # imputer = KNNImputer()
-    # scaler = StandardScaler()
-
-    X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
     if process:
+        metadata = filter_metadata(metadata, biological_replicates = True)
+        X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
+        X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, histone_mark_str + " SRR list")
         df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, geo_train_x=X_train, geo_train_y=y_train)
                         
         #evaluation metrics
@@ -623,6 +619,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
 
         print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     else:
+        metadata = filter_metadata(metadata, biological_replicates = True)
+        
         param_grid = {
             'epochs':[1000],
             'batch_size': [16, 48],
@@ -642,7 +640,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
 if __name__ == '__main__':
 
     #GEO
-    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
     # metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
@@ -661,5 +660,9 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # post-processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
+    # main(metadata, H3K4me3_data_object, "H3K4me3", True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
     # main(metadata, H3K4me1_data_object, "H3K4me1", True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+
+    # GEO post_processing
+    # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
+    main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
