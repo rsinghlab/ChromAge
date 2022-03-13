@@ -341,7 +341,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             training_y, 
             epochs=600, 
             batch_size=batch_size, 
-            validation_data=(validation_x, validation_y),
+            # validation_data=(validation_x, validation_y),
             # verbose = 0
         )
 
