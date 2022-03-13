@@ -277,15 +277,15 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     return metadata
 
 def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, gaussian_noise, df, k = 4, geo_train_x = None, geo_train_y = None):
-    metadata = metadata.drop(y_test.index)
+    # metadata = metadata.drop(y_test.index)
 
     X = histone_data_object.df
-    samples = np.intersect1d(metadata.index, X.index)
-    metadata_temp = metadata.loc[samples, :]
+    # samples = np.intersect1d(metadata.index, X.index)
+    # metadata_temp = metadata.loc[samples, :]
 
     kf = KFold(n_splits=k, shuffle=True)
 
-    kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
+    # kfold_data = kf.split(metadata_temp.groupby(['Experiment accession']).count().index)
     val_metrics_array = []
     min_auto_encoder_train_mse_array = []
     min_auto_encoder_train_mae_array = []
@@ -299,31 +299,31 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
     min_val_mae_array = []
 
     #GEO DATASET
-    # kfold_data = kf.split(geo_train_x, geo_train_y)
+    kfold_data = kf.split(geo_train_x, geo_train_y)
 
     for train_index, val_index in kfold_data:
         
-        experiment_training = metadata_temp.groupby(['Experiment accession']).count().index[train_index]
-        experiment_val = metadata_temp.groupby(['Experiment accession']).count().index[val_index]
+        # experiment_training = metadata_temp.groupby(['Experiment accession']).count().index[train_index]
+        # experiment_val = metadata_temp.groupby(['Experiment accession']).count().index[val_index]
         
-        training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
-        train_metadata = metadata_temp.loc[training_list, :]
+        # training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
+        # train_metadata = metadata_temp.loc[training_list, :]
         
-        val_list = [i in experiment_val for i in np.array(metadata_temp['Experiment accession'])]
-        val_metadata = metadata_temp.loc[val_list, :]
+        # val_list = [i in experiment_val for i in np.array(metadata_temp['Experiment accession'])]
+        # val_metadata = metadata_temp.loc[val_list, :]
 
-        training_x = X.loc[train_metadata.index]
-        # print(training_x)
-        training_y = train_metadata.loc[training_x.index].age
+        # training_x = X.loc[train_metadata.index]
+        # # print(training_x)
+        # training_y = train_metadata.loc[training_x.index].age
 
-        validation_x = X.loc[val_metadata.index]
-        validation_y = val_metadata.loc[validation_x.index].age
+        # validation_x = X.loc[val_metadata.index]
+        # validation_y = val_metadata.loc[validation_x.index].age
 
-        validation_y_index = validation_y.index
+        # validation_y_index = validation_y.index
 
         #GEO DATASET
-        # training_x, training_y = np.array(geo_train_x)[train_index], np.array(geo_train_y)[train_index]
-        # validation_x, validation_y = np.array(geo_train_x)[val_index], np.array(geo_train_y)[val_index]
+        training_x, training_y = np.array(geo_train_x)[train_index], np.array(geo_train_y)[train_index]
+        validation_x, validation_y = np.array(geo_train_x)[val_index], np.array(geo_train_y)[val_index]
 
         print(training_x.shape)
         print(training_y.shape)
