@@ -604,6 +604,9 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 def test(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
     # Testing
 
+    y_train = np.expand_dims(np.array(y_train),1)
+    y_test = np.expand_dims(np.array(y_test),1)
+
     if data_transform == "scaler":
         transformer = StandardScaler()
         X_train = transformer.fit_transform(X_train)
@@ -643,6 +646,9 @@ def test(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = No
     model = create_nn(50, 5, 0.0002, 0.1, 0.05)
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16)
     
+    y_train = np.squeeze(y_train)
+    y_test = np.squeeze(y_test)
+
     prediction_distribution = model(auto_encoder.encoder(X_test))
     predictions = test_age_transformer.inverse_transform(np.array(model.predict(auto_encoder.encoder(X_test))).flatten())
     y_test = test_age_transformer.inverse_transform(y_test)
