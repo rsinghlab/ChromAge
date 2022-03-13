@@ -28,6 +28,7 @@ from sklearn.metrics import median_absolute_error
 from sklearn.linear_model import ElasticNet, ElasticNetCV
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import mean_squared_error, median_absolute_error
+from scipy.stats import pearsonr
 
 import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
@@ -647,12 +648,17 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16)
     
     y_test = np.squeeze(y_test)
-
     prediction_distribution = model(auto_encoder.encoder(X_test))
-    predictions = test_age_transformer.inverse_transform(np.array(model.predict(auto_encoder.encoder(X_test))).flatten())
-    y_test = test_age_transformer.inverse_transform(y_test)
+    predictions = model.predict(auto_encoder.encoder(X_test)).flatten()
+
+    if age_transform == "loglinear":
+        predictions = test_age_transformer.inverse_transform(predictions)
+        y_test = test_age_transformer.inverse_transform(y_test)
+    
     mse = mean_squared_error(y_test, predictions)
     mae = median_absolute_error(y_test, predictions)
+    corr, _ = pearsonr(y_test, predictions)
+    print('Pearsons correlation: %.3f' % corr)
 
     print("Model: ", "simple_nn 16, 50, 5, 0.0002, 0.1, 0.05", "with Mean mse, mae: ", mse, mae)
 
@@ -673,22 +679,24 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         training_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
         
         #GEO
-        H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-        # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
+        GEO_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+        # GEO_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
         metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
-        X_train, X_test, y_train, y_test = split_data(metadata, H3K4me3_data_object, histone_str = histone_mark_str + " SRR list", GEO = GEO)
+        X_train, X_test, y_train, y_test = split_data(metadata, GEO_data_object, histone_str = histone_mark_str + " SRR list", GEO = GEO)
         testing_x = np.concatenate((np.array(X_train), np.array(X_test)), axis=0)
         testing_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
 
-        # test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
-        test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "robust")
+        test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
+        # test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "robust")
 
         model = ElasticNet(max_iter=1000, random_state = 42)
         model.fit(training_x, training_y)
         predictions = model.predict(testing_x)
         mse = mean_squared_error(testing_y, predictions)
         mae = median_absolute_error(testing_y, predictions)
+        corr, _ = pearsonr(testing_y, predictions)
+        print('Pearsons correlation: %.3f' % corr)
 
         print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     else:
