@@ -322,8 +322,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         # validation_y_index = validation_y.index
 
         #GEO DATASET
-        training_x, training_y = np.array(geo_train_x)[train_index], np.array(geo_train_x)[val_index]
-        validation_x, validation_y = np.array(geo_train_y)[train_index], np.array(geo_train_y)[val_index]
+        training_x, training_y = np.array(geo_train_x)[train_index], np.array(geo_train_y)[train_index]
+        validation_x, validation_y = np.array(geo_train_x)[val_index], np.array(geo_train_y)[val_index]
 
         auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
