@@ -371,7 +371,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(np.array(validation_x)))
-        type_arr = np.full(np.array(validation_y).shape, model_type)
+        type_arr = np.full(np.squeeze(validation_y).shape, model_type)
 
         if df is None:
             df_dict = {"Actual Age": np.squeeze(validation_y), "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
