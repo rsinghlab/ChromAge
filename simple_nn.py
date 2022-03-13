@@ -1,4 +1,5 @@
 from collections import defaultdict
+from typing_extensions import dataclass_transform
 import numpy as np
 import pandas as pd
 import random
@@ -27,6 +28,7 @@ from sklearn.impute import KNNImputer
 from sklearn.metrics import median_absolute_error
 from sklearn.linear_model import ElasticNet, ElasticNetCV
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.metrics import mean_squared_error, median_absolute_error
 
 import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
@@ -219,40 +221,42 @@ class histone_data:
 
 #------------------------------------------------------------------------------------------------------
 
-def split_data(metadata, histone_data_object, split = 0.2, histone_str = None):
+def split_data(metadata, histone_data_object, split = 0.2, histone_str = None, GEO = False):
     X = histone_data_object.df
     # ####### GEO DATA PROCESSING
     # metadata = metadata.dropna(subset=[histone_str])
+    if GEO:
+        metadata = metadata.dropna(subset=[histone_str])
 
-    # metadata.loc[:,[histone_str]] = metadata[histone_str].apply(lambda x: re.search('SRR\d*',x)[0])
-    # metadata = metadata.dropna(subset=[histone_str])
-    # metadata = metadata.dropna(subset=["Age"])
+        metadata.loc[:,[histone_str]] = metadata[histone_str].apply(lambda x: re.search('SRR\d*',x)[0])
+        metadata = metadata.dropna(subset=[histone_str])
+        metadata = metadata.dropna(subset=["Age"])
 
-    # metadata_temp = metadata[metadata[histone_str].apply(lambda x: x in X.index)]
+        metadata_temp = metadata[metadata[histone_str].apply(lambda x: x in X.index)]
 
-    # y = metadata_temp["Age"]
-    # X = X.loc[metadata_temp[histone_str]]
-    # X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
-
-    ##### ENCODE DATA PROCESSING
-
-    samples = np.intersect1d(metadata.index, X.index)
-
-    metadata_temp = metadata.loc[samples, :]
-
-    experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
-
-    training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
-    training_metadata = metadata_temp.loc[training_list, :]
-
-    X_train = X.loc[training_metadata.index]
-    y_train = training_metadata.loc[X_train.index].age
+        y = metadata_temp["Age"]
+        X = X.loc[metadata_temp[histone_str]]
+        X_train, X_test, y_train, y_test = train_test_split(X,y, test_size = split, random_state = 42)
     
-    testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
-    testing_metadata = metadata_temp.loc[testing_list, :]
+    else:
+    ##### ENCODE DATA PROCESSING
+        samples = np.intersect1d(metadata.index, X.index)
 
-    X_test = X.loc[testing_metadata.index]
-    y_test = testing_metadata.loc[X_test.index].age
+        metadata_temp = metadata.loc[samples, :]
+
+        experiment_training, experiment_testing = train_test_split(metadata_temp.groupby(['Experiment accession']).count().index, test_size = split, random_state = 42)
+
+        training_list = [i in experiment_training for i in np.array(metadata_temp['Experiment accession'])]
+        training_metadata = metadata_temp.loc[training_list, :]
+
+        X_train = X.loc[training_metadata.index]
+        y_train = training_metadata.loc[X_train.index].age
+        
+        testing_list = [i in experiment_testing for i in np.array(metadata_temp['Experiment accession'])]
+        testing_metadata = metadata_temp.loc[testing_list, :]
+
+        X_test = X.loc[testing_metadata.index]
+        y_test = testing_metadata.loc[X_test.index].age
 
     return X_train, X_test, y_train, y_test
 
@@ -276,7 +280,7 @@ def filter_metadata(metadata, cancer = False, biological_replicates = False):
     
     return metadata
 
-def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, gaussian_noise, df, k = 4, geo_train_x = None, geo_train_y = None, data_transform = None, age_transform = None):
+def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, epochs, model_type, model_params, latent_size, gaussian_noise, df, k = 4, data_transform = None, age_transform = None):
     metadata = metadata.drop(y_test.index)
 
     X = histone_data_object.df
@@ -297,9 +301,6 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
     min_val_loss_array = []
     min_val_mse_array = []
     min_val_mae_array = []
-
-    #GEO DATASET
-    # kfold_data = kf.split(geo_train_x, geo_train_y)
 
     for train_index, val_index in kfold_data:
         
@@ -323,15 +324,6 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_x = np.array(validation_x)
         validation_y = np.expand_dims(np.array(validation_y),1)
-
-        #GEO DATASET
-        # training_x, training_y = np.array(geo_train_x)[train_index], np.expand_dims(np.array(geo_train_y)[train_index],1)
-        # validation_x, validation_y = np.array(geo_train_x)[val_index], np.expand_dims(np.array(geo_train_y)[val_index],1)
-
-        # print(training_x.shape)
-        # print(training_y.shape)
-        # print(validation_x.shape)
-        # print(validation_y.shape)
 
         # Data + Age transform
 
@@ -367,17 +359,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         auto_history = auto_encoder.fit(
             training_x, 
             training_y, 
-            epochs=600, # Encode 600, GEO 20
+            epochs=600, # Encode 600
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
             # verbose = 0
         )
-
-        if age_transform == "loglinear":
-            auto_history.history['loss'] = train_age_transformer.inverse_transform(np.array(auto_history.history['loss']))
-            auto_history.history['mae'] = train_age_transformer.inverse_transform(np.array(auto_history.history['mae']))
-            auto_history.history['val_loss'] = val_age_transformer.inverse_transform(np.array(auto_history.history['val_loss']))
-            auto_history.history['val_mae'] = val_age_transformer.inverse_transform(np.array(auto_history.history['val_mae']))
 
         min_auto_encoder_train_mse_array.append(np.min(auto_history.history['loss']))
         min_auto_encoder_train_mae_array.append(np.min(auto_history.history['mae']))
@@ -392,21 +378,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             validation_data=(auto_encoder.encoder(validation_x), validation_y),
             # verbose = 0
         )
-        
-        if age_transform == "loglinear":
-            history.history['loss'] = train_age_transformer.inverse_transform(np.array(history.history['loss']))
-            history.history['mse'] = train_age_transformer.inverse_transform(np.array(history.history['mse']))
-            history.history['mae'] = train_age_transformer.inverse_transform(np.array(history.history['mae']))
-            history.history['val_loss'] = val_age_transformer.inverse_transform(np.array(history.history['val_loss']))
-            history.history['val_mae'] = val_age_transformer.inverse_transform(np.array(history.history['val_mae']))
-            history.history['val_mse'] = val_age_transformer.inverse_transform(np.array(history.history['val_mse']))
 
         min_train_loss_array.append(np.min(history.history['loss']))
         min_train_mse_array.append(np.min(history.history['mse']))
         min_train_mae_array.append(np.min(history.history['mae']))
         min_val_loss_array.append(np.min(history.history['val_loss']))
-        min_val_mse_array.append(np.min(history.history['val_mse']))
-        min_val_mae_array.append(np.min(history.history['val_mae']))
 
         results = model.evaluate(auto_encoder.encoder(validation_x), validation_y, batch_size)
         if age_transform == "loglinear":
@@ -415,23 +391,27 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         prediction_distribution = model(auto_encoder.encoder(validation_x))
         predicted_age = prediction_distribution.mean().numpy().flatten()
+        validation_y = np.squeeze(validation_y)
 
         if age_transform == "loglinear":
             validation_y = val_age_transformer.inverse_transform(validation_y)
             predicted_age = val_age_transformer.inverse_transform(predicted_age)
-
-        validation_y = np.squeeze(validation_y)
+            mse = mean_squared_error(validation_y, predicted_age)
+            mae = median_absolute_error(validation_y, predicted_age)
+            min_val_mse_array.append(np.mean(mse))
+            min_val_mae_array.append(np.mean(mse))
+        else:
+            min_val_mse_array.append(np.min(history.history['val_mse']))
+            min_val_mae_array.append(np.min(history.history['val_mae']))
+        
         type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
-            # change to np.squeeze for GEO
             df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predicted_age, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
-            # df = pd.DataFrame(df_dict) # GEO
         else:
             df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predicted_age, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
-            # df2 = pd.DataFrame(df_dict) # GEO
             df = df.append(df2)
         # print(df)
     return df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array, min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array
@@ -603,16 +583,16 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                                     print(metrics_dict)
     return df, metrics_dict
 
-def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test):
+def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
+    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
 
-    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
+    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
 
-    # print("Best auto val models:", *list(best_auto_val_models), sep='\n')
-    # print("Best auto train models:", *list(best_auto_train_models), sep='\n')
-    # print("Best val models:", *list(best_val_models), sep='\n')
-    # print("Best train models:", *list(best_train_models), sep='\n')
+    print("Best auto val models:", *list(best_auto_val_models), sep='\n')
+    print("Best auto train models:", *list(best_auto_train_models), sep='\n')
+    print("Best val models:", *list(best_val_models), sep='\n')
+    print("Best train models:", *list(best_train_models), sep='\n')
 
     scaler_list = ["standard", "robust", "quantile"]
     age_transform_list = ["loglinear"]
@@ -621,48 +601,84 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
 
     print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
     df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
+    return
 
-    # Testing 
-    # auto_encoder = AutoEncoder(16, 50, 0.05, 0.01, 0.2)
-    # auto_encoder.compile(
-    # loss='mae',
-    # metrics=['mae'],
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
+def test(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
+    # Testing
 
-    # history = auto_encoder.fit(
-    #     X_train, 
-    #     y_train, 
-    #     epochs=300, 
-    #     batch_size=16, 
-    #     validation_data=(X_test, y_test)
-    # )
+    if data_transform == "scaler":
+        transformer = StandardScaler()
+        X_train = transformer.fit_transform(X_train)
+        X_test = transformer.fit_transform(X_test)
+        
+    if data_transform == "robust":
+        transformer = RobustScaler()
+        X_train = transformer.fit_transform(X_train)
+        X_test = transformer.fit_transform(X_test)
+        
+    if data_transform == "quantile":
+        transformer = QuantileTransformer(output_distribution='normal', random_state=42)
+        X_train = transformer.fit_transform(X_train)
+        X_test = transformer.fit_transform(X_test)
+        
+    if age_transform == "loglinear":
+        train_age_transformer = LogLinearTransformer()
+        train_age_transformer.fit(y_train)
+        y_train = train_age_transformer.transform(y_train)
+        test_age_transformer = LogLinearTransformer()
+        test_age_transformer.fit(y_test)
+        y_test = test_age_transformer.transform(y_test) 
+    
+    auto_encoder = AutoEncoder(16, 5, 0.0002, 0.1, 0.05, 0.1)
+    auto_encoder.compile(
+    loss='mse',
+    metrics=['mae'],
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002))
 
-    # model = create_nn(50, 3, 0.0003, 0.05, 0.02)
-    # history = model.fit(auto_encoder.encoder(np.array(X_train)),np.array(y_train), epochs = 500, batch_size=16)
-    # print("Model: ", "simple_nn 16 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    # results = model.evaluate(auto_encoder.encoder(np.array(X_test)), np.array(y_test), 16)
-    # prediction_distribution = model(auto_encoder.encoder(np.array(X_test)))
-    # predictions = model.predict(auto_encoder.encoder(np.array(X_test)))
-    # print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten()))
+    history = auto_encoder.fit(
+        X_train, 
+        y_train, 
+        epochs=600, 
+        batch_size=16
+    )
 
-    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    model = create_nn(50, 5, 0.0002, 0.1, 0.05)
+    history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16)
+    
+    prediction_distribution = model(auto_encoder.encoder(X_test))
+    predictions = test_age_transformer.inverse_transform(np.array(model.predict(auto_encoder.encoder(X_test))).flatten())
+    y_test = test_age_transformer.inverse_transform(y_test)
+    mse = mean_squared_error(y_test, predictions)
+    mae = median_absolute_error(y_test, predictions)
 
-    # df = pd.DataFrame(df_dict, index = y_test.index)
-    # print(df)
-    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
+    print("Model: ", "simple_nn 16, 50, 5, 0.0002, 0.1, 0.05", "with Mean mse, mae: ", mse, mae)
+
+    df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+
+    df = pd.DataFrame(df_dict)
+    print(df)
+    df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/GEO-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = False):
+    metadata = filter_metadata(metadata, biological_replicates = True)
+    X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
     if process:
-        metadata = filter_metadata(metadata, biological_replicates = True)
-        X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
-        X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, histone_str = histone_mark_str + " SRR list")
-        df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, geo_train_x=X_train, geo_train_y=y_train)
-                        
-        #evaluation metrics
-        print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
+        training_x = np.append(np.array(X_train), np.array(X_test))
+        training_y = np.append(np.array(y_train), np.array(y_test))
+        
+        #GEO
+        H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+        # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
+        metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
+
+        X_train, X_test, y_train, y_test = split_data(metadata, H3K4me3_data_object, histone_str = histone_mark_str + " SRR list", GEO = GEO)
+        testing_x = np.append(np.array(X_train), np.array(X_test))
+        testing_y = np.append(np.array(y_train), np.array(y_test))
+
+        test(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
 
         model = ElasticNetCV(n_alphas = 10, max_iter=1000, random_state = 42)
         results = cross_validate(model, X_train, y_train, cv = 4, scoring = {'mae':'neg_median_absolute_error', 'mse':'neg_mean_squared_error', 'r2':'r2'})
@@ -675,8 +691,6 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
 
         print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     else:
-        metadata = filter_metadata(metadata, biological_replicates = True)
-
         param_grid = {
             'epochs':[1000],
             'batch_size': [16, 48],
@@ -720,18 +734,13 @@ class LogLinearTransformer(BaseEstimator, TransformerMixin):
         return target_
 
 if __name__ == '__main__':
-    #GEO
-    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
-    # metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
-
     #Encore
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
     # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
-    H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
+    # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
     # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
     
     # For Grid Searches
@@ -744,8 +753,8 @@ if __name__ == '__main__':
 
     # For post-processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
-    main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
 
     # GEO post_processing
-    # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
+    main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
     # main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
