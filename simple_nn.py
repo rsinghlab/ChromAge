@@ -598,6 +598,10 @@ def main(metadata, histone_data_object, histone_mark_str, process = False):
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
 
     auto_encoder = AutoEncoder(16, 50, 0.1, 0.05, 0.1)
+    auto_encoder.compile(
+    loss='mae',
+    metrics=['mae'],
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002))
 
     auto_encoder.fit(
         X_train, 
