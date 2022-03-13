@@ -26,6 +26,7 @@ from sklearn.preprocessing import StandardScaler, RobustScaler, QuantileTransfor
 from sklearn.impute import KNNImputer
 from sklearn.metrics import median_absolute_error
 from sklearn.linear_model import ElasticNet, ElasticNetCV
+from sklearn.base import BaseEstimator, TransformerMixin
 
 import tensorflow as tf
 from tensorflow.keras.wrappers.scikit_learn import KerasRegressor
