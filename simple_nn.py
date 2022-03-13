@@ -569,12 +569,12 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     history = auto_encoder.fit(
         X_train, 
         y_train, 
-        epochs=600, 
+        epochs=300, 
         batch_size=16, 
         validation_data=(X_test, y_test)
     )
 
-    model = create_nn(3, 0.0003, 0.0, 0.01)
+    model = create_nn(50, 3, 0.0003, 0.0, 0.01)
     history = model.fit(auto_encoder.encoder(np.array(X_train)),np.array(y_train), epochs = 1000, batch_size=16)
     print("Model: ", "simple_nn 16 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
     results = model.evaluate(auto_encoder.encoder(np.array(X_test)), np.array(y_test), 16)
