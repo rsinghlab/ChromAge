@@ -383,9 +383,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         min_train_mae_array.append(np.min(history.history['mae']))
         min_val_loss_array.append(np.min(history.history['val_loss']))
 
-        results = model.evaluate(auto_encoder.encoder(validation_x), validation_y, batch_size)
-        if age_transform == "loglinear":
-            print("Validation metrics:", val_age_transformer.inverse_transform(np.array(results)))  
+        results = model.evaluate(auto_encoder.encoder(validation_x), validation_y, batch_size) 
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(validation_x))
@@ -398,7 +396,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             mse = mean_squared_error(validation_y, predicted_age)
             mae = median_absolute_error(validation_y, predicted_age)
             min_val_mse_array.append(np.mean(mse))
-            min_val_mae_array.append(np.mean(mse))
+            min_val_mae_array.append(np.mean(mae))
         else:
             min_val_mse_array.append(np.min(history.history['val_mse']))
             min_val_mae_array.append(np.min(history.history['val_mae']))
@@ -679,8 +677,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         training_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
         
         #GEO
-        GEO_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-        # GEO_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
+        # GEO_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+        GEO_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
         metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
         X_train, X_test, y_train, y_test = split_data(metadata, GEO_data_object, histone_str = histone_mark_str + " SRR list", GEO = GEO)
@@ -745,8 +743,8 @@ class LogLinearTransformer(BaseEstimator, TransformerMixin):
 if __name__ == '__main__':
     #Encore
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-    H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
+    # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
+    H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
     # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
     # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
@@ -765,5 +763,5 @@ if __name__ == '__main__':
     # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
 
     # GEO post_processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
-    # main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
+    # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
+    main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
