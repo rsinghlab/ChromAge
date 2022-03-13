@@ -410,7 +410,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         results = model.evaluate(auto_encoder.encoder(validation_x), validation_y, batch_size)
         if age_transform == "loglinear":
-            print("Validation metrics:", val_age_transformer.inverse_transform(results))     
+            print("Validation metrics:", val_age_transformer.inverse_transform(np.array(results)))  
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(validation_x))
