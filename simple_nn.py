@@ -664,8 +664,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
     if process:
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
-        training_x = np.concatenate(np.array(X_train), np.array(X_test), axis=0)
-        training_y = np.concatenate(np.array(y_train), np.array(y_test), axis=0)
+        training_x = np.concatenate((np.array(X_train), np.array(X_test)), axis=0)
+        training_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
         
         #GEO
         H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
@@ -673,8 +673,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
         X_train, X_test, y_train, y_test = split_data(metadata, H3K4me3_data_object, histone_str = histone_mark_str + " SRR list", GEO = GEO)
-        testing_x = np.concatenate(np.array(X_train), np.array(X_test), axis=0)
-        testing_y = np.concatenate(np.array(y_train), np.array(y_test), axis=0)
+        testing_x = np.concatenate((np.array(X_train), np.array(X_test)), axis=0)
+        testing_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
 
         test(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
 
