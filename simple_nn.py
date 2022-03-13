@@ -324,11 +324,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
 
         validation_y_index = validation_y.index
 
-        auto_encoder = AutoEncoder(batch_size, latent_size, 0.15, model_params[3], gaussian_noise)
+        auto_encoder = AutoEncoder(batch_size, latent_size, 0.05, model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
         metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001))
+        optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
 
         auto_history = auto_encoder.fit(
             training_x, 
@@ -548,12 +548,12 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
     # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
 
-    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
+    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
 
-    print("Best auto val models:", *list(best_auto_val_models), sep='\n')
-    print("Best auto train models:", *list(best_auto_train_models), sep='\n')
-    print("Best val models:", *list(best_val_models), sep='\n')
-    print("Best train models:", *list(best_train_models), sep='\n')
+    # print("Best auto val models:", *list(best_auto_val_models), sep='\n')
+    # print("Best auto train models:", *list(best_auto_train_models), sep='\n')
+    # print("Best val models:", *list(best_val_models), sep='\n')
+    # print("Best train models:", *list(best_train_models), sep='\n')
 
     # train_x, val_x, train_y, val_y = split_data(metadata.drop(y_test.index), histone_data_object)
     # train_x, val_x, train_y, val_y = scaler.fit_transform(train_x), scaler.fit_transform(val_x), scaler.fit_transform(train_y), scaler.fit_transform(val_y)
@@ -574,11 +574,9 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     #     validation_data=(val_x, val_y)
     # )
 
-    # simple_nn 16 5 0.0003 0.0 0.01 300 0.1
+    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0003 0.0 0.01 50 0.2", [3, 0.0003, 0.0, 0.01], 50, 0.2, None)
 
-    # df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0003 0.0 0.01 300 0.1", [5, 0.0003, 0.1, 0.01], 300, 0.1, None)
-
-    # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Min-autoencoder-train-MSE:", min_auto_encoder_train_mse_array, "\n Min-autoencoder-train-MAE:", min_auto_encoder_train_mae_array, "\n Min-autoencoder-val-MSE:", min_auto_encoder_val_mse_array, "\n Min-autoencoder-val-MAE:", min_auto_encoder_val_mae_array,  "\n Min-train-loss:", min_train_loss_array, "\n Min-train-mse:", min_train_mse_array, "\n Min-train-mae:", min_train_mae_array, "\n Min-val-loss:", min_val_loss_array, "\n Min-val-mse:",min_val_mse_array, "\n Min-val-mae:", min_val_mae_array)
+    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
 
     # model = create_nn(3, 0.0003, 0.0, 0.01)
     # history = model.fit(auto_encoder.encoder(np.array(train_x)),np.array(train_y), epochs = 1000, batch_size=48, verbose = 0)
@@ -643,5 +641,5 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # post-processing
-    # main(metadata, H3K4me3_data_object, "H3K4me3", True)
-    main(metadata, H3K4me1_data_object, "H3K4me1", True)
+    # main(metadata, H3K4me3_data_object, "H3K4me3", True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
+    main(metadata, H3K4me1_data_object, "H3K4me1", True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2
