@@ -391,15 +391,21 @@ age_transform_list = [
 ]
 
 results_H3K4me3 = validate_classical_models('H3K4me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+results_H3K4me3.to_csv("classic_results_H3K4me3.csv")
 
 results_H3K27ac = validate_classical_models('H3K27ac', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+results_H3K27ac.to_csv("classic_results_H3K27ac.csv")
 
 results_H3K4me1 = validate_classical_models('H3K4me1', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+results_H3K4me1.to_csv("classic_results_H3K4me1.csv")
 
 results_H3K9me3 = validate_classical_models('H3K9me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+results_H3K9me3.to_csv("classic_results_H3K9me3.csv")
 
 results_H3K27me3 = validate_classical_models('H3K27me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+results_H3K27me3.to_csv("classic_results_H3K27me3.csv")
 
 results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+results_H3K36me3.to_csv("classic_results_H3K36me3.csv")
 
 # plot(results_H3K36me3)
