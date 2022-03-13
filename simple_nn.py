@@ -313,7 +313,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_metadata = metadata_temp.loc[val_list, :]
 
         training_x = X.loc[train_metadata.index]
-        training_y = np.array(train_metadata.loc[training_x.index].age)
+        training_y = np.expand_dims(np.array(train_metadata.loc[training_x.index].age),1)
         training_x = np.array(training_x)
 
         validation_x = X.loc[val_metadata.index]
@@ -322,7 +322,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         validation_y_index = validation_y.index
 
         validation_x = np.array(validation_x)
-        validation_y = np.array(validation_y)
+        validation_y = np.expand_dims(np.array(validation_y),1)
 
         #GEO DATASET
         # training_x, training_y = np.array(geo_train_x)[train_index], np.expand_dims(np.array(geo_train_y)[train_index],1)
@@ -356,7 +356,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             training_y = train_age_transformer.transform(training_y)
             val_age_transformer = LogLinearTransformer()
             val_age_transformer.fit(validation_y)
-            validation_y = val_age_transformer.transform(validation_y)
+            validation_y = val_age_transformer.transform(validation_y) 
 
         auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
@@ -399,10 +399,12 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(validation_x))
-        type_arr = np.full(validation_y.shape, model_type)
 
         if age_transform == "loglinear":
             validation_y = val_age_transformer.inverse_transform(validation_y)
+
+        validation_y = np.squeeze(validation_y)
+        type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
             # change to np.squeeze for GEO
