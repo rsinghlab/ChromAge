@@ -627,7 +627,7 @@ def test(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = No
         test_age_transformer.fit(y_test)
         y_test = test_age_transformer.transform(y_test) 
     
-    auto_encoder = AutoEncoder(16, 5, 0.0002, 0.1, 0.05, 0.1)
+    auto_encoder = AutoEncoder(16, 50, 0.1, 0.05, 0.1)
     auto_encoder.compile(
     loss='mse',
     metrics=['mae'],
