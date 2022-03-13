@@ -682,6 +682,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         testing_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
 
         # test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
+        test_model(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "robust")
 
         model = ElasticNet(max_iter=1000, random_state = 42)
         model.fit(training_x, training_y)
