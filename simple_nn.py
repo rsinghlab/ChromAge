@@ -744,10 +744,10 @@ if __name__ == '__main__':
     #Encore
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
     # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
-    H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
+    # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
     # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
-    # H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
+    H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
     # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
     
     # For Grid Searches
@@ -760,8 +760,8 @@ if __name__ == '__main__':
 
     # For post-processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
-    # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
-    main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
+    # main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
