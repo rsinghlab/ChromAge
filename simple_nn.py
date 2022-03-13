@@ -312,13 +312,16 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_list = [i in experiment_val for i in np.array(metadata_temp['Experiment accession'])]
         val_metadata = metadata_temp.loc[val_list, :]
 
-        training_x = np.array(X.loc[train_metadata.index])
+        training_x = X.loc[train_metadata.index]
         training_y = np.array(train_metadata.loc[training_x.index].age)
+        training_x = np.array(training_x)
 
-        validation_x = np.array(X.loc[val_metadata.index])
+        validation_x = X.loc[val_metadata.index]
         validation_y = val_metadata.loc[validation_x.index].age
 
         validation_y_index = validation_y.index
+        
+        validation_x = np.array(validation_x)
         validation_y = np.array(validation_y)
 
         #GEO DATASET
