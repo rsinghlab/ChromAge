@@ -322,8 +322,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         # validation_y_index = validation_y.index
 
         #GEO DATASET
-        training_x, training_y = np.array(geo_train_x)[train_index], np.array(geo_train_y)[train_index]
-        validation_x, validation_y = np.array(geo_train_x)[val_index], np.array(geo_train_y)[val_index]
+        training_x, training_y = np.array(geo_train_x)[train_index], np.expand_dims(np.array(geo_train_y)[train_index],1)
+        validation_x, validation_y = np.array(geo_train_x)[val_index], np.expand_dims(np.array(geo_train_y)[val_index],1)
 
         print(training_x.shape)
         print(training_y.shape)
@@ -341,7 +341,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             training_y, 
             epochs=600, 
             batch_size=batch_size, 
-            # validation_data=(validation_x, validation_y),
+            validation_data=(validation_x, validation_y),
             # verbose = 0
         )
 
