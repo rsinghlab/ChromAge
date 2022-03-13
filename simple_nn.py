@@ -602,7 +602,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
-        X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, histone_mark_str + " SRR list")
+        X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object, histone_str = histone_mark_str + " SRR list")
         df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, geo_train_x=X_train, geo_train_y=y_train)
                         
         #evaluation metrics
@@ -620,7 +620,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     else:
         metadata = filter_metadata(metadata, biological_replicates = True)
-        
+
         param_grid = {
             'epochs':[1000],
             'batch_size': [16, 48],
