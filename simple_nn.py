@@ -325,6 +325,11 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         training_x, training_y = np.array(geo_train_x)[train_index], np.array(geo_train_y)[train_index]
         validation_x, validation_y = np.array(geo_train_x)[val_index], np.array(geo_train_y)[val_index]
 
+        print(training_x.shape)
+        print(training_y.shape)
+        print(validation_x.shape)
+        print(validation_y.shape)
+
         auto_encoder = AutoEncoder(batch_size, latent_size, model_params[2], model_params[3], gaussian_noise)
         auto_encoder.compile(
         loss='mse',
@@ -600,19 +605,6 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
     if process:
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
-        auto_encoder = AutoEncoder(16, 50, 0.1, 0.05, 0.1)
-        auto_encoder.compile(
-        loss='mae',
-        metrics=['mae'],
-        optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002))
-
-        auto_encoder.fit(
-            X_train, 
-            y_train, 
-            epochs=600, 
-            batch_size=16
-        )
-
         df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, geo_train_x=X_train, geo_train_y=y_train)
                         
         #evaluation metrics
