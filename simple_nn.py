@@ -399,20 +399,22 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         val_metrics_array.append(results)
 
         prediction_distribution = model(auto_encoder.encoder(validation_x))
+        predicted_age = prediction_distribution.mean().numpy().flatten()
 
         if age_transform == "loglinear":
             validation_y = val_age_transformer.inverse_transform(validation_y)
+            predicted_age = val_age_transformer.inverse_transform(predicted_age)
 
         validation_y = np.squeeze(validation_y)
         type_arr = np.full(validation_y.shape, model_type)
 
         if df is None:
             # change to np.squeeze for GEO
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predicted_age, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df = pd.DataFrame(df_dict, index = validation_y_index)
             # df = pd.DataFrame(df_dict) # GEO
         else:
-            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": prediction_distribution.mean().numpy().flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
+            df_dict = {"Actual Age": validation_y, "Predicted Mean Age": predicted_age, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten(), "Model Type" : type_arr}
             df2 = pd.DataFrame(df_dict, index = validation_y_index)
             # df2 = pd.DataFrame(df_dict) # GEO
             df = df.append(df2)
@@ -603,6 +605,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, data_transform=scaler_list[0], age_transform=age_transform_list[0])
 
     print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
+    df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
 
     # Testing 
     # auto_encoder = AutoEncoder(16, 50, 0.05, 0.01, 0.2)
