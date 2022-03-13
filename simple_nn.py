@@ -583,21 +583,21 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
+    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
 
-    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
+    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
 
-    print("Best auto val models:", *list(best_auto_val_models), sep='\n')
-    print("Best auto train models:", *list(best_auto_train_models), sep='\n')
-    print("Best val models:", *list(best_val_models), sep='\n')
-    print("Best train models:", *list(best_train_models), sep='\n')
+    # print("Best auto val models:", *list(best_auto_val_models), sep='\n')
+    # print("Best auto train models:", *list(best_auto_train_models), sep='\n')
+    # print("Best val models:", *list(best_val_models), sep='\n')
+    # print("Best train models:", *list(best_train_models), sep='\n')
 
     scaler_list = ["standard", "robust", "quantile"]
     age_transform_list = ["loglinear"]
 
     df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, data_transform=scaler_list[0], age_transform=age_transform_list[0])
 
-    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
+    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-val-mse:", np.mean(min_val_mse_array), "\n Mean-val-mae:", np.mean(min_val_mae_array))
     df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
     return
 
@@ -664,8 +664,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
     if process:
         post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
-        training_x = np.append(np.array(X_train), np.array(X_test))
-        training_y = np.append(np.array(y_train), np.array(y_test))
+        training_x = np.concatenate(np.array(X_train), np.array(X_test), axis=0)
+        training_y = np.concatenate(np.array(y_train), np.array(y_test), axis=0)
         
         #GEO
         H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/GEO_histone_data/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
@@ -673,8 +673,8 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         metadata = pd.read_csv('/users/masif/data/masif/ChromAge/GEO_metadata.csv')
 
         X_train, X_test, y_train, y_test = split_data(metadata, H3K4me3_data_object, histone_str = histone_mark_str + " SRR list", GEO = GEO)
-        testing_x = np.append(np.array(X_train), np.array(X_test))
-        testing_y = np.append(np.array(y_train), np.array(y_test))
+        testing_x = np.concatenate(np.array(X_train), np.array(X_test), axis=0)
+        testing_y = np.concatenate(np.array(y_train), np.array(y_test), axis=0)
 
         test(training_x, testing_x, training_y, testing_y, histone_mark_str, data_transform = "scaler", age_transform = "loglinear")
 
