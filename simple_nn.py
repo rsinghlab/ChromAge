@@ -555,37 +555,37 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # print("Best val models:", *list(best_val_models), sep='\n')
     # print("Best train models:", *list(best_train_models), sep='\n')
 
-    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0003 0.0 0.01 50 0.2", [3, 0.0003, 0.0, 0.01], 50, 0.2, None)
+    # df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 3 0.0003 0.0 0.01 50 0.2", [3, 0.0003, 0.0, 0.01], 50, 0.2, None)
 
-    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
+    # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-Min-val-mse:", np.mean(min_val_mse_array), "\n Mean-Min-val-mae:", np.mean(min_val_mae_array))
 
     # Testing 
-    # auto_encoder = AutoEncoder(48, 50, 0.05, 0.01, 0.2)
-    # auto_encoder.compile(
-    # loss='mae',
-    # metrics=['mae'],
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
+    auto_encoder = AutoEncoder(16, 50, 0.05, 0.01, 0.2)
+    auto_encoder.compile(
+    loss='mae',
+    metrics=['mae'],
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
 
-    # history = auto_encoder.fit(
-    #     X_train, 
-    #     y_train, 
-    #     epochs=300, 
-    #     batch_size=48, 
-    #     validation_data=(X_test, y_test)
-    # )
+    history = auto_encoder.fit(
+        X_train, 
+        y_train, 
+        epochs=200, 
+        batch_size=16, 
+        validation_data=(X_test, y_test)
+    )
 
-    # model = create_nn(50, 3, 0.0003, 0.0, 0.01)
-    # history = model.fit(auto_encoder.encoder(np.array(X_train)),np.array(y_train), epochs = 1000, batch_size=16)
-    # print("Model: ", "simple_nn 16 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
-    # results = model.evaluate(auto_encoder.encoder(np.array(X_test)), np.array(y_test), 16)
-    # prediction_distribution = model(auto_encoder.encoder(np.array(X_test)))
-    # predictions = model.predict(auto_encoder.encoder(np.array(X_test)))
-    # print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten()))
+    model = create_nn(50, 3, 0.0003, 0.01, 0.02)
+    history = model.fit(auto_encoder.encoder(np.array(X_train)),np.array(y_train), epochs = 1000, batch_size=16)
+    print("Model: ", "simple_nn 16 3, 0.0003, 0.0, 0.01", "with min loss, mse, mae: ", [np.min(history.history['loss']), np.min(history.history['mse']), np.min(history.history['mae'])])
+    results = model.evaluate(auto_encoder.encoder(np.array(X_test)), np.array(y_test), 16)
+    prediction_distribution = model(auto_encoder.encoder(np.array(X_test)))
+    predictions = model.predict(auto_encoder.encoder(np.array(X_test)))
+    print("Validation metrics:", results, "Median Absolute error:", median_absolute_error(np.array(y_test), np.array(predictions).flatten()))
 
-    # df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    df_dict = {"Actual Age": np.array(y_test), "Predicted Mean Age": np.array(predictions).flatten(), "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 
-    # df = pd.DataFrame(df_dict, index = y_test.index)
-    # print(df)
+    df = pd.DataFrame(df_dict, index = y_test.index)
+    print(df)
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/NN-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False):
