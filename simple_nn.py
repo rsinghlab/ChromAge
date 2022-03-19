@@ -491,7 +491,7 @@ def analyze_metrics(file_path, histone_mark_str):
                     mean_metric = np.mean(dictionary[model_types][metrics])
                     metric_dict["mean"+metrics[3:]].append(mean_metric)
         df = pd.DataFrame(metric_dict, index = list(dictionary.keys()))
-        df.to_csv("simple_nn_grid_metrics_" +  histone_mark_str + ".csv")
+        df.to_csv(histone_mark_str + "/simple_nn_grid_metrics_" +  histone_mark_str + ".csv")
 
         best_auto_train_mse_models = df.nsmallest(10, 'mean_train_auto_mse')
         best_auto_train_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mse_models_" +  histone_mark_str + ".csv")
