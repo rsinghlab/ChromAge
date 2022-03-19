@@ -494,29 +494,29 @@ def analyze_metrics(file_path, histone_mark_str):
         df.to_csv("simple_nn_grid_metrics_" +  histone_mark_str + ".csv")
 
         best_auto_train_mse_models = df.nsmallest(10, 'mean_train_auto_mse')
-        best_auto_train_mse_models.to_csv("best_auto_encoder_train_mse_models_" +  histone_mark_str + ".csv")
+        best_auto_train_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mse_models_" +  histone_mark_str + ".csv")
         best_auto_val_mse_models = df.nsmallest(20, 'mean_val_auto_mse')
-        best_auto_val_mse_models.to_csv("best_auto_encoder_val_mse_models_" +  histone_mark_str + ".csv")
+        best_auto_val_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_val_mse_models_" +  histone_mark_str + ".csv")
 
         best_auto_train_mae_models = df.nsmallest(10, 'mean_train_auto_mae')
-        best_auto_train_mae_models.to_csv("best_auto_encoder_train_mae_models_" +  histone_mark_str + ".csv")
+        best_auto_train_mae_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mae_models_" +  histone_mark_str + ".csv")
         best_auto_val_mae_models = df.nsmallest(20, 'mean_val_auto_mae')
-        best_auto_val_mae_models.to_csv("best_auto_encoder_val_mae_models_" +  histone_mark_str + ".csv")
+        best_auto_val_mae_models.to_csv(histone_mark_str + "/best_auto_encoder_val_mae_models_" +  histone_mark_str + ".csv")
 
         best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
-        best_train_loss_models.to_csv("best_train_loss_models_" +  histone_mark_str + ".csv")
+        best_train_loss_models.to_csv(histone_mark_str + "/best_train_loss_models_" +  histone_mark_str + ".csv")
         best_val_loss_models = df.nsmallest(20, 'mean_val_loss')
-        best_val_loss_models.to_csv("best_val_loss_models_" +  histone_mark_str + ".csv")
+        best_val_loss_models.to_csv(histone_mark_str + "/best_val_loss_models_" +  histone_mark_str + ".csv")
 
         best_train_mse_models = df.nsmallest(10, 'mean_train_mse')
-        best_train_mse_models.to_csv("best_train_mse_models_" +  histone_mark_str + ".csv")
+        best_train_mse_models.to_csv(histone_mark_str + "/best_train_mse_models_" +  histone_mark_str + ".csv")
         best_val_mse_models = df.nsmallest(20, 'mean_val_mse')
-        best_val_mse_models.to_csv("best_val_mse_models_" +  histone_mark_str + ".csv")
+        best_val_mse_models.to_csv(histone_mark_str + "/best_val_mse_models_" +  histone_mark_str + ".csv")
 
         best_train_mae_models = df.nsmallest(10, 'mean_train_mae')
-        best_train_mae_models.to_csv("best_train_mae_models_" +  histone_mark_str + ".csv")
+        best_train_mae_models.to_csv(histone_mark_str + "/best_train_mae_models_" +  histone_mark_str + ".csv")
         best_val_mae_models = df.nsmallest(20, 'mean_val_mae')
-        best_val_mae_models.to_csv("best_val_mae_models_" +  histone_mark_str + ".csv")
+        best_val_mae_models.to_csv(histone_mark_str + "/best_val_mae_models_" +  histone_mark_str + ".csv")
         
         best_auto_train_models = set()
         best_auto_val_models = set()
@@ -582,22 +582,20 @@ def run_grid_search(metadata, histone_data_object, param_grid):
 
 def post_process(metadata, histone_data_object, histone_mark_str, y_test):
     
-    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
+    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/" + histone_mark_str + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
 
-    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/metrics-output-" + histone_mark_str+ "-middle.txt", histone_mark_str)
-
-    # print("Best auto val models:", *list(best_auto_val_models), sep='\n')
-    # print("Best auto train models:", *list(best_auto_train_models), sep='\n')
-    # print("Best val models:", *list(best_val_models), sep='\n')
-    # print("Best train models:", *list(best_train_models), sep='\n')
+    print("Best auto val models:", *list(best_auto_val_models), sep='\n')
+    print("Best auto train models:", *list(best_auto_train_models), sep='\n')
+    print("Best val models:", *list(best_val_models), sep='\n')
+    print("Best train models:", *list(best_train_models), sep='\n')
 
     scaler_list = ["standard", "robust", "quantile"]
     age_transform_list = ["loglinear"]
 
-    df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, data_transform=scaler_list[0], age_transform=None)
+    # df, val_metrics_array, min_auto_encoder_train_mse_array, min_auto_encoder_train_mae_array, min_auto_encoder_val_mse_array, min_auto_encoder_val_mae_array,  min_train_loss_array, min_train_mse_array, min_train_mae_array, min_val_loss_array, min_val_mse_array, min_val_mae_array = k_cross_validate_model(metadata, histone_data_object, y_test, 16, 1000, "simple_nn 16 5 0.0002 0.1 0.05", [5, 0.0002, 0.1, 0.05], 50, 0.1, None, data_transform=scaler_list[0], age_transform=None)
 
-    print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-val-mse:", np.mean(min_val_mse_array), "\n Mean-val-mae:", np.mean(min_val_mae_array))
-    df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
+    # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-val-mse:", np.mean(min_val_mse_array), "\n Mean-val-mae:", np.mean(min_val_mae_array))
+    # df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
     return
 
 def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
@@ -745,10 +743,10 @@ if __name__ == '__main__':
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
     # H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     # H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
-    # H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
-    # H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
+    H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
+    H3K36me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K36me3/processed_data/H3K36me3_mean_bins.pkl', 'rb'))
     H3K4me1_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me1/processed_data/H3K4me1_mean_bins.pkl', 'rb'))
-    # H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
+    H3K9me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K9me3/processed_data/H3K9me3_mean_bins.pkl', 'rb'))
     
     # For Grid Searches
     # main(metadata, H3K4me3_data_object, "H3K4me3")
@@ -760,7 +758,10 @@ if __name__ == '__main__':
 
     # For post-processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
+    main(metadata, H3K27me3_data_object, "H3K27me3", process = True)
+    main(metadata, H3K36me3_data_object, "H3K36me3", process = True)
     main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    main(metadata, H3K9me3_data_object, "H3K9me3", process = True)
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
