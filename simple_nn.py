@@ -1,4 +1,5 @@
 from collections import defaultdict
+from sched import scheduler
 import numpy as np
 import pandas as pd
 import random
@@ -28,6 +29,7 @@ from sklearn.metrics import median_absolute_error
 from sklearn.linear_model import ElasticNet, ElasticNetCV
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.metrics import mean_squared_error, median_absolute_error
+from sklearn.decomposition import PCA
 from scipy.stats import pearsonr
 
 import tensorflow as tf
@@ -354,6 +356,7 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
         loss='mse',
         metrics=['mae'],
         optimizer = tf.keras.optimizers.Adam(learning_rate=model_params[1]))
+        scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=100, min_lr=0.00001)
 
         auto_history = auto_encoder.fit(
             training_x, 
@@ -361,7 +364,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             epochs=300, #600 for H3K4me1
             batch_size=batch_size, 
             validation_data=(validation_x, validation_y),
-            # verbose = 0
+            # verbose = 0,
+            callbacks = [scheduler]
         )
 
         min_auto_encoder_train_mse_array.append(np.min(auto_history.history['loss']))
@@ -375,7 +379,8 @@ def k_cross_validate_model(metadata, histone_data_object, y_test, batch_size, ep
             batch_size, 
             epochs,
             validation_data=(auto_encoder.encoder(validation_x), validation_y),
-            # verbose = 0
+            # verbose = 0,
+            callbacks = [scheduler]
         )
 
         min_train_loss_array.append(np.min(history.history['loss']))
@@ -626,6 +631,9 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
         test_age_transformer = LogLinearTransformer()
         test_age_transformer.fit(y_test)
         y_test = test_age_transformer.transform(y_test) 
+
+    pca = PCA(n_components=len(X_train))
+    X_train = pca.fit_transform(X_train)
     
     # simple_nn 16 3 0.0003 0.0 0.1 50 0.2 - H3K27ac
     auto_encoder = AutoEncoder(16, 50, 0.0, 0.1, 0.2)
@@ -633,16 +641,17 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     loss='mse',
     metrics=['mae'],
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
-
+    scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=100, min_lr=0.00001)
     history = auto_encoder.fit(
         X_train, 
         y_train, 
         epochs=600, 
-        batch_size=16
+        batch_size=16, 
+        callbacks = [scheduler]
     )
 
     model = create_nn(50, 3, 0.0003, 0.0, 0.1)
-    history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16)
+    history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16, callbacks = [scheduler])
     
     y_test = np.squeeze(y_test)
     prediction_distribution = model(auto_encoder.encoder(X_test))
@@ -759,7 +768,7 @@ if __name__ == '__main__':
 
     # For post-processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
-    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
     # main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
     # main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
     # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
@@ -767,4 +776,4 @@ if __name__ == '__main__':
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
-    # main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
+    main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
