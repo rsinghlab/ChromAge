@@ -1,0 +1,253 @@
+﻿GEO Dataset,Control SRR list 1,Control SRR list 2,H3K4me3 GEO,H3K4me3 SRR list,H3K27ac GEO,H3K27ac SRR list,H3K4me1 GEO,H3K4me1 SRR list,H3K27me3 GEO,H3K27me3 SRR list,H3K9me3 GEO,H3K9me3 SRR list,H3K36me3 GEO,H3K36me3 SRR list,Age,Age notes,Sex,"Cell line, primary cell, organoid, or tissue",Cell type class,Cell type,Cancer state,Disease (if any),Treatment (if any),Platform,SE or PE,biological replicate,technical replicate,biological or technical replicate,Study,Notes
+GSE40668,SRR557727,,,,GSM998996,SRR557713,GSM998995,SRR557712,,,,,,,24,,M,tissue,Blood,B-cell (CD19+),,,,Illumina Genome Analyzer,SE,,,,,donor A
+GSE40668,SRR557727,,,,GSM998997,SRR557714,GSM998994,SRR557711,,,,,,,28,,M,tissue,Blood,B-cell (CD19+),,,,Illumina Genome Analyzer,SE,,,,,donor C
+GSE40668,SRR557729,SRR557730,,,GSM999000,SRR557717,GSM998998,SRR557715,,,,,,,24,,M,tissue,Blood,CD8-Positive T-Lymphocytes,,,,Illumina Genome Analyzer,SE,,,,,donor A
+GSE40668,SRR557729,SRR557730,,,GSM999001,SRR557718,GSM998999,SRR557716,,,,,,,28,,M,tissue,Blood,CD8-Positive T-Lymphocytes,,,,Illumina Genome Analyzer,SE,,,,,donor E
+GSE40668,SRR557731,,,,GSM999004,SRR557721,GSM999002,SRR557719,,,,,,,23,,M,tissue,Blood,CD4-Positive T-Lymphocytes,,,,Illumina Genome Analyzer,SE,,,,,donor F
+GSE40668,SRR557731,,,,GSM999005,SRR557722,GSM999003,SRR557720,,,,,,,30,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,,,Illumina Genome Analyzer,SE,,,,,donor A
+GSE40668,SRR557728,,,,GSM999008,SRR557725,GSM999007,SRR557724,,,,,,,24,,M,tissue,Blood,CD56+,,,,Illumina Genome Analyzer,SE,,,,,donor C
+GSE40668,SRR557728,,,,GSM999009,SRR557726,GSM999006,SRR557723,,,,,,,28,,M,tissue,Blood,CD56+,,,,Illumina Genome Analyzer,SE,,,,,
+GSE62245,SRR1610148,,,,GSM1523532,SRR1610147,,,,,,,,,44,,F,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610152,,,,GSM1523535,SRR1610150,,,,,,,,,53,,M,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610161,,,,GSM1523544,SRR1610159,,,,,,,,,52,,M,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610167,,,,GSM1523550,SRR1610165,,,,,,,,,53,,F,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610172,,,,GSM1523556,SRR1610171,,,,,,,,,40,,M,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610176,,,,GSM1523559,SRR1610174,,,,,,,,,78,,M,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610182,,,,GSM1523565,SRR1610180,,,,,,,,,63,,F,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610187,,,,GSM1523571,SRR1610186,,,,,,,,,63,,F,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE62245,SRR1610189,,,,GSM1523573,SRR1610188,,,,,,,,,61,,M,tissue,Blood,B-cell (CD19+),Yes,,,Illumina HiSeq 2000,SE,,,,cancer study,
+GSE67978,SRR3030727,SRR3030726,GSM1821387,SRR2102199,GSM1660046,SRR1978996,,,,,,,,,68,,F,tissue,Neural,Cerebellum,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,GSM1821388,SRR2102200,GSM1660028,SRR1978978,,,,,,,,,68,,F,tissue,Neural,Occipital Lobe,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,GSM1821389,SRR2102201,GSM1660043,SRR1978993,,,,,,,,,68,,F,tissue,Neural,Precentral gyrus,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,GSM1821390,SRR2102202,GSM1660040,SRR1978990,,,,,,,,,68,,F,tissue,Neural,Putamen,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,GSM1821391,SRR2102203,GSM1660031,SRR1978981,,,,,,,,,68,,F,tissue,Neural,White Matter,,,,Illumina HiSeq 2000,SE,,1,,,donor 1
+GSE67978,SRR3030727,SRR3030726,GSM1821392,SRR2102204,,,,,,,,,,,68,,F,tissue,Neural,White Matter,,,,Illumina HiSeq 2000,SE,,2,,,donor 1
+GSE67978,SRR3030727,SRR3030726,,,GSM1660047,SRR1978997,,,,,,,,,90,,F,tissue,Neural,Cerebellum,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660048,SRR1978998,,,,,,,,,50,,F,tissue,Neural,Cerebellum,,,,Illumina HiSeq 2000,SE,,,,,donor 4
+GSE67978,SRR3030727,SRR3030726,,,GSM1660029,SRR1978979,,,,,,,,,90,,F,tissue,Neural,Occipital Lobe,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660030,SRR1978980,,,,,,,,,59,,F,tissue,Neural,Occipital Lobe,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE67978,SRR3030727,SRR3030726,,,GSM1660044,SRR1978994,,,,,,,,,90,,F,tissue,Neural,Precentral gyrus,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660045,SRR1978995,,,,,,,,,59,,F,tissue,Neural,Precentral gyrus,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE67978,SRR3030727,SRR3030726,,,GSM1660041,SRR1978991,,,,,,,,,90,,F,tissue,Neural,Putamen,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660042,SRR1978992,,,,,,,,,59,,F,tissue,Neural,Putamen,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE67978,SRR3030727,SRR3030726,,,GSM1660032,SRR1978982,,,,,,,,,90,,F,tissue,Neural,White Matter,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660033,SRR1978983,,,,,,,,,59,,F,tissue,Neural,White Matter,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE67978,SRR3030727,SRR3030726,,,GSM1660034,SRR1978984,,,,,,,,,68,,F,tissue,Neural,Caudate Nucleus,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,,,GSM1660035,SRR1978985,,,,,,,,,90,,F,tissue,Neural,Caudate Nucleus,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660036,SRR1978986,,,,,,,,,59,,F,tissue,Neural,Caudate Nucleus,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE67978,SRR3030727,SRR3030726,,,GSM1660037,SRR1978987,,,,,,,,,68,,F,tissue,Neural,Thalamic Nuclei,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,,,GSM1660038,SRR1978988,,,,,,,,,90,,F,tissue,Neural,Thalamic Nuclei,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660039,SRR1978989,,,,,,,,,59,,F,tissue,Neural,Thalamic Nuclei,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE67978,SRR3030727,SRR3030726,,,GSM1660049,SRR1978999,,,,,,,,,68,,F,tissue,Neural,Prefrontal Cortex,,,,Illumina HiSeq 2000,SE,,,,,donor 1
+GSE67978,SRR3030727,SRR3030726,,,GSM1660050,SRR1979000,,,,,,,,,90,,F,tissue,Neural,Prefrontal Cortex,,,,Illumina HiSeq 2000,SE,,,,,donor 2
+GSE67978,SRR3030727,SRR3030726,,,GSM1660051,SRR1979001,,,,,,,,,59,,F,tissue,Neural,Prefrontal Cortex,,,,Illumina HiSeq 2000,SE,,,,,donor 3
+GSE68952,SRR2028284,,GSM1688583,SRR2028278,,,,,,,,,,,55,,M,tissue,Neural,Prefrontal Cortex,,control,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688584,SRR2028279,,,,,,,,,,,63,,M,tissue,Neural,Prefrontal Cortex,,control,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688585,SRR2028280,,,,,,,,,,,64,,M,tissue,Neural,Prefrontal Cortex,,control,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688586,SRR2028281,,,,,,,,,,,74,,M,tissue,Neural,Prefrontal Cortex,,control,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688587,SRR2028282,,,,,,,,,,,81,,M,tissue,Neural,Prefrontal Cortex,,control,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688588,SRR2028283,,,,,,,,,,,68,,F,tissue,Neural,Prefrontal Cortex,,control,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688590,SRR2028285,,,,,,,,,,,55,,M,tissue,Neural,Prefrontal Cortex,,HD,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688591,SRR2028286,,,,,,,,,,,71,,M,tissue,Neural,Prefrontal Cortex,,HD,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688592,SRR2028287,,,,,,,,,,,43,,M,tissue,Neural,Prefrontal Cortex,,HD,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688593,SRR2028288,,,,,,,,,,,68,,M,tissue,Neural,Prefrontal Cortex,,HD,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688594,SRR2028289,,,,,,,,,,,56,,F,tissue,Neural,Prefrontal Cortex,,HD,,Illumina Genome Analyzer II,SE,,,,,
+GSE68952,SRR2028284,,GSM1688595,SRR2028290,,,,,,,,,,,69,,M,tissue,Neural,Prefrontal Cortex,,HD,,Illumina Genome Analyzer II,SE,,,,,
+GSE71952,SRR2155304,,GSM1847924,SRR2155242,,,,,,,,,,,41,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847925,SRR2155243,,,,,,,,,,,41,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847926,SRR2155244,,,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847927,SRR2155245,,,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847928,SRR2155246,,,,,,,,,,,61,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847929,SRR2155247,,,,,,,,,,,61,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847930,SRR2155248,,,,,,,,,,,51,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847931,SRR2155249,,,,,,,,,,,51,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847932,SRR2155250,,,,,,,,,,,44,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847933,SRR2155251,,,,,,,,,,,44,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847934,SRR2155252,,,,,,,,,,,73,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847935,SRR2155253,,,,,,,,,,,73,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847936,SRR2155254,,,,,,,,,,,75,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847937,SRR2155255,,,,,,,,,,,45,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847938,SRR2155256,,,,,,,,,,,49,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847939,SRR2155257,,,,,,,,,,,50,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847940,SRR2155258,,,,,,,,,,,50,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847941,SRR2155259,,,,,,,,,,,52,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847942,SRR2155260,,,,,,,,,,,52,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847943,SRR2155261,,,,,,,,,,,28,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847944,SRR2155262,,,,,,,,,,,28,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847945,SRR2155263,,,,,,,,,,,62,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847946,SRR2155264,,,,,,,,,,,50,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847947,SRR2155265,,,,,,,,,,,50,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847948,SRR2155266,,,,,,,,,,,77,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847949,SRR2155267,,,,,,,,,,,77,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847950,SRR2155268,,,,,,,,,,,76,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847951,SRR2155269,,,,,,,,,,,76,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847952,SRR2155270,,,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847953,SRR2155271,,,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847954,SRR2155272,,,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847955,SRR2155273,,,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847956,SRR2155274,,,,,,,,,,,39,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847957,SRR2155275,,,,,,,,,,,39,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847958,SRR2155276,,,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847959,SRR2155277,,,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847960,SRR2155278,,,,,,,,,,,27,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847961,SRR2155279,,,,,,,,,,,27,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847962,SRR2155280,,,,,,,,,,,41,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847963,SRR2155281,,,,,,,,,,,41,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847964,SRR2155282,,,,,,,,,,,55,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847965,SRR2155283,,,,,,,,,,,55,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847966,SRR2155284,,,,,,,,,,,28,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847967,SRR2155285,,,,,,,,,,,28,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847968,SRR2155286,,,,,,,,,,,26,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847969,SRR2155287,,,,,,,,,,,26,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847970,SRR2155288,,,,,,,,,,,38,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847971,SRR2155289,,,,,,,,,,,38,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847972,SRR2155290,,,,,,,,,,,73,,M,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847973,SRR2155291,,,,,,,,,,,73,,M,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847974,SRR2155292,,,,,,,,,,,35,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847975,SRR2155293,,,,,,,,,,,29,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847976,SRR2155294,,,,,,,,,,,29,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847977,SRR2155295,,,,,,,,,,,57,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847978,SRR2155296,,,,,,,,,,,28,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847979,SRR2155297,,,,,,,,,,,26,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847980,SRR2155298,,,,,,,,,,,26,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847981,SRR2155299,,,,,,,,,,,72,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155305,,GSM1847982,SRR2155300,,,,,,,,,,,69,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155304,,GSM1847983,SRR2155301,,,,,,,,,,,56,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847867,SRR2155185,,,,,,,,,41,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847868,SRR2155186,,,,,,,,,41,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847869,SRR2155187,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847870,SRR2155188,,,,,,,,,61,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847871,SRR2155189,,,,,,,,,61,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847872,SRR2155190,,,,,,,,,51,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847873,SRR2155191,,,,,,,,,51,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847874,SRR2155192,,,,,,,,,44,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847875,SRR2155193,,,,,,,,,44,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847876,SRR2155194,,,,,,,,,73,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847877,SRR2155195,,,,,,,,,45,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847878,SRR2155196,,,,,,,,,49,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847879,SRR2155197,,,,,,,,,59,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847880,SRR2155198,,,,,,,,,50,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847881,SRR2155199,,,,,,,,,52,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847882,SRR2155200,,,,,,,,,28,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847883,SRR2155201,,,,,,,,,62,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847884,SRR2155202,,,,,,,,,50,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847885,SRR2155203,,,,,,,,,77,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847886,SRR2155204,,,,,,,,,76,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847887,SRR2155205,,,,,,,,,76,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847888,SRR2155206,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847889,SRR2155207,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847890,SRR2155208,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847891,SRR2155209,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847892,SRR2155210,,,,,,,,,39,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847893,SRR2155211,,,,,,,,,39,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847894,SRR2155212,,,,,,,,,54,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847895,SRR2155213,,,,,,,,,54,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847896,SRR2155214,,,,,,,,,27,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847897,SRR2155215,,,,,,,,,27,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847898,SRR2155216,,,,,,,,,41,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847899,SRR2155217,,,,,,,,,41,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847900,SRR2155218,,,,,,,,,55,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847901,SRR2155219,,,,,,,,,55,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847902,SRR2155220,,,,,,,,,28,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847903,SRR2155221,,,,,,,,,28,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847904,SRR2155222,,,,,,,,,26,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847905,SRR2155223,,,,,,,,,26,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847906,SRR2155224,,,,,,,,,38,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847907,SRR2155225,,,,,,,,,38,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847908,SRR2155226,,,,,,,,,73,,M,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847909,SRR2155227,,,,,,,,,73,,M,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847910,SRR2155228,,,,,,,,,35,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847911,SRR2155229,,,,,,,,,29,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847912,SRR2155230,,,,,,,,,29,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847913,SRR2155231,,,,,,,,,57,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847914,SRR2155232,,,,,,,,,28,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847915,SRR2155233,,,,,,,,,26,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847916,SRR2155234,,,,,,,,,26,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Healthy,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847917,SRR2155235,,,,,,,,,72,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,"SRR2155238	",,,,GSM1847918,SRR2155236,,,,,,,,,69,,F,tissue,Blood,CD8-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE71952,SRR2155239,,,,GSM1847919,SRR2155237,,,,,,,,,56,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,Graves,,Illumina HiSeq 2500,PE,,,,,
+GSE72929,SRR2351735,,GSM1874933,SRR2351736,,,,,,,,,,,28,,M,tissue,Neural,Prefrontal Cortex,,,,Illumina Genome Analyzer II,SE,,,,,
+GSE72929,SRR2351735,,GSM1874934,SRR2351737,,,,,,,,,,,30,,M,tissue,Neural,Prefrontal Cortex,,,,Illumina Genome Analyzer II,SE,,,,,
+GSE73865,SRR2588346,,,,GSM1904603,SRR2588347,,,,,,,,,-0.46,,,tissue,Kidney,Kidney Cortex,,,,Illumina HiSeq 2000,SE,,,,,
+GSE73865,SRR2588345,,,,GSM1904604,SRR2588348,,,,,,,,,-0.441,,,tissue,Kidney,Kidney Cortex,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246899,,GSM2316338,SRR4246877,GSM2316309,SRR4246848,GSM2316326,SRR4246865,GSM2316314,SRR4246853,,,GSM2316319,SRR4246858,-0.499,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246901,,GSM2316339,SRR4246878,,,GSM2316327,SRR4246866,GSM2316315,SRR4246854,,,,,-0.46,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246902,,GSM2316340,SRR4246879,GSM2316311,SRR4246850,GSM2316328,SRR4246867,GSM2316316,SRR4246855,,,GSM2316321,SRR4246860,-0.422,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246905,,GSM2316341,SRR4246880,GSM2316312,SRR4246851,GSM2316329,SRR4246868,GSM2316317,SRR4246856,,,GSM2316322,SRR4246861,-0.307,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246898,,,,,,,,,,GSM2316349,SRR4246888,,,-0.518,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246900,,,,GSM2316310,SRR4246849,,,,,GSM2316350,SRR4246889,GSM2316320,SRR4246859,-0.479,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246903,,,,,,,,,,GSM2316351,SRR4246890,,,-0.383,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE86981,SRR4246904,,,,,,,,,,GSM2316352,SRR4246891,,,-0.326,,,tissue,Neural,Retina,,,,Illumina HiSeq 2000,SE,,,,,
+GSE104404,SRR6116860,,GSM2797209,SRR6116825,GSM2797235,SRR6116851,,,,,,,,,22,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y8
+GSE104404,SRR6116865,,GSM2797210,SRR6116826,,,GSM2797201,SRR6116817,,,,,,,28,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y17
+GSE104404,SRR6116866,,GSM2797211,SRR6116827,,,GSM2797202,SRR6116818,,,,,,,29,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y18
+GSE104404,SRR6116871,,GSM2797213,SRR6116829,,,,,,,,,,,19,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y27
+GSE104404,SRR6116875,,GSM2797214,SRR6116830,,,,,,,,,,,66,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o6
+GSE104404,SRR6116876,,GSM2797215,SRR6116831,,,GSM2797204,SRR6116820,,,,,,,66,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o7 
+GSE104404,SRR6116877,,GSM2797216,SRR6116832,,,,,,,,,,,66,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o8
+GSE104404,SRR6116880,,GSM2797217,SRR6116833,,,,,,,,,,,68,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o12
+GSE104404,SRR6116886,,GSM2797219,SRR6116835,,,,,,,,,,,73,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o24
+GSE104404,SRR6116889,,GSM2797220,SRR6116836,,,GSM2797207,SRR6116823,,,,,,,75,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o29
+GSE104404,SRR6116874,,GSM2797221,SRR6116837,,,,,,,,,,,66,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o5
+GSE104404,SRR6116859,,,,GSM2797234,SRR6116850,GSM2797198,SRR6116814,,,,,,,18,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y2
+GSE104404,SRR6116861,,,,GSM2797236,SRR6116852,GSM2797199,SRR6116815,,,,,,,23,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y10
+GSE104404,SRR6116862,,,,GSM2797237,SRR6116853,,,,,,,,,23,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y11
+GSE104404,SRR6116873,,,,GSM2797238,SRR6116854,,,,,,,,,65,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o3
+GSE104404,SRR6116878,,,,GSM2797239,SRR6116855,,,,,,,,,66,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o9
+GSE104404,SRR6116881,,,,GSM2797240,SRR6116856,,,,,,,,,68,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o13
+GSE104404,SRR6116885,,,,GSM2797241,SRR6116857,,,,,,,,,71,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o22
+GSE104404,SRR6116887,,,,GSM2797242,SRR6116858,,,,,,,,,74,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o26
+GSE104404,SRR6116864,,,,,,GSM2797200,SRR6116816,,,,,,,26,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor y14
+GSE104404,SRR6116872,,,,,,GSM2797203,SRR6116819,,,,,,,65,,F,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o2
+GSE104404,SRR6116879,,,,,,GSM2797205,SRR6116821,,,,,,,67,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o10
+GSE104404,SRR6116888,,,,,,GSM2797206,SRR6116822,,,,,,,74,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o27
+GSE104404,SRR6116890,,,,,,GSM2797208,SRR6116824,,,,,,,75,,M,tissue,Blood,CD34 Hematopoietic stem cells,,,,Illumina HiSeq 2500,SE,,,,,donor o31
+GSE107196,SRR6311279,,,,GSM2862457,SRR6311275,GSM2862453,SRR6311271,,,,,,,54,,F,tissue,Cardiovascular,Circle of Willis,,,,Illumina HiSeq 2000,SE,,,,,
+GSE107196,SRR6311280,,,,GSM2862458,SRR6311276,GSM2862454,SRR6311272,,,,,,,60,,F,tissue,Cardiovascular,Circle of Willis,,,,Illumina HiSeq 2000,SE,,,,,
+GSE107196,SRR6311279,SRR6311280,,,GSM2862459,SRR6311277,GSM2862455,SRR6311273,,,,,,,90,,F,tissue,Cardiovascular,Circle of Willis,,,,Illumina HiSeq 2000,SE,,,,,
+GSE107196,SRR6311279,SRR6311280,,,GSM2862460,SRR6311278,GSM2862456,SRR6311274,,,,,,,67,,F,tissue,Cardiovascular,Circle of Willis,,,,Illumina HiSeq 2000,SE,,,,,
+GSE111850,SRR6836031,,GSM3041072,SRR6836028,GSM3041073,SRR6836029,GSM3041071,SRR6836027,GSM3041074,SRR6836030,,,,,-0.441,fetal,,tissue,Bone,Knee cartilage,,,,Illumina HiSeq 2500,SE,,,1,differentiation study,
+GSE111850,SRR6836036,,GSM3041077,SRR6836033,GSM3041078,SRR6836034,GSM3041076,SRR6836032,GSM3041079,SRR6836035,,,,,-0.441,fetal,,tissue,Bone,Knee cartilage,,,,Illumina HiSeq 2500,SE,,,2,differentiation study,
+GSE111850,SRR6836041,,GSM3041082,SRR6836038,GSM3041083,SRR6836039,GSM3041081,SRR6836037,GSM3041084,SRR6836040,,,,,-0.441,fetal,,tissue,Bone,Knee cartilage,,,,Illumina HiSeq 2500,SE,,,3,differentiation study,
+GSE138378,SRR10225162,,GSM4106243,SRR10225161,,,,,,,,,,,-0.268,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225164,,GSM4106245,SRR10225163,,,,,,,,,,,-0.239,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225166,,GSM4106247,SRR10225165,,,,,,,,,,,-0.22,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225168,,GSM4106249,SRR10225167,,,,,,,,,,,-0.213,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225170,,GSM4106251,SRR10225169,,,,,,,,,,,-0.212,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225172,,GSM4106253,SRR10225171,,,,,,,,,,,-0.256,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225174,,GSM4106255,SRR10225173,,,,,,,,,,,-0.169,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225176,,GSM4106257,SRR10225175,,,,,,,,,,,-0.127,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225178,,GSM4106259,SRR10225177,,,,,,,,,,,-0.133,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225180,,GSM4106261,SRR10225179,,,,,,,,,,,-0.108,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225182,,GSM4106263,SRR10225181,,,,,,,,,,,-0.136,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225185,,GSM4106266,SRR10225184,,,,,,,,,,,-0.098,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225187,,GSM4106268,SRR10225186,,,,,,,,,,,-0.006,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225189,,GSM4106270,SRR10225188,,,,,,,,,,,-0.029,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225191,,GSM4106272,SRR10225190,,,,,,,,,,,0.018,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225193,,GSM4106274,SRR10225192,,,,,,,,,,,-0.021,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225195,,GSM4106276,SRR10225194,,,,,,,,,,,0.017,Mixture,,tissue,Blood,CD4-Positive T-Lymphocytes,,preterm chorioamnionitis-exposed,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225197,,GSM4106278,SRR10225196,,,,,,,,,,,35,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225199,,GSM4106280,SRR10225198,,,,,,,,,,,37,,F,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE138378,SRR10225201,,GSM4106282,SRR10225200,,,,,,,,,,,44,,M,tissue,Blood,CD4-Positive T-Lymphocytes,,healthy,,Illumina HiSeq 2500,SE,,,,,
+GSE151078,SRR11832933,,GSM4566016,SRR11832878,GSM4566038,SRR11832900,,,GSM4565992,SRR11832922,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell CD34+ CD1-
+GSE151078,SRR11832933,,GSM4566017,SRR11832879,GSM4566039,SRR11832901,,,GSM4565993,SRR11832923,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell CD34+ CD1+
+GSE151078,SRR11832933,,GSM4566018,SRR11832880,GSM4566040,SRR11832902,,,GSM4565994,SRR11832924,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell CD34+ CD4+
+GSE151078,SRR11832933,,GSM4566019,SRR11832881,GSM4566041,SRR11832903,,,GSM4565995,SRR11832925,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell ISP CD28+
+GSE151078,SRR11832933,,GSM4566020,SRR11832882,GSM4566042,SRR11832904,,,GSM4565996,SRR11832926,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell DP CD3-
+GSE151078,SRR11832933,,GSM4566021,SRR11832883,GSM4566043,SRR11832905,,,GSM4565997,SRR11832927,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell DP CD3+
+GSE151078,SRR11832933,,GSM4566022,SRR11832884,GSM4566044,SRR11832906,,,GSM4565998,SRR11832928,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell SP CD4+
+GSE151078,SRR11832933,,GSM4566023,SRR11832885,GSM4566045,SRR11832907,,,GSM4565999,SRR11832929,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell SP CD8+
+GSE151078,SRR11832933,,GSM4566024,SRR11832886,GSM4566046,SRR11832908,,,GSM4566000,SRR11832930,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell gamma delta CD1-
+GSE151078,SRR11832933,,GSM4566025,SRR11832887,GSM4566047,SRR11832909,,,GSM4566001,SRR11832931,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell gamma delta CD1+
+GSE151078,SRR11832933,,GSM4566026,SRR11832888,GSM4566048,SRR11832910,,,GSM4566002,SRR11832932,,,,,0,,,tissue,Blood,CD34+,,,,Illumina NextSeq 500,SE,,,,,donor 1; cell HPC
+GSE151078,SRR11832877,,GSM4566027,SRR11832889,GSM4566049,SRR11832911,,,GSM4566004,SRR11832934,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell CD34+ CD1-
+GSE151078,SRR11832877,,GSM4566028,SRR11832890,GSM4566050,SRR11832912,,,GSM4566005,SRR11832935,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell CD34+ CD1+
+GSE151078,SRR11832877,,GSM4566029,SRR11832891,GSM4566051,SRR11832913,,,GSM4566006,SRR11832936,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell CD34+ CD4+
+GSE151078,SRR11832877,,GSM4566030,SRR11832892,GSM4566052,SRR11832914,,,GSM4566007,SRR11832937,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell ISP CD28+
+GSE151078,SRR11832877,,GSM4566031,SRR11832893,GSM4566053,SRR11832915,,,GSM4566008,SRR11832938,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell DP CD3-
+GSE151078,SRR11832877,,GSM4566032,SRR11832894,GSM4566054,SRR11832916,,,GSM4566009,SRR11832871,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell DP CD3+
+GSE151078,SRR11832877,,GSM4566033,SRR11832895,GSM4566055,SRR11832917,,,GSM4566010,SRR11832872,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell SP CD4+
+GSE151078,SRR11832877,,GSM4566034,SRR11832896,GSM4566056,SRR11832918,,,GSM4566011,SRR11832873,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell SP CD8+
+GSE151078,SRR11832877,,GSM4566035,SRR11832897,GSM4566057,SRR11832919,,,GSM4566012,SRR11832874,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell gamma delta CD1-
+GSE151078,SRR11832877,,GSM4566036,SRR11832898,GSM4566058,SRR11832920,,,GSM4566013,SRR11832875,,,,,0,,,tissue,Others,Thymus,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell gamma delta CD1+
+GSE151078,SRR11832877,,GSM4566037,SRR11832899,GSM4566059,SRR11832921,,,GSM4566014,SRR11832876,,,,,0,,,tissue,Blood,CD34+,,,,Illumina NextSeq 500,SE,,,,,donor 2; cell HPC
