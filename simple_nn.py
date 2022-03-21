@@ -627,11 +627,12 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
         test_age_transformer.fit(y_test)
         y_test = test_age_transformer.transform(y_test) 
     
-    auto_encoder = AutoEncoder(16, 50, 0.1, 0.05, 0.1)
+    # simple_nn 16 3 0.0003 0.0 0.1 50 0.2 - H3K27ac
+    auto_encoder = AutoEncoder(16, 50, 0.0, 0.1, 0.2)
     auto_encoder.compile(
     loss='mse',
     metrics=['mae'],
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0002))
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
 
     history = auto_encoder.fit(
         X_train, 
@@ -640,7 +641,7 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
         batch_size=16
     )
 
-    model = create_nn(50, 5, 0.0002, 0.1, 0.05)
+    model = create_nn(50, 3, 0.0003, 0.0, 0.1)
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16)
     
     y_test = np.squeeze(y_test)
@@ -656,7 +657,7 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     corr, _ = pearsonr(y_test, predictions)
     print('Pearsons correlation: %.3f' % corr)
 
-    print("Model: ", "simple_nn 16, 50, 5, 0.0002, 0.1, 0.05", "with Mean mse, mae: ", mse, mae)
+    print("Model: ", "simple_nn 16 3 0.0003 0.0 0.1 50 0.2", "with Mean mse, mae: ", mse, mae)
 
     df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 
@@ -766,4 +767,4 @@ if __name__ == '__main__':
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
-    # main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
+    main(metadata, H3K27ac_data_object, "H3K27ac", GEO = True)
