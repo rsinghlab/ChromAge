@@ -634,28 +634,29 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
 
     pca = PCA(n_components=len(X_train))
     X_train = pca.fit_transform(X_train)
+    X_test = pca.fit_transform(X_test)
     
     # simple_nn 16 3 0.0003 0.0 0.1 50 0.2 - H3K27ac
-    auto_encoder = AutoEncoder(16, 50, 0.0, 0.1, 0.2)
-    auto_encoder.compile(
-    loss='mse',
-    metrics=['mae'],
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
-    scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=100, min_lr=0.00001)
-    history = auto_encoder.fit(
-        X_train, 
-        y_train, 
-        epochs=600, 
-        batch_size=16, 
-        callbacks = [scheduler]
-    )
+    # auto_encoder = AutoEncoder(16, 50, 0.0, 0.1, 0.2)
+    # auto_encoder.compile(
+    # loss='mse',
+    # metrics=['mae'],
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
+    # scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=100, min_lr=0.00001)
+    # history = auto_encoder.fit(
+    #     X_train, 
+    #     y_train, 
+    #     epochs=600, 
+    #     batch_size=16, 
+    #     callbacks = [scheduler]
+    # )
 
-    model = create_nn(50, 3, 0.0003, 0.0, 0.1)
-    history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16, callbacks = [scheduler])
+    model = create_nn(len(X_train), 3, 0.0003, 0.0, 0.1)
+    history = model.fit(X_train,y_train, epochs = 1000, batch_size=16, callbacks = [scheduler])
     
     y_test = np.squeeze(y_test)
-    prediction_distribution = model(auto_encoder.encoder(X_test))
-    predictions = model.predict(auto_encoder.encoder(X_test)).flatten()
+    prediction_distribution = model(X_test)
+    predictions = model.predict(X_test).flatten()
 
     if age_transform == "loglinear":
         predictions = test_age_transformer.inverse_transform(predictions)
