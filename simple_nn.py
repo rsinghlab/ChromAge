@@ -637,7 +637,7 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     history = auto_encoder.fit(
         X_train, 
         y_train, 
-        epochs=600, 
+        epochs=300, #600 for H3K4me1
         batch_size=16
     )
 
