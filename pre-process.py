@@ -34,7 +34,7 @@ def process_srr_val(srr_val):
     print(cleaned_srr_arr)
     return cleaned_srr_arr
 
-def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata.csv"):
+def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_metadata_age_copy.csv"):
     with open(path, 'rb') as f:
         df = pd.read_csv(f)
         df = df.sort_values(by="Age", ascending=False)
@@ -333,7 +333,7 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
-run_pipeline(histone_str='H3K4me1')
+run_pipeline(histone_str='H3K4me3')
 
 
 # json_example = {
