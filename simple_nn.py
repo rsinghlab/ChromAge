@@ -498,15 +498,15 @@ def analyze_metrics(file_path, histone_mark_str):
         df = pd.DataFrame(metric_dict, index = list(dictionary.keys()))
         df.to_csv(histone_mark_str + "/simple_nn_grid_metrics_" +  histone_mark_str + ".csv")
 
-        best_auto_train_mse_models = df.nsmallest(10, 'mean_train_auto_mse')
-        best_auto_train_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mse_models_" +  histone_mark_str + ".csv")
-        best_auto_val_mse_models = df.nsmallest(20, 'mean_val_auto_mse')
-        best_auto_val_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_val_mse_models_" +  histone_mark_str + ".csv")
+        # best_auto_train_mse_models = df.nsmallest(10, 'mean_train_auto_mse')
+        # best_auto_train_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mse_models_" +  histone_mark_str + ".csv")
+        # best_auto_val_mse_models = df.nsmallest(20, 'mean_val_auto_mse')
+        # best_auto_val_mse_models.to_csv(histone_mark_str + "/best_auto_encoder_val_mse_models_" +  histone_mark_str + ".csv")
 
-        best_auto_train_mae_models = df.nsmallest(10, 'mean_train_auto_mae')
-        best_auto_train_mae_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mae_models_" +  histone_mark_str + ".csv")
-        best_auto_val_mae_models = df.nsmallest(20, 'mean_val_auto_mae')
-        best_auto_val_mae_models.to_csv(histone_mark_str + "/best_auto_encoder_val_mae_models_" +  histone_mark_str + ".csv")
+        # best_auto_train_mae_models = df.nsmallest(10, 'mean_train_auto_mae')
+        # best_auto_train_mae_models.to_csv(histone_mark_str + "/best_auto_encoder_train_mae_models_" +  histone_mark_str + ".csv")
+        # best_auto_val_mae_models = df.nsmallest(20, 'mean_val_auto_mae')
+        # best_auto_val_mae_models.to_csv(histone_mark_str + "/best_auto_encoder_val_mae_models_" +  histone_mark_str + ".csv")
 
         best_train_loss_models = df.nsmallest(10, 'mean_train_loss')
         best_train_loss_models.to_csv(histone_mark_str + "/best_train_loss_models_" +  histone_mark_str + ".csv")
@@ -528,19 +528,19 @@ def analyze_metrics(file_path, histone_mark_str):
         best_val_models = set()
         best_train_models = set()
         
-        for model in best_auto_val_mse_models.index:
-            if model in best_auto_val_mae_models.index:
-                best_auto_val_models.add(model)
-        for model in best_auto_val_mae_models.index:
-            if model in best_auto_val_mse_models.index:
-                best_auto_val_models.add(model)
+        # for model in best_auto_val_mse_models.index:
+        #     if model in best_auto_val_mae_models.index:
+        #         best_auto_val_models.add(model)
+        # for model in best_auto_val_mae_models.index:
+        #     if model in best_auto_val_mse_models.index:
+        #         best_auto_val_models.add(model)
         
-        for model in best_auto_train_mse_models.index:
-            if model in best_auto_train_mae_models.index:
-                best_auto_train_models.add(model)
-        for model in best_auto_train_mae_models.index:
-            if model in best_auto_train_mse_models.index:
-                best_auto_train_models.add(model)
+        # for model in best_auto_train_mse_models.index:
+        #     if model in best_auto_train_mae_models.index:
+        #         best_auto_train_models.add(model)
+        # for model in best_auto_train_mae_models.index:
+        #     if model in best_auto_train_mse_models.index:
+        #         best_auto_train_models.add(model)
 
         for model in best_val_loss_models.index:
             if model in best_val_mse_models.index or model in best_val_mae_models.index:
