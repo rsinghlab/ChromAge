@@ -408,9 +408,11 @@ age_transform_list = [
 # results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
 # results_H3K36me3.to_csv("classic_results_H3K36me3.csv")
 
-plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K4me3.csv"), "H3K4me3")
-plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K27ac.csv"), "H3K27ac")
-plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K4me1.csv"), "H3K4me1")
-plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K9me3.csv"), "H3K9me3")
-plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K27me3.csv"), "H3K27me3")
-plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K36me3.csv"), "H3K36me3")
+#plot results
+
+# plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K4me3.csv"), "H3K4me3")
+# plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K27ac.csv"), "H3K27ac")
+# plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K4me1.csv"), "H3K4me1")
+# plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K9me3.csv"), "H3K9me3")
+# plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K27me3.csv"), "H3K27me3")
+# plot(pd.read_csv("/users/masif/data/masif/ChromAge/Classic_Models_results/classic_results_H3K36me3.csv"), "H3K36me3")
