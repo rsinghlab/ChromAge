@@ -679,7 +679,7 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
     metadata = filter_metadata(metadata, biological_replicates = True)
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
     print(histone_mark_str, len(X_train), len(X_test))
-    exit()
+    return
 
     if process:
         post_process(metadata, histone_data_object, histone_mark_str, y_test)
