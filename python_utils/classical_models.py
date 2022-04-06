@@ -354,7 +354,7 @@ def validate_classical_models(histone, organism, data_type, model_list, scaler_l
 
     return summary_df
 
-def plot(histone_mark):
+def plot(histone_mark, histone_mark_str):
     a = histone_mark
 
     df = a
@@ -368,7 +368,7 @@ def plot(histone_mark):
     sns.boxplot(data = df, x = 'Function', y = 'Mean MSE', ax = axs[2], showfliers = False)
     axs[3].set_title('Validation MSE')
     sns.boxplot(data = df, x = 'Scaler', y = 'Mean MSE', ax = axs[3], showfliers = False)
-    fig.show()
+    plt.savefig(histone_mark_str+"_plot")
 
 model_list = [
     ('elastic_net', ElasticNetCV(n_alphas = 10, max_iter=1000, random_state = 42)),
@@ -390,22 +390,27 @@ age_transform_list = [
     ('loglinear', LogLinearTransformer()),
 ]
 
-results_H3K4me3 = validate_classical_models('H3K4me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
-results_H3K4me3.to_csv("classic_results_H3K4me3.csv")
+# results_H3K4me3 = validate_classical_models('H3K4me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+# results_H3K4me3.to_csv("classic_results_H3K4me3.csv")
 
-results_H3K27ac = validate_classical_models('H3K27ac', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
-results_H3K27ac.to_csv("classic_results_H3K27ac.csv")
+# results_H3K27ac = validate_classical_models('H3K27ac', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+# results_H3K27ac.to_csv("classic_results_H3K27ac.csv")
 
-results_H3K4me1 = validate_classical_models('H3K4me1', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
-results_H3K4me1.to_csv("classic_results_H3K4me1.csv")
+# results_H3K4me1 = validate_classical_models('H3K4me1', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+# results_H3K4me1.to_csv("classic_results_H3K4me1.csv")
 
-results_H3K9me3 = validate_classical_models('H3K9me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
-results_H3K9me3.to_csv("classic_results_H3K9me3.csv")
+# results_H3K9me3 = validate_classical_models('H3K9me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+# results_H3K9me3.to_csv("classic_results_H3K9me3.csv")
 
-results_H3K27me3 = validate_classical_models('H3K27me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
-results_H3K27me3.to_csv("classic_results_H3K27me3.csv")
+# results_H3K27me3 = validate_classical_models('H3K27me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+# results_H3K27me3.to_csv("classic_results_H3K27me3.csv")
 
-results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
-results_H3K36me3.to_csv("classic_results_H3K36me3.csv")
+# results_H3K36me3 = validate_classical_models('H3K36me3', 'human', 'tissue', model_list, scaler_list, age_transform_list, folds = 4)
+# results_H3K36me3.to_csv("classic_results_H3K36me3.csv")
 
-# plot(results_H3K36me3)
+plot(pd.read_csv("Classic_Models_results/classic_results_H3K4me3.csv"), "H3K4me3")
+plot(pd.read_csv("Classic_Models_results/classic_results_H3K27ac.csv"), "H3K27ac")
+plot(pd.read_csv("Classic_Models_results/classic_results_H3K4me1.csv"), "H3K4me1")
+plot(pd.read_csv("Classic_Models_results/classic_results_H3K9me3.csv"), "H3K9me3")
+plot(pd.read_csv("Classic_Models_results/classic_results_H3K27me3.csv"), "H3K27me3")
+plot(pd.read_csv("Classic_Models_results/classic_results_H3K36me3.csv"), "H3K36me3")
