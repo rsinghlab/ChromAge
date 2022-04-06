@@ -678,6 +678,8 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
 def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = False):
     metadata = filter_metadata(metadata, biological_replicates = True)
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
+    print(histone_mark_str, len(X_train), len(X_test))
+    exit()
 
     if process:
         post_process(metadata, histone_data_object, histone_mark_str, y_test)
@@ -769,11 +771,11 @@ if __name__ == '__main__':
 
     # For post-processing
     main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
-    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
-    # main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
-    # main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-    # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-    # main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+    main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+    main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
