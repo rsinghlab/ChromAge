@@ -648,12 +648,12 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     # X_train = pca.fit_transform(X_train)
     # X_test = pca.fit_transform(X_test)
 
-    if histone_mark_str == "H3K4me3":
+    if histone_mark_str == "H3K27ac":
         model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
         auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
     elif histone_mark_str == "H3K27ac":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+        auto_encoder_args = [16, 50, 0.0, 0.1, 0.2, 0.0003]
     elif histone_mark_str == "H3K27me3":
         model = create_nn(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
         auto_encoder_args = [16, 300, 0.0, 0.1, 0.1, 0.0003]
@@ -799,8 +799,8 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # For post-processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
     # main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
     # main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
     # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
