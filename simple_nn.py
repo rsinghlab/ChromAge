@@ -616,7 +616,8 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
 
 def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
     # Testing
-
+    X_train = np.array(X_train)
+    X_test = np.array(X_test)
     y_train = np.expand_dims(np.array(y_train),1)
     y_test = np.expand_dims(np.array(y_test),1)
 
