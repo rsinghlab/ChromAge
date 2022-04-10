@@ -585,14 +585,14 @@ def run_grid_search(metadata, histone_data_object, param_grid):
                                     print(metrics_dict)
     return df, metrics_dict
 
-def post_process(metadata, histone_data_object, histone_mark_str, y_test):
+def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test):
     
-    best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/" + histone_mark_str + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
+    # best_auto_val_models, best_auto_train_models, best_val_models, best_train_models = analyze_metrics(os.getcwd() + "/" + histone_mark_str + "/metrics-output-" + histone_mark_str + ".txt", histone_mark_str)
 
-    print("Best auto val models:", *list(best_auto_val_models), sep='\n')
-    print("Best auto train models:", *list(best_auto_train_models), sep='\n')
-    print("Best val models:", *list(best_val_models), sep='\n')
-    print("Best train models:", *list(best_train_models), sep='\n')
+    # print("Best auto val models:", *list(best_auto_val_models), sep='\n')
+    # print("Best auto train models:", *list(best_auto_train_models), sep='\n')
+    # print("Best val models:", *list(best_val_models), sep='\n')
+    # print("Best train models:", *list(best_train_models), sep='\n')
 
     # scaler_list = ["standard", "robust", "quantile"]
     # age_transform_list = ["loglinear"]
@@ -601,6 +601,17 @@ def post_process(metadata, histone_data_object, histone_mark_str, y_test):
 
     # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-val-mse:", np.mean(min_val_mse_array), "\n Mean-val-mae:", np.mean(min_val_mae_array))
     # df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
+    test_model(X_train, X_test, y_train, y_test, histone_mark_str)
+
+    model = ElasticNet(max_iter=1000, random_state = 42)
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    mse = mean_squared_error(y_test, predictions)
+    mae = median_absolute_error(y_test, predictions)
+    corr, _ = pearsonr(y_test, predictions)
+    print("ELASTIC NET")
+    print('Pearsons correlation: %.3f' % corr)
+    print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     return
 
 def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transform = None, age_transform = None):
@@ -635,24 +646,41 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     # pca = PCA(n_components=len(X_train))
     # X_train = pca.fit_transform(X_train)
     # X_test = pca.fit_transform(X_test)
-    
-    # simple_nn 16 3 0.0003 0.0 0.1 50 0.2 - H3K27ac
-    # auto_encoder = AutoEncoder(16, 50, 0.0, 0.1, 0.2)
-    # auto_encoder.compile(
-    # loss='mse',
-    # metrics=['mae'],
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=0.0003))
-    # scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=100, min_lr=0.00001)
-    # history = auto_encoder.fit(
-    #     X_train, 
-    #     y_train, 
-    #     epochs=600, 
-    #     batch_size=16, 
-    #     callbacks = [scheduler]
-    # )
 
-    model = create_nn(len(X_train), 3, 0.0003, 0.0, 0.1)
-    history = model.fit(X_train,y_train, epochs = 1000, batch_size=16, callbacks = [scheduler])
+    if histone_mark_str == "H3K4me3":
+        model = create_nn(len(X_train), 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 300 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+    if histone_mark_str == "H3K27ac":
+        model = create_nn(len(X_train), 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+        auto_encoder_args = [16, 50, 0.0, 0.1, 0.2, 0.0003]
+    if histone_mark_str == "H3K27me3":
+        model = create_nn(len(X_train), 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+        auto_encoder_args = [16, 300, 0.0, 0.1, 0.1, 0.0003]
+    if histone_mark_str == "H3K36me3":
+        model = create_nn(len(X_train), 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.1, 0.1, 0.0003]
+    if histone_mark_str == "H3K4me1":
+        model = create_nn(len(X_train), 5, 0.0002, 0.1, 0.05) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.1, 0.05, 0.1, 0.0002]
+    if histone_mark_str == "H3K9me3":
+        model = create_nn(len(X_train), 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.05, 0.1, 0.0001]
+    
+    auto_encoder = AutoEncoder(auto_encoder_args[0], auto_encoder_args[1], auto_encoder_args[2], auto_encoder_args[3], auto_encoder_args[4])
+    auto_encoder.compile(
+    loss='mse',
+    metrics=['mae'],
+    optimizer = tf.keras.optimizers.Adam(learning_rate=auto_encoder_args[5]))
+    scheduler = tf.keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.2, patience=100, min_lr=0.00001)
+    history = auto_encoder.fit(
+        X_train, 
+        y_train, 
+        epochs=600, 
+        batch_size=auto_encoder_args[0], 
+        callbacks = [scheduler]
+    )
+
+    history = model.fit(X_train,y_train, epochs = 1000, batch_size=16, callbacks=[scheduler])
     
     y_test = np.squeeze(y_test)
     prediction_distribution = model(X_test)
@@ -665,9 +693,11 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     mse = mean_squared_error(y_test, predictions)
     mae = median_absolute_error(y_test, predictions)
     corr, _ = pearsonr(y_test, predictions)
+    print(histone_mark_str)
+    print("--------------------")
     print('Pearsons correlation: %.3f' % corr)
-
-    print("Model: ", "simple_nn 16 3 0.0003 0.0 0.1 50 0.2", "with Mean mse, mae: ", mse, mae)
+    print("MSE:", mse)
+    print("MSE:", mae)
 
     df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
 
@@ -678,11 +708,9 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
 def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = False):
     metadata = filter_metadata(metadata, biological_replicates = True)
     X_train, X_test, y_train, y_test = split_data(metadata, histone_data_object)
-    print(histone_mark_str, len(X_train), len(X_test))
-    return
 
     if process:
-        post_process(metadata, histone_data_object, histone_mark_str, y_test)
+        post_process(metadata, histone_data_object, histone_mark_str, X_train, X_test, y_train, y_test)
     elif GEO:
         training_x = np.concatenate((np.array(X_train), np.array(X_test)), axis=0)
         training_y = np.concatenate((np.array(y_train), np.array(y_test)), axis=0)
