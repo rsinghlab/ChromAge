@@ -648,7 +648,7 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     # X_train = pca.fit_transform(X_train)
     # X_test = pca.fit_transform(X_test)
 
-    if histone_mark_str == "H3K27ac":
+    if histone_mark_str == "H3K4me3":
         model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
         auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
     elif histone_mark_str == "H3K27ac":
