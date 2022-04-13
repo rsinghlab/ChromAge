@@ -813,7 +813,7 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     shap_importance.sort_values(by=['shap_importance'], ascending=False,inplace=True)
     shap_importance.shap_importance = 100*shap_importance.shap_importance/np.sum(shap_importance.shap_importance)
     feature_importance = shap_importance.sort_values('shap_importance', ascending = False).reset_index()
-    shap_fig0, ax = plt.subplots(figsize=(150,150), dpi = 1000)
+    shap_fig0, ax = plt.subplots(figsize=(15,15), dpi = 1000)
     # ax.set_xlim(-1.5, 2.5)
     #ax.set_ylim(-2.5,1.4)
     print(feature_importance.col_name[0])
