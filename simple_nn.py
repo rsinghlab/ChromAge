@@ -800,11 +800,11 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
             convert_file.write(json.dumps(metrics_dict))
 
 def get_shap_values(model, X_train, X_test, histone_mark_str):
-    # explainer = shap.GradientExplainer(model, np.array(X_train))
+    explainer = shap.GradientExplainer(model, np.array(X_train))
 
-    # shap_values_train = explainer.shap_values(np.array(X_train))
-    # shap_values_test = explainer.shap_values(np.array(X_test))
-    # pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
+    shap_values_train = explainer.shap_values(np.array(X_train))
+    shap_values_test = explainer.shap_values(np.array(X_test))
+    pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
 
     shap_values = pd.read_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
     shap_vals = pd.DataFrame(shap_values[0], columns = X_test.columns.values.tolist())
@@ -870,7 +870,7 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # For post-processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+    # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
     main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
     main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
     main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
