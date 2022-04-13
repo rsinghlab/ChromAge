@@ -807,8 +807,8 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     # pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
 
     shap_values = pd.read_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
-    shap_values = pd.DataFrame(shap_values[0], columns = X_test.columns.values.tolist())
-    vals = np.abs(shap_values).mean()
+    shap_vals = pd.DataFrame(shap_values[0], columns = X_test.columns.values.tolist())
+    vals = np.abs(shap_vals).mean()
     shap_importance = pd.DataFrame(list(zip(X_test.columns.values.tolist(), vals)), columns=['col_name','shap_importance'])
     shap_importance.sort_values(by=['shap_importance'], ascending=False,inplace=True)
     shap_importance.shap_importance = 100*shap_importance.shap_importance/np.sum(shap_importance.shap_importance)
