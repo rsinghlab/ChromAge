@@ -812,7 +812,7 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     shap_importance = pd.DataFrame(list(zip(X_test.columns.values, vals)), columns=['col_name','shap_importance'])
     shap_importance.sort_values(by=['shap_importance'], ascending=False,inplace=True)
     shap_importance.shap_importance = 100*shap_importance.shap_importance/np.sum(shap_importance.shap_importance)
-    feature_importance = feature_importance.sort_values('shap_importance', ascending = False).reset_index()
+    feature_importance = shap_importance.sort_values('shap_importance', ascending = False).reset_index()
     shap_fig0, ax = plt.subplots(figsize=(150), dpi = 1000)
     # ax.set_xlim(-1.5, 2.5)
     #ax.set_ylim(-2.5,1.4)
