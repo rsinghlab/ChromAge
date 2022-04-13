@@ -635,17 +635,17 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # test_model(X_train, X_test, y_train, y_test, histone_mark_str)
 
     if histone_mark_str == "H3K4me3":
-        model = create_nn_shap(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+        model = create_nn_shap(30321, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
     elif histone_mark_str == "H3K27ac":
-        model = create_nn_shap(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+        model = create_nn_shap(30321, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
     elif histone_mark_str == "H3K27me3":
-        model = create_nn_shap(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+        model = create_nn_shap(30321, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
     elif histone_mark_str == "H3K36me3":
-        model = create_nn_shap(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+        model = create_nn_shap(30321, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
     elif histone_mark_str == "H3K4me1":
-        model = create_nn_shap(50, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+        model = create_nn_shap(30321, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
     elif histone_mark_str == "H3K9me3":
-        model = create_nn_shap(50, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+        model = create_nn_shap(30321, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     get_shap_values(model, X_train, X_test, histone_mark_str)
     # model = ElasticNet(max_iter=1000, random_state = 42)
