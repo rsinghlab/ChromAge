@@ -818,7 +818,7 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     #ax.set_ylim(-2.5,1.4)
     print(feature_importance.col_name[0])
     print(shap_values)
-    shap.dependence_plot(feature_importance.col_name[0], shap_values, np.array(X_test),
+    shap.dependence_plot(feature_importance.col_name[0], shap_values, np.array(X_test), feature_names=X_test.columns.values.tolist(),
                         alpha = 0.4, ax = ax, dot_size=4)
     ax.set_ylabel('SHAP value')
     ax.set_xlabel(feature_importance.col_name[0])
