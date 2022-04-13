@@ -1,6 +1,7 @@
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
+import seaborn as sns
 
 def scatter_plot(ModelArr, ENArr):
     actual_age = []
@@ -55,6 +56,23 @@ def histogram():
 
     return
 
+def plot_std(csvArr):
+    predicted_std = []
+    actual_age = []
+    for csv in csvArr:
+        df = pd.read_csv(csv)
+        predicted_std.extend(df["Predicted Stddev"].to_numpy().flatten())
+        actual_age.extend(df["Actual Age"].to_numpy().flatten())
+
+    df_dict = {"Actual Age (years)": actual_age, "Predicted Stddev (years)": predicted_std}
+    df = pd.DataFrame(df_dict)
+
+    plt.rcParams.update({'figure.figsize':(20,15), 'figure.dpi':100})
+    sns.set_style('whitegrid')
+    sns.lmplot(x='Actual Age (years)', y='Predicted Stddev (years)', data=df)
+    plt.show()
+    return
+
 ModelCsvArr = ["H3K4me1_results.csv", "H3K36me3_results.csv",
      "H3K27me3_results.csv", "H3K27ac_results.csv",
       "H3K9me3_results.csv", "H3K4me3_results.csv"]
@@ -64,5 +82,6 @@ ElasticNetCsvArr = ["ElasticNet-H3K4me1_results.csv", "ElasticNet-H3K36me3_resul
       "ElasticNet-H3K9me3_results.csv", "ElasticNet-H3K4me3_results.csv"]
 
 # scatter_plot(ModelCsvArr,ElasticNetCsvArr)
-histogram()
+# histogram()
+plot_std(ModelCsvArr)
     

@@ -20,6 +20,7 @@ from os.path import isfile, join
 
 from progressbar import ProgressBar, Bar, Percentage, AnimatedMarker, AdaptiveETA
 from IPython.display import clear_output
+import shap
 
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.model_selection import train_test_split, KFold, cross_validate, GridSearchCV
@@ -601,17 +602,37 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
 
     # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-val-mse:", np.mean(min_val_mse_array), "\n Mean-val-mae:", np.mean(min_val_mae_array))
     # df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
-    test_model(X_train, X_test, y_train, y_test, histone_mark_str)
+    # test_model(X_train, X_test, y_train, y_test, histone_mark_str)
 
-    model = ElasticNet(max_iter=1000, random_state = 42)
-    model.fit(X_train, y_train)
-    predictions = model.predict(X_test)
-    mse = mean_squared_error(y_test, predictions)
-    mae = median_absolute_error(y_test, predictions)
-    corr, _ = pearsonr(y_test, predictions)
-    print("ELASTIC NET")
-    print('Pearsons correlation: %.3f' % corr)
-    print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
+    if histone_mark_str == "H3K4me3":
+        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+    elif histone_mark_str == "H3K27ac":
+        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+    elif histone_mark_str == "H3K27me3":
+        model = create_nn(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+        auto_encoder_args = [16, 300, 0.0, 0.1, 0.1, 0.0003]
+    elif histone_mark_str == "H3K36me3":
+        model = create_nn(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.1, 0.1, 0.0003]
+    elif histone_mark_str == "H3K4me1":
+        model = create_nn(50, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.2, 0.0003]
+    elif histone_mark_str == "H3K9me3":
+        model = create_nn(50, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.05, 0.1, 0.0003]
+
+    get_shap_values(model, X_train, X_test, histone_mark_str)
+    # model = ElasticNet(max_iter=1000, random_state = 42)
+    # model.fit(X_train, y_train)
+    # predictions = model.predict(X_test)
+    # mse = mean_squared_error(y_test, predictions)
+    # mae = median_absolute_error(y_test, predictions)
+    # corr, _ = pearsonr(y_test, predictions)
+    # print("ELASTIC NET")
+    # print('Pearsons correlation: %.3f' % corr)
+    # print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
     # df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions}
     # df = pd.DataFrame(df_dict)
     # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/ElasticNet-' + histone_mark_str + '_results.csv')
@@ -659,17 +680,17 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
         model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
         auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
     elif histone_mark_str == "H3K27me3":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+        auto_encoder_args = [16, 300, 0.0, 0.1, 0.1, 0.0003]
     elif histone_mark_str == "H3K36me3":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.1, 0.1, 0.0003]
     elif histone_mark_str == "H3K4me1":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn(50, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.2, 0.0003]
     elif histone_mark_str == "H3K9me3":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn(50, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.05, 0.1, 0.0003]
     
     auto_encoder = AutoEncoder(auto_encoder_args[0], auto_encoder_args[1], auto_encoder_args[2], auto_encoder_args[3], auto_encoder_args[4])
     auto_encoder.compile(
@@ -754,6 +775,30 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
         with open('metrics-output-' + histone_mark_str + '.txt', 'w') as convert_file:
             convert_file.write(json.dumps(metrics_dict))
 
+def get_shap_values(model, X_train, X_test, histone_mark_str):
+    explainer = shap.GradientExplainer(model, np.array(X_train))
+
+    shap_values_train = explainer.shap_values(np.array(X_train))
+    shap_values_test = explainer.shap_values(np.array(X_test))
+    pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
+
+    shap_values = pd.read_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
+    shap_values = pd.DataFrame(shap_values[0], index = X_test.index, columns = X_test.columns.values)
+    vals = np.abs(shap_values).mean()
+    shap_importance = pd.DataFrame(list(zip(X_test.columns.values, vals)), columns=['col_name','shap_importance'])
+    shap_importance.sort_values(by=['shap_importance'], ascending=False,inplace=True)
+    shap_importance.shap_importance = 100*shap_importance.shap_importance/np.sum(shap_importance.shap_importance)
+    feature_importance = feature_importance.sort_values('shap_importance', ascending = False).reset_index()
+    shap_fig0, ax = plt.subplots(figsize=(150), dpi = 1000)
+    # ax.set_xlim(-1.5, 2.5)
+    #ax.set_ylim(-2.5,1.4)
+    shap.dependence_plot(feature_importance.col_name[0], shap_values[0], np.array(X_test), feature_names=X_test.columns.values,
+                        alpha = 0.4, ax = ax, dot_size=4)
+    ax.set_ylabel('SHAP value')
+    ax.set_xlabel(feature_importance.col_name[0])
+    shap_fig0.savefig('annotation/' + histone_mark_str +'_shap_fig0_revision.pdf', bbox_inches='tight')
+    shap_fig0
+
 class LogLinearTransformer(BaseEstimator, TransformerMixin):
     
     def __init__(self, adult_age = 20):
@@ -799,11 +844,11 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # For post-processing
-    # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
     main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
-    # main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-    # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+    main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
     main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     # GEO post_processing
