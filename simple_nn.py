@@ -456,6 +456,36 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
 
     return model
 
+#create neural network with adjustable parameters
+def create_nn_shap(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 0.01):
+    hidden_layer_sizes = []
+
+    # hidden layer size
+    for i in range(hidden_layers):
+        hidden_layer_sizes.append(32)
+    
+    model = Sequential()
+
+    model.add(Input(shape = (input_size,)))
+    model.add(BatchNormalization())
+    # model.add(ActivityRegularization(coeff, coeff))
+    
+    for i in range(hidden_layers):
+        model.add(Dense(hidden_layer_sizes[i],
+                  kernel_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff),
+                  activity_regularizer = tf.keras.regularizers.l1_l2(coeff, coeff)))
+        model.add(Activation('selu'))
+        model.add(BatchNormalization())
+        model.add(Dropout(dropout))
+
+    model.add(Dense(hidden_layer_sizes[-1], activation='selu'))
+
+    model.add(Dense(1))
+    optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
+    model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
+
+    return model
+
 class AutoEncoder(tf.keras.Model):
     def __init__(self, batch_size, latent_size, dropout_rate, coeff, gaussian_noise):
         super(AutoEncoder, self,).__init__()
@@ -605,23 +635,17 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     # test_model(X_train, X_test, y_train, y_test, histone_mark_str)
 
     if histone_mark_str == "H3K4me3":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn_shap(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
     elif histone_mark_str == "H3K27ac":
-        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
+        model = create_nn_shap(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
     elif histone_mark_str == "H3K27me3":
-        model = create_nn(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
-        auto_encoder_args = [16, 300, 0.0, 0.1, 0.1, 0.0003]
+        model = create_nn_shap(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
     elif histone_mark_str == "H3K36me3":
-        model = create_nn(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.1, 0.1, 0.0003]
+        model = create_nn_shap(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
     elif histone_mark_str == "H3K4me1":
-        model = create_nn(50, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.2, 0.0003]
+        model = create_nn_shap(50, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
     elif histone_mark_str == "H3K9me3":
-        model = create_nn(50, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.05, 0.1, 0.0003]
+        model = create_nn_shap(50, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     get_shap_values(model, X_train, X_test, histone_mark_str)
     # model = ElasticNet(max_iter=1000, random_state = 42)
