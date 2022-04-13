@@ -684,9 +684,7 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
         batch_size=auto_encoder_args[0], 
         callbacks = [scheduler]
     )
-    auto_encoder.save("saved_models/auto_encoder")
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16, callbacks=[scheduler])
-    model.save("saved_models/NN")
     y_test = np.squeeze(y_test)
     prediction_distribution = model(auto_encoder.encoder(X_test))
     predictions = model.predict(auto_encoder.encoder(X_test)).flatten()
