@@ -807,9 +807,9 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
 
     shap_values = pd.read_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
-    shap_values = pd.DataFrame(shap_values[0], index = X_test.index, columns = X_test.columns.values)
+    shap_values = pd.DataFrame(shap_values[0], index = X_test.index, columns = X_test.columns.values.index)
     vals = np.abs(shap_values).mean()
-    shap_importance = pd.DataFrame(list(zip(X_test.columns.values, vals)), columns=['col_name','shap_importance'])
+    shap_importance = pd.DataFrame(list(zip(X_test.columns.values.index, vals)), columns=['col_name','shap_importance'])
     shap_importance.sort_values(by=['shap_importance'], ascending=False,inplace=True)
     shap_importance.shap_importance = 100*shap_importance.shap_importance/np.sum(shap_importance.shap_importance)
     feature_importance = shap_importance.sort_values('shap_importance', ascending = False).reset_index()
@@ -818,8 +818,8 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     #ax.set_ylim(-2.5,1.4)
     print(feature_importance)
     print(shap_values)
-    print(X_test.columns.values)
-    shap.dependence_plot(feature_importance.col_name[0], shap_values[0], np.array(X_test), feature_names=X_test.columns.values,
+    print(X_test.columns.values.index)
+    shap.dependence_plot(feature_importance.col_name[0], shap_values, np.array(X_test), feature_names=X_test.columns.values.index,
                         alpha = 0.4, ax = ax, dot_size=4)
     ax.set_ylabel('SHAP value')
     ax.set_xlabel(feature_importance.col_name[0])
