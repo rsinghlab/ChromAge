@@ -601,7 +601,7 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
 
     # print("Dataframe: ", df, "\n Val-metrics array:", val_metrics_array, "\n Mean-min-autoencoder-train-MSE:", np.mean(min_auto_encoder_train_mse_array), "\n Mean-Min-autoencoder-train-MAE:", np.mean(min_auto_encoder_train_mae_array), "\n Mean-Min-autoencoder-val-MSE:", np.mean(min_auto_encoder_val_mse_array), "\n Mean-Min-autoencoder-val-MAE:", np.mean(min_auto_encoder_val_mae_array),  "\n Mean-Min-train-loss:", np.mean(min_train_loss_array), "\n Mean-Min-train-mse:", np.mean(min_train_mse_array), "\n Mean-Min-train-mae:", np.mean(min_train_mae_array), "\n Mean-Min-val-loss:", np.mean(min_val_loss_array), "\n Mean-val-mse:", np.mean(min_val_mse_array), "\n Mean-val-mae:", np.mean(min_val_mae_array))
     # df.to_csv("Model_Results_" +  histone_mark_str + ".csv")
-    # test_model(X_train, X_test, y_train, y_test, histone_mark_str)
+    test_model(X_train, X_test, y_train, y_test, histone_mark_str)
 
     model = ElasticNet(max_iter=1000, random_state = 42)
     model.fit(X_train, y_train)
@@ -612,9 +612,9 @@ def post_process(metadata, histone_data_object, histone_mark_str, X_train, X_tes
     print("ELASTIC NET")
     print('Pearsons correlation: %.3f' % corr)
     print("Mean Median AE: ", mae, "\n Mean MSE:", mse)
-    df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions}
-    df = pd.DataFrame(df_dict)
-    df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/ElasticNet-' + histone_mark_str + '_results.csv')
+    # df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions}
+    # df = pd.DataFrame(df_dict)
+    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/ElasticNet-' + histone_mark_str + '_results.csv')
     
     return
 
@@ -662,11 +662,11 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
         model = create_nn(300, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
         auto_encoder_args = [16, 300, 0.0, 0.1, 0.1, 0.0003]
     elif histone_mark_str == "H3K36me3":
-        model = create_nn(50, 3, 0.0003, 0.0, 0.1) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.1, 0.1, 0.0003]
+        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
     elif histone_mark_str == "H3K4me1":
-        model = create_nn(50, 3, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-        auto_encoder_args = [16, 50, 0.0, 0.01, 0.2, 0.0003]
+        model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+        auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
     elif histone_mark_str == "H3K9me3":
         model = create_nn(50, 3, 0.0001, 0.0, 0.05) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
         auto_encoder_args = [16, 50, 0.0, 0.05, 0.1, 0.0001]
@@ -704,9 +704,9 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     print("MSE:", mse)
     print("MSE:", mae)
 
-    df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
-    df = pd.DataFrame(df_dict)
-    df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/Model-' + histone_mark_str + '_results.csv')
+    # df_dict = {"Actual Age": y_test, "Predicted Mean Age": predictions, "Predicted Stddev": prediction_distribution.stddev().numpy().flatten()}
+    # df = pd.DataFrame(df_dict)
+    # df.to_csv('/gpfs/data/rsingh47/masif/ChromAge/Model-' + histone_mark_str + '_results.csv')
 
 def main(metadata, histone_data_object, histone_mark_str, process = False, GEO = False):
     metadata = filter_metadata(metadata, biological_replicates = True)
@@ -801,12 +801,12 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # For post-processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
-    main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+    # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    # main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
     main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
     main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-    main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+    # main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
