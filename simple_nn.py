@@ -802,9 +802,9 @@ def main(metadata, histone_data_object, histone_mark_str, process = False, GEO =
 def get_shap_values(model, X_train, X_test, histone_mark_str):
     explainer = shap.GradientExplainer(model, np.array(X_train))
 
-    shap_values_train = explainer.shap_values(np.array(X_train))
-    shap_values_test = explainer.shap_values(np.array(X_test))
-    pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
+    # shap_values_train = explainer.shap_values(np.array(X_train))
+    # shap_values_test = explainer.shap_values(np.array(X_test))
+    # pd.Series(shap_values_test).to_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
 
     shap_values = pd.read_pickle('annotation/' + histone_mark_str +'_shap_values_test.pkl')
     shap_vals = pd.DataFrame(shap_values[0], columns = X_test.columns.values.tolist())
@@ -813,7 +813,7 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     shap_importance.sort_values(by=['shap_importance'], ascending=False,inplace=True)
     shap_importance.shap_importance = 100*shap_importance.shap_importance/np.sum(shap_importance.shap_importance)
     feature_importance = shap_importance.sort_values('shap_importance', ascending = False).reset_index()
-    shap_fig0, ax = plt.subplots(figsize=(15,15), dpi = 1000)
+    shap_fig0, ax = plt.subplots(figsize=(20,20), dpi = 1000)
     # ax.set_xlim(-1.5, 2.5)
     #ax.set_ylim(-2.5,1.4)
     print(feature_importance.col_name[0])
