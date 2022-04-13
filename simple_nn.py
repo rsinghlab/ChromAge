@@ -819,7 +819,7 @@ def get_shap_values(model, X_train, X_test, histone_mark_str):
     print(feature_importance.col_name[0])
     print(shap_values)
     shap.dependence_plot(feature_importance.col_name[0], shap_values[0], np.array(X_test), feature_names=X_test.columns.values.tolist(),
-                        alpha = 0.4, ax = ax, dot_size=4)
+                        alpha = 1, ax = ax, dot_size=4)
     ax.set_ylabel('SHAP value')
     ax.set_xlabel(feature_importance.col_name[0])
     shap_fig0.savefig('annotation/' + histone_mark_str +'_shap_fig0_revision.pdf', bbox_inches='tight')
@@ -870,12 +870,12 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # For post-processing
-    # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
-    main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
-    main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-    main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-    main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+    main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    # main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
+    # main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+    # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    # main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
