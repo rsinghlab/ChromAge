@@ -73,6 +73,16 @@ def plot_std(csvArr):
     plt.show()
     return
 
+def plot_bubble():
+    df_dict = {"Neural Network Histone Mark": ["H3K4me3", "H3K27ac", "H3K27me3", "H3K36me3", "H3K4me1", "H3K9me3"],
+     "Histone Mark Test Predictions": ["H3K4me3", "H3K27ac", "H3K27me3", "H3K36me3", "H3K4me1", "H3K9me3"],
+      "Correlation (R)": [], 
+      "MAE (Median Absolute Error)": []}
+    data = pd.DataFrame(df_dict)
+    sns.scatterplot(data=data, x="Neural Network Histone Mark", y="Histone Mark Test Predictions", size="Correlation (R)", color="MAE (Median Absolute Error)",legend=True, sizes=(20, 2000))
+    plt.show()
+    return
+
 ModelCsvArr = ["H3K4me1_results.csv", "H3K36me3_results.csv",
      "H3K27me3_results.csv", "H3K27ac_results.csv",
       "H3K9me3_results.csv", "H3K4me3_results.csv"]
@@ -83,5 +93,6 @@ ElasticNetCsvArr = ["ElasticNet-H3K4me1_results.csv", "ElasticNet-H3K36me3_resul
 
 # scatter_plot(ModelCsvArr,ElasticNetCsvArr)
 # histogram()
-plot_std(ModelCsvArr)
+# plot_std(ModelCsvArr)
+plot_bubble()
     
