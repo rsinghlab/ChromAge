@@ -1,3 +1,4 @@
+from cProfile import label
 import pandas as pd
 from matplotlib import pyplot as plt
 import numpy as np
@@ -67,19 +68,26 @@ def plot_std(csvArr):
     df_dict = {"Actual Age (years)": actual_age, "Predicted Stddev (years)": predicted_std}
     df = pd.DataFrame(df_dict)
 
-    plt.rcParams.update({'figure.figsize':(20,15), 'figure.dpi':100})
+    plt.rcParams.update({'figure.figsize':(10,10), 'figure.dpi':100})
     sns.set_style('whitegrid')
     sns.lmplot(x='Actual Age (years)', y='Predicted Stddev (years)', data=df)
+    plt.ylim(0.5,2.0)
     plt.show()
     return
 
 def plot_bubble():
-    df_dict = {"Neural Network Histone Mark": ["H3K4me3", "H3K27ac", "H3K27me3", "H3K36me3", "H3K4me1", "H3K9me3"],
-     "Histone Mark Test Predictions": ["H3K4me3", "H3K27ac", "H3K27me3", "H3K36me3", "H3K4me1", "H3K9me3"],
-      "Correlation (R)": [], 
-      "MAE (Median Absolute Error)": []}
-    data = pd.DataFrame(df_dict)
-    sns.scatterplot(data=data, x="Neural Network Histone Mark", y="Histone Mark Test Predictions", size="Correlation (R)", color="MAE (Median Absolute Error)",legend=True, sizes=(20, 2000))
+    data = pd.read_csv("bubble_plot.csv")
+    print(data)
+    fig, ax = plt.subplots(figsize=(7, 5))
+
+    sc = ax.scatter(data["Neural Network Histone Mark"], data["Histone Mark Test Predictions"], c=data["MAE (Median Absolute Error)"], cmap='Blues_r', s=data["Correlation"]*300)
+    # ax.set_ylabel("Histone Mark Tested")
+    ax.set_xlabel("Neural Network Histone Mark")
+    # ax.set_title("Pan-Histone Mark Prediction")
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.grid(color='grey', linestyle='-', linewidth=0.25, alpha=0.7)
+    plt.colorbar(sc, ax=ax, label="MAE (Median Absolute Error)")
     plt.show()
     return
 
