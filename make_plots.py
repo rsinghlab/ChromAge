@@ -18,8 +18,8 @@ def scatter_plot(ModelArr, ENArr):
 
     fig, ax = plt.subplots(figsize=(8, 6))
 
-    ax.scatter(actual_age, elasticNet_Age, color='purple', alpha=0.5, s=50, label="ElasticNet")
-    ax.scatter(actual_age, predicted_age, color='darkblue', alpha=0.5, s=50, label="Neural Network")
+    ax.scatter(actual_age, elasticNet_Age, color='orange', alpha=0.5, s=50, label="ElasticNet")
+    ax.scatter(actual_age, predicted_age, color='blue', alpha=0.5, s=50, label="Neural Network")
     ax.plot(actual_age, actual_age, color="black")
     ax.set_ylabel("Predicted Age (years)")
     ax.set_xlabel("Actual Age (years)")
@@ -99,8 +99,8 @@ ElasticNetCsvArr = ["ElasticNet-H3K4me1_results.csv", "ElasticNet-H3K36me3_resul
      "ElasticNet-H3K27me3_results.csv", "ElasticNet-H3K27ac_results.csv",
       "ElasticNet-H3K9me3_results.csv", "ElasticNet-H3K4me3_results.csv"]
 
-# scatter_plot(ModelCsvArr,ElasticNetCsvArr)
+scatter_plot(ModelCsvArr,ElasticNetCsvArr)
 # histogram()
 # plot_std(ModelCsvArr)
-plot_bubble()
+# plot_bubble()
     
