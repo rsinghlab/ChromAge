@@ -860,11 +860,6 @@ class LogLinearTransformer(BaseEstimator, TransformerMixin):
 if __name__ == '__main__':
     #Encode
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
-    ages = metadata["Age"].tolist()
-    print(ages)
-    print("Min:", min(ages))
-    print("Max:", max(ages))
-    print("Mean:", sum(ages)/len(ages))
 
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
