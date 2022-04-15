@@ -860,6 +860,12 @@ class LogLinearTransformer(BaseEstimator, TransformerMixin):
 if __name__ == '__main__':
     #Encode
     metadata = pd.read_pickle('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/metadata_summary.pkl') 
+    ages = metadata["Age"].tolist()
+    print(ages)
+    print("Min:", min(ages))
+    print("Max:", max(ages))
+    print("Mean:", sum(ages)/len(ages))
+
     H3K4me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K4me3/processed_data/H3K4me3_mean_bins.pkl', 'rb'))
     H3K27ac_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27ac/processed_data/H3K27ac_mean_bins.pkl', 'rb'))
     H3K27me3_data_object = pickle.load(open('/users/masif/data/masif/ChromAge/encode_histone_data/human/tissue/H3K27me3/processed_data/H3K27me3_mean_bins.pkl', 'rb'))
@@ -876,12 +882,12 @@ if __name__ == '__main__':
     # main(metadata, H3K9me3_data_object, "H3K9me3")
 
     # For post-processing
-    main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
-    main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
+    # main(metadata, H3K4me3_data_object, "H3K4me3", process = True) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+    # main(metadata, H3K27ac_data_object, "H3K27ac", process = True) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2
     # main(metadata, H3K27me3_data_object, "H3K27me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 300 0.1
-    main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
-    main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
-    main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
+    # main(metadata, H3K36me3_data_object, "H3K36me3", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.1 50 0.1
+    # main(metadata, H3K4me1_data_object, "H3K4me1", process = True) # Best Model: simple_nn 16 3 0.0003 0.0 0.01 50 0.2 / simple_nn 16 5 0.0002 0.1 0.05 50 0.1
+    # main(metadata, H3K9me3_data_object, "H3K9me3", process = True) # Best Model: simple_nn 16 3 0.0001 0.0 0.05 50 0.1
 
     # GEO post_processing
     # main(metadata, H3K4me3_data_object, "H3K4me3", GEO = True)
