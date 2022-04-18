@@ -738,7 +738,6 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16, callbacks=[scheduler], verbose = 0)
     plot_model(model, to_file="feed-forward.png", show_shapes=True, show_layer_names=True, show_layer_activations=True)
     plot_model(auto_encoder, to_file="auto-encoder.png", show_shapes=True, show_layer_names=True, show_layer_activations=True)
-    model.save("saved_models/nn")
     y_test = np.squeeze(y_test)
     prediction_distribution = model(auto_encoder.encoder(X_test))
     predictions = model.predict(auto_encoder.encoder(X_test)).flatten()
