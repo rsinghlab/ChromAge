@@ -453,6 +453,7 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
     model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
+    model.save("saved_models/nn")
     return model
 
 #create neural network with adjustable parameters
