@@ -453,7 +453,6 @@ def create_nn(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coeff = 
     
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
     model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
-
     return model
 
 #create neural network with adjustable parameters
@@ -483,7 +482,6 @@ def create_nn_shap(input_size, hidden_layers = 3, lr = 0.001, dropout = 0.1, coe
     model.add(Dense(1))
     optimizer = tf.keras.optimizers.Adam(learning_rate=lr)
     model.compile(optimizer=optimizer, loss=loss_function, metrics=['mse', 'mae'])    
-    model.save("saved_models/nn")
     return model
 
 class AutoEncoder(tf.keras.Model):
@@ -704,6 +702,7 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
 
     if histone_mark_str == "H3K4me3":
         model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 5 0.0003 0.0 0.01 50 0.1
+        return
         auto_encoder_args = [16, 50, 0.0, 0.01, 0.1, 0.0003]
     elif histone_mark_str == "H3K27ac":
         model = create_nn(50, 5, 0.0003, 0.0, 0.01) # Best Model: simple_nn 16 3 0.0002 0.05 0.1 150 0.2 / simple_nn 16 3 0.0003 0.0 0.1 50 0.2 / simple_nn 16 5 0.0003 0.0 0.01 50 0.1
