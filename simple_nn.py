@@ -42,6 +42,7 @@ import tensorflow_probability as tfp
 import keras.backend as K
 from matplotlib import pyplot as plt
 from keras.utils.vis_utils import plot_model
+from keras_visualizer import visualizer
 
 #random seed for reproducibility
 tf.random.set_seed(42)
@@ -736,8 +737,9 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     )
 
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16, callbacks=[scheduler], verbose = 0)
-    plot_model(model, to_file="feed-forward.png", show_shapes=True, show_layer_names=True)
-    plot_model(auto_encoder, to_file="auto-encoder.png", show_shapes=True, show_layer_names=True)
+    visualizer(model, format='png', view=True)
+    # plot_model(model, to_file="feed-forward.png", show_shapes=True, show_layer_names=True)
+    # plot_model(auto_encoder, to_file="auto-encoder.png", show_shapes=True, show_layer_names=True)
     y_test = np.squeeze(y_test)
     prediction_distribution = model(auto_encoder.encoder(X_test))
     predictions = model.predict(auto_encoder.encoder(X_test)).flatten()
