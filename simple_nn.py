@@ -41,6 +41,7 @@ from tensorflow.keras.layers import Embedding, Bidirectional,Conv1DTranspose, Ac
 import tensorflow_probability as tfp
 import keras.backend as K
 from matplotlib import pyplot as plt
+from keras.utils.vis_utils import plot_model
 
 #random seed for reproducibility
 tf.random.set_seed(42)
@@ -735,6 +736,8 @@ def test_model(X_train, X_test, y_train, y_test, histone_mark_str, data_transfor
     )
     history = model.fit(auto_encoder.encoder(X_train),y_train, epochs = 1000, batch_size=16, callbacks=[scheduler], verbose = 0)
     model.save("saved_models/nn")
+    plot_model(model, to_file="feed-forward.png", show_shapes=True, show_layer_names=True, show_layer_activations=True)
+    plot_model(auto_encoder, to_file="auto-encoder.png", show_shapes=True, show_layer_names=True, show_layer_activations=True)
     y_test = np.squeeze(y_test)
     prediction_distribution = model(auto_encoder.encoder(X_test))
     predictions = model.predict(auto_encoder.encoder(X_test)).flatten()
