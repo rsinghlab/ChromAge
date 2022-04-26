@@ -333,7 +333,7 @@ def run_pipeline(histone_str, path = "/gpfs/data/rsingh47/masif/ChromAge/GEO_met
 
 local_path = "/Users/haider/Documents/Fall-2021/ChromAge/GEO_metadata.csv"
 
-run_pipeline(histone_str='H3K4me3')
+run_pipeline(histone_str='H3K27ac')
 
 
 # json_example = {
