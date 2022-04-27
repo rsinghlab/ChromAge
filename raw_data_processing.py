@@ -281,13 +281,13 @@ def my_entropy(bases):
 
 
 # H3K4me3
-H3K4me3_mean_bins = histone_data('H3K4me3', 'human', 'tissue', chrom_info_hg38)
-H3K4me3_mean_bins.divide_into_folders()
+H3K4me3_mean_bins = histone_data('H3K4me3-age', 'human', 'tissue', chrom_info_hg38)
+# H3K4me3_mean_bins.divide_into_folders()
 H3K4me3_mean_bins.add_file_names(fc_or_pval_path="fc/")
 H3K4me3_mean_bins.check_files(verbose = True)
 H3K4me3_mean_bins.subdivide(by = 'bin', window_size = 100000)
 H3K4me3_mean_bins.process(np.mean)
-H3K4me3_mean_bins.save('H3K4me3_mean_bins')
+H3K4me3_mean_bins.save('H3K4me3_age_mean_bins')
 
 # H3K4me3_mean_genes = histone_data('H3K4me3', 'human', 'tissue', chrom_info_hg38)
 # H3K4me3_mean_genes.add_file_names()
